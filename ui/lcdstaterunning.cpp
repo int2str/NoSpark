@@ -19,6 +19,7 @@
 #include "board/j1772status.h"
 #include "devices/ds3231.h"
 #include "evse/state.h"
+#include "customcharacters.h"
 #include "lcdstaterunning.h"
 #include "strings.h"
 
@@ -28,11 +29,6 @@ using board::J1772Status;
 using devices::DS3231;
 using devices::LCD16x2;
 using evse::State;
-
-#include "utils/pair.h"
-#include "utils/math.h"
-#include "board/pin.h"
-using board::Pin;
 
 namespace
 {
@@ -94,7 +90,7 @@ bool LcdStateRunning::draw(devices::LCD16x2 &lcd)
     write_temp(lcd, rtc.readTemp());
 
     lcd.write(' ');
-    lcd.write(0x01);
+    lcd.write(CUSTOM_CHAR_SEPARATOR);
     lcd.write(" 24A ");
     lcd.move(0,1);
 
@@ -120,7 +116,7 @@ bool LcdStateRunning::draw(devices::LCD16x2 &lcd)
             lcd.setBacklight(LCD16x2::CYAN);
             lcd.write_P(STR_CHARGING);
             lcd.write("  ");
-            lcd.write(0x01);
+            lcd.write(CUSTOM_CHAR_SEPARATOR);
             lcd.write("00:00");
             break;
 

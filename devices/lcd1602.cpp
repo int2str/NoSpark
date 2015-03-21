@@ -181,14 +181,17 @@ void LCD16x2::setBacklight(const Backlight color)
 
 void LCD16x2::createChar(const uint8_t idx, const uint8_t* data, const uint8_t len)
 {
-    if (len != 8)
-        return;
-
-    const uint8_t cgaddr = (idx << 3);
-    writeCommand(LCD_SET_CG_ADDR | cgaddr);
+    writeCommand(LCD_SET_CG_ADDR | (idx << 3));
     for (uint8_t i = 0; i != len; ++i)
         writeData(*data++);
+    move(0, 0); // To reset address pointer
+}
 
+void LCD16x2::createChar_P(const uint8_t idx, const uint8_t* data, const uint8_t len)
+{
+    writeCommand(LCD_SET_CG_ADDR | (idx << 3));
+    for (uint8_t i = 0; i != len; ++i)
+        writeData(pgm_read_byte(data++));
     move(0, 0); // To reset address pointer
 }
 

@@ -18,6 +18,7 @@
 
 #include "evse/state.h"
 #include "system/timer.h"
+#include "customcharacters.h"
 #include "events.h"
 #include "lcdconsole.h"
 #include "lcdstatebootup.h"
@@ -29,6 +30,15 @@
 using devices::LCD16x2;
 using evse::State;
 using system::Timer;
+
+namespace
+{
+    void loadCustomCharacters(LCD16x2 &lcd)
+    {
+        for (uint8_t i=0; i != NUM_CUSTOM_CHARS; ++i)
+            lcd.createChar_P(i, &ui::CUSTOM_CHAR_MAP[i][0], 8);
+    }
+}
 
 namespace ui
 {
@@ -43,8 +53,7 @@ LcdConsole::LcdConsole()
     : inSettings(false)
     , lcdState(new LcdStateBootup())
 {
-    const uint8_t separator[] = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04};
-    lcd.createChar(1, separator, 8);
+    loadCustomCharacters(lcd);
 }
 
 void LcdConsole::setState(LcdState *newState)

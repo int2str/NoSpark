@@ -45,6 +45,7 @@ public:
     void move(const uint8_t x, const uint8_t y);
 
     void createChar(const uint8_t idx, const uint8_t* data, const uint8_t len);
+    void createChar_P(const uint8_t idx, const uint8_t* data, const uint8_t len);
 
     void setBacklight(const Backlight color);
 
