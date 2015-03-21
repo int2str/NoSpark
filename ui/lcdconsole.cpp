@@ -51,7 +51,7 @@ LcdConsole& LcdConsole::init()
 
 LcdConsole::LcdConsole()
     : inSettings(false)
-    , lcdState(new LcdStateBootup())
+    , lcdState(new LcdStateBootup(lcd))
 {
     loadCustomCharacters(lcd);
 }
@@ -63,18 +63,17 @@ void LcdConsole::setState(LcdState *newState)
 
     lcd.clear();
     lcdState = newState;
-    if (lcdState)
-        lcdState->draw(lcd);
+    lcdState->draw();
 }
 
 
 void LcdConsole::update()
 {
-    const bool keepState = lcdState->draw(lcd);
+    const bool keepState = lcdState->draw();
     if (!keepState && inSettings)
     {
         inSettings = false;
-        setState(new LcdStateRunning());
+        setState(new LcdStateRunning(lcd));
     }
 }
 
@@ -88,16 +87,16 @@ void LcdConsole::onEvent(const event::Event &event)
 
         case EVENT_CONTROLLER_STATE:
             if (event.param == State::RUNNING)
-                setState(new LcdStateRunning());
+                setState(new LcdStateRunning(lcd));
             else if (event.param == State::FAULT)
-                setState(new LcdStateError());
+                setState(new LcdStateError(lcd));
             break;
 
         case EVENT_KEYHOLD:
             if (!inSettings)
             {
                 inSettings = true;
-                setState(new LcdStateSettings());
+                setState(new LcdStateSettings(lcd));
             } else {
                 lcdState->advance();
             }

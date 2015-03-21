@@ -76,11 +76,12 @@ namespace
 namespace ui
 {
 
-LcdStateRunning::LcdStateRunning()
+LcdStateRunning::LcdStateRunning(devices::LCD16x2 &lcd)
+    : LcdState(lcd)
 {
 }
 
-bool LcdStateRunning::draw(devices::LCD16x2 &lcd)
+bool LcdStateRunning::draw()
 {
     DS3231& rtc = DS3231::get();
 

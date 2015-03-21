@@ -25,11 +25,17 @@ namespace ui
 class LcdState
 {
 public:
-    virtual bool draw(devices::LCD16x2 &lcd) = 0;
+    LcdState(devices::LCD16x2 &lcd)
+        : lcd(lcd) {};
+
+    virtual bool draw() = 0;
 
     virtual ~LcdState() {}
     virtual void select() {};
     virtual void advance() {}
+
+protected:
+    devices::LCD16x2 &lcd;
 };
 
 }

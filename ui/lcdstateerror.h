@@ -26,7 +26,8 @@ namespace ui
 class LcdStateError : public LcdState
 {
 public:
-    bool draw(devices::LCD16x2 &lcd);
+    LcdStateError(devices::LCD16x2 &lcd);
+    bool draw();
 };
 
 }

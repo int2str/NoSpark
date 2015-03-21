@@ -28,7 +28,7 @@ public:
     static void enable();
     static void reset();
 
-    static void force_restart();
+    static void forceRestart();
 
 private:
     static Watchdog& get();

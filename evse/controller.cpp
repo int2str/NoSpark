@@ -15,7 +15,6 @@
 
 #include "board/j1772pilot.h"
 #include "event/loop.h"
-#include "system/watchdog.h"
 #include "controller.h"
 #include "events.h"
 #include "post.h"
@@ -166,10 +165,6 @@ void Controller::onEvent(const event::Event &event)
             J1772Pilot::set(J1772Pilot::LOW);
             State::get().fault = State::FAULT_GFCI_TRIPPED;
             setControllerState(State::FAULT);
-            break;
-
-        case EVENT_RESET:
-            system::Watchdog::force_restart();
             break;
     }
 }

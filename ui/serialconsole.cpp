@@ -20,6 +20,7 @@
 #include "event/loop.h"
 #include "evse/state.h"
 #include "system/timer.h"
+#include "system/watchdog.h"
 #include "serialconsole.h"
 #include "events.h"
 #include "strings.h"
@@ -212,7 +213,7 @@ void SerialConsole::commandHelp()
 
 void SerialConsole::commandReset()
 {
-    event::Loop::post(event::Event(EVENT_RESET));
+    system::Watchdog::forceRestart();
 }
 
 void SerialConsole::commandSetTime()

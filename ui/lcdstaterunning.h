@@ -27,9 +27,9 @@ namespace ui
 class LcdStateRunning : public LcdState
 {
 public:
-    LcdStateRunning();
+    LcdStateRunning(devices::LCD16x2 &lcd);
 
-    bool draw(devices::LCD16x2 &lcd);
+    bool draw();
 };
 
 }

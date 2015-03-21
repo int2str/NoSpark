@@ -26,9 +26,14 @@ namespace ui
 class LcdStateSettings : public LcdState
 {
 public:
-    LcdStateSettings();
+    LcdStateSettings(devices::LCD16x2 &lcd);
 
-    bool draw(devices::LCD16x2 &lcd);
+    bool draw();
+
+    void pageSetClock();
+    void pageSetCurrent();
+    void pageReset();
+    void pageExit();
 
     // Forwarded keyboard events
     virtual void select();
@@ -40,8 +45,11 @@ private:
 
     uint8_t page;
     uint8_t option;
+    bool adjusting;
 
+    uint32_t lastAction;
     uint32_t lastUpdate;
+    uint8_t uiState;
 };
 
 }

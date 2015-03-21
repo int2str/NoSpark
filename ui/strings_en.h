@@ -23,6 +23,12 @@
 #define STR_ERROR_STATE             PSTR("ERROR")
 #define STR_DIODE_CHECK_FAILED      PSTR("DIODE CHECK FAIL")
 
+// Settings
+#define STR_SET_CLOCK               PSTR(" Set clock")
+#define STR_SET_CURRENT             PSTR(" Max. current")
+#define STR_SET_RESET               PSTR(" Force restart")
+#define STR_SET_EXIT                PSTR(" Exit settings")
+
 // Console strings
 #define STR_PROMPT                  PSTR("nospark> ")
 #define STR_EVENT                   PSTR("\r[Event] ")

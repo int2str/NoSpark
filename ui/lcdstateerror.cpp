@@ -24,7 +24,12 @@ using devices::LCD16x2;
 namespace ui
 {
 
-bool LcdStateError::draw(devices::LCD16x2 &lcd)
+LcdStateError::LcdStateError(devices::LCD16x2 &lcd)
+    : LcdState(lcd)
+{
+}
+
+bool LcdStateError::draw()
 {
     lcd.setBacklight(LCD16x2::RED);
 

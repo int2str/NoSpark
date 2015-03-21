@@ -42,12 +42,13 @@ namespace
 namespace ui
 {
 
-LcdStateBootup::LcdStateBootup()
-    : intro_shown(false)
+LcdStateBootup::LcdStateBootup(devices::LCD16x2 &lcd)
+    : LcdState(lcd)
+    , intro_shown(false)
 {
 }
 
-bool LcdStateBootup::draw(devices::LCD16x2 &lcd)
+bool LcdStateBootup::draw()
 {
     if (intro_shown)
         return false;

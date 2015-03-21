@@ -26,8 +26,8 @@ namespace ui
 class LcdStateBootup : public LcdState
 {
 public:
-    LcdStateBootup();
-    bool draw(devices::LCD16x2 &lcd);
+    LcdStateBootup(devices::LCD16x2 &lcd);
+    bool draw();
 
 private:
     bool intro_shown;

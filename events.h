@@ -36,6 +36,4 @@
 #define EVENT_POST_GFCI         110
 #define EVENT_POST_ACRELAY      111
 
-#define EVENT_RESET             200
-
 #define EVENT_TEST              255

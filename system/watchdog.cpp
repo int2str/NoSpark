@@ -41,7 +41,7 @@ void Watchdog::reset()
     get().reset_impl();
 }
 
-void Watchdog::force_restart()
+void Watchdog::forceRestart()
 {
     wdt_enable(WDTO_15MS);
     while(1) {}
