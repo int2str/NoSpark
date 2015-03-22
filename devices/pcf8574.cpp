@@ -20,7 +20,7 @@ namespace devices
 
 PCF8574::PCF8574(const uint8_t i2c_addr)
     : i2c_addr(i2c_addr)
-    , i2c(board::I2CMaster::get())
+    , i2c(I2CMaster::get())
     , ddr(0xFF)
 {
 }

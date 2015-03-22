@@ -116,7 +116,7 @@ namespace
     }
 }
 
-namespace board
+namespace devices
 {
 
 I2CMaster& I2CMaster::get()

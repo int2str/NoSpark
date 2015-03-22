@@ -32,7 +32,7 @@ namespace devices
 
 MCP23008::MCP23008(const uint8_t i2c_addr)
     : i2c_addr(i2c_addr)
-    , i2c(board::I2CMaster::get())
+    , i2c(I2CMaster::get())
 {
 }
 

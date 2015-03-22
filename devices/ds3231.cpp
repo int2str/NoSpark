@@ -73,7 +73,7 @@ DS3231& DS3231::get()
 
 DS3231::DS3231()
     : i2c_addr(DS3231_I2C_ADDRESS)
-    , i2c(board::I2CMaster::get())
+    , i2c(I2CMaster::get())
 {
 }
 

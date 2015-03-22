@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include "board/i2c_master.h"
 #include "utils/cpp.h"
+#include "i2c_master.h"
 
 namespace devices
 {
@@ -51,7 +51,7 @@ private:
     void read_impl();
 
     const uint8_t i2c_addr;
-    board::I2CMaster& i2c;
+    I2CMaster& i2c;
 
     DISALLOW_COPY_AND_ASSIGN(DS3231);
 };

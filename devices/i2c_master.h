@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include "utils/cpp.h"
 
-namespace board
+namespace devices
 {
 
 class I2CMaster

@@ -43,7 +43,7 @@ namespace devices
 
 MCP23017::MCP23017(const uint8_t i2c_addr)
     : i2c_addr(i2c_addr)
-    , i2c(board::I2CMaster::get())
+    , i2c(I2CMaster::get())
 {
 }
 
