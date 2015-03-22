@@ -48,6 +48,7 @@ public:
     ControllerState controller;
     ControllerFault fault;
     board::J1772Status::J1772State j1772;
+    uint8_t max_amps;
 
 private:
     DISALLOW_COPY_AND_ASSIGN(State);

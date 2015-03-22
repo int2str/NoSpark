@@ -24,7 +24,7 @@
 
 #define CONSOLE_BUFFER 50
 
-#define MAX_COMMANDS    5
+#define MAX_COMMANDS    6
 
 namespace ui
 {
@@ -62,6 +62,7 @@ private:
     SerialState handleCommand();
     void commandHelp();
     void commandReset();
+    void commandSetCurrent();
     void commandSetTime();
     void commandStatus();
     void commandDebug();

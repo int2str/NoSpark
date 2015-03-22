@@ -25,6 +25,7 @@
 #include "events.h"
 #include "strings.h"
 
+using evse::State;
 using serial::Usart;
 using devices::DS3231;
 
@@ -41,11 +42,16 @@ namespace
         uart.write('0' + (d & 0x0F));
     }
 
+    void write_decimal(Usart& uart, const uint8_t dec)
+    {
+        if (dec > 10)
+            uart.write('0' + (dec / 10));
+        uart.write('0' + (dec % 10));
+    }
+
     void write_temp(Usart& uart, const uint8_t temp)
     {
-        if (temp > 10)
-            uart.write('0' + (temp / 10));
-        uart.write('0' + (temp % 10));
+        write_decimal(uart, temp);
         uart.write('C');
     }
 
@@ -84,11 +90,12 @@ SerialConsole::SerialConsole()
     , event_debug(true) // TODO: Read from EEPROM? Default false?
     , len(0)
     , commands({
-        { STR_CMD_HELP,     false, &SerialConsole::commandHelp }
-      , { STR_CMD_STATUS,   false, &SerialConsole::commandStatus }
-      , { STR_CMD_RESET,    false, &SerialConsole::commandReset }
-      , { STR_CMD_SETTIME,  true,  &SerialConsole::commandSetTime }
-      , { STR_CMD_DEBUG,    true,  &SerialConsole::commandDebug }
+        { STR_CMD_HELP,      false, &SerialConsole::commandHelp }
+      , { STR_CMD_STATUS,    false, &SerialConsole::commandStatus }
+      , { STR_CMD_RESET,     false, &SerialConsole::commandReset }
+      , { STR_CMD_SETCURRENT, true, &SerialConsole::commandSetCurrent }
+      , { STR_CMD_SETTIME,    true, &SerialConsole::commandSetTime }
+      , { STR_CMD_DEBUG,      true, &SerialConsole::commandDebug }
     })
 {
 }
@@ -155,7 +162,7 @@ void SerialConsole::onEvent(const event::Event& event)
             {
                 uart.write_P(STR_EVENT);
                 uart.write_P(STR_EVT_CONTROLLER_STATE);
-                uart.write('0' + evse::State::get().controller);
+                uart.write('0' + State::get().controller);
                 uart.write(CR);
             }
             break;
@@ -217,6 +224,7 @@ void SerialConsole::commandHelp()
     uart.writeln_P(STR_HELP_COMMANDS);
     uart.writeln_P(STR_HELP_HELP);
     uart.writeln_P(STR_HELP_RESET);
+    uart.writeln_P(STR_HELP_SETCURRENT);
     uart.writeln_P(STR_HELP_SETTIME);
     uart.writeln_P(STR_HELP_STATUS);
     uart.writeln_P(STR_HELP_DEBUG);
@@ -226,6 +234,27 @@ void SerialConsole::commandHelp()
 void SerialConsole::commandReset()
 {
     system::Watchdog::forceRestart();
+}
+
+void SerialConsole::commandSetCurrent()
+{
+    const uint8_t cmd_len = strlen_P(STR_CMD_SETCURRENT);
+
+    if (len < cmd_len + 2 || len > cmd_len + 3)
+    {
+        uart.writeln_P(STR_ERR_PARAM);
+        return;
+    }
+
+    int amps = atoi(buffer + cmd_len);
+    if (amps > 0)
+    {
+        State::get().max_amps = amps;
+        event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, amps));
+
+    } else {
+        uart.writeln_P(STR_ERR_PARAM);
+    }
 }
 
 void SerialConsole::commandSetTime()
@@ -277,6 +306,11 @@ void SerialConsole::commandStatus()
 
     uart.write_P(STR_STATUS_TEMP);
     write_temp(uart, rtc.readTemp());
+    uart.write(CR);
+
+    uart.write_P(STR_STATUS_MAX_CURRENT);
+    write_decimal(uart, State::get().max_amps);
+    uart.write('A');
     uart.write(CR);
 }
 

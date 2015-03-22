@@ -29,6 +29,7 @@ State::State()
     : controller(BOOTUP)
     , fault(NOTHING_WRONG)
     , j1772(board::J1772Status::UNKNOWN)
+    , max_amps(24) // TODO: Read from EEPROM
 {
 }
 

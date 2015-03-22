@@ -117,12 +117,12 @@ void Controller::updateRunning()
         case J1772Status::STATE_D:              // Vent required :(
         case J1772Status::DIODE_CHECK_FAILED:   // Keep PWM up so we can re-check
             enableCharge(false);
-            J1772Pilot::pwmAmps(24);
+            J1772Pilot::pwmAmps(state.max_amps);
             // TODO: Debounce state changes to avoid relay clicking hell?
             break;
 
         case J1772Status::STATE_C:
-            J1772Pilot::pwmAmps(24);
+            J1772Pilot::pwmAmps(state.max_amps);
             enableCharge(true);
             break;
 
@@ -165,6 +165,11 @@ void Controller::onEvent(const event::Event &event)
             J1772Pilot::set(J1772Pilot::LOW);
             State::get().fault = State::FAULT_GFCI_TRIPPED;
             setControllerState(State::FAULT);
+            break;
+
+        case EVENT_MAX_AMPS_CHANGED:
+            if (J1772Pilot::getMode() == J1772Pilot::PWM)
+                J1772Pilot::pwmAmps(event.param);
             break;
     }
 }

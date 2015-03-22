@@ -84,6 +84,7 @@ LcdStateRunning::LcdStateRunning(devices::LCD16x2 &lcd)
 bool LcdStateRunning::draw()
 {
     DS3231& rtc = DS3231::get();
+    const uint8_t max_amps = State::get().max_amps;
 
     lcd.move(0,0);
     write_time(lcd, rtc);
@@ -92,7 +93,11 @@ bool LcdStateRunning::draw()
 
     lcd.write(' ');
     lcd.write(CUSTOM_CHAR_SEPARATOR);
-    lcd.write(" 24A ");
+    lcd.write(' ');
+    lcd.write(max_amps >= 10 ? '0' + max_amps / 10 : ' ');
+    lcd.write('0' + max_amps % 10);
+    lcd.write('A');
+
     lcd.move(0,1);
 
     switch (State::get().j1772)
