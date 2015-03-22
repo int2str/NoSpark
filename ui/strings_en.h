@@ -45,7 +45,9 @@
 #define STR_CMD_RESET               PSTR("reset")
 #define STR_CMD_SETTIME             PSTR("settime ")
 #define STR_CMD_STATUS              PSTR("status")
+#define STR_CMD_DEBUG               PSTR("debug ")
 #define STR_ERR_SETTIME_PARAM       PSTR("Invalid time format")
+#define STR_ERR_PARAM               PSTR("Invalid parameter. Try 'help'.")
 
 // Console help strings
 #define STR_HELP_UNKNOWN            PSTR("Unknown command. Try 'help'.")
@@ -54,3 +56,4 @@
 #define STR_HELP_RESET              PSTR(" reset    force watchdog timeout to reset device")
 #define STR_HELP_SETTIME            PSTR(" settime  set the clock <hhmmss ddmmyy>")
 #define STR_HELP_STATUS             PSTR(" status   shows the device/charging status")
+#define STR_HELP_DEBUG              PSTR(" debug    enable (1) or disable (0) debug events")

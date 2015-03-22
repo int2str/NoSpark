@@ -16,6 +16,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "event/handler.h"
 #include "serial/usart.h"
@@ -23,7 +24,7 @@
 
 #define CONSOLE_BUFFER 50
 
-#define MAX_COMMANDS    4
+#define MAX_COMMANDS    5
 
 namespace ui
 {
@@ -48,7 +49,7 @@ public:
     static SerialConsole& init();
 
 private:
-    enum State
+    enum SerialState
     {
         CONSOLE_STARTUP,
         CONSOLE_READY,
@@ -58,15 +59,18 @@ private:
 
     void onEvent(const event::Event &event);
 
-    State handleCommand();
+    SerialState handleCommand();
     void commandHelp();
     void commandReset();
     void commandSetTime();
     void commandStatus();
+    void commandDebug();
+
     void update();
 
     serial::Usart& uart;
-    State state;
+    SerialState state;
+    bool event_debug;
 
     char buffer[CONSOLE_BUFFER];
     uint8_t len;

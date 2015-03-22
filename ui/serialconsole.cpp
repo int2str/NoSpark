@@ -81,12 +81,14 @@ SerialConsole& SerialConsole::init()
 SerialConsole::SerialConsole()
     : uart(serial::Usart::get())
     , state(CONSOLE_STARTUP)
+    , event_debug(true) // TODO: Read from EEPROM? Default false?
     , len(0)
     , commands({
         { STR_CMD_HELP,     false, &SerialConsole::commandHelp }
       , { STR_CMD_STATUS,   false, &SerialConsole::commandStatus }
       , { STR_CMD_RESET,    false, &SerialConsole::commandReset }
-      , { STR_CMD_SETTIME,   true, &SerialConsole::commandSetTime }
+      , { STR_CMD_SETTIME,  true,  &SerialConsole::commandSetTime }
+      , { STR_CMD_DEBUG,    true,  &SerialConsole::commandDebug }
     })
 {
 }
@@ -134,18 +136,28 @@ void SerialConsole::onEvent(const event::Event& event)
 {
     switch (event.id)
     {
+        case EVENT_UPDATE:
+            update();
+            break;
+
         case EVENT_J1772_STATE:
-            uart.write_P(STR_EVENT);
-            uart.write_P(STR_EVT_J1772_STATE);
-            uart.write('A' - 1 + event.param);
-            uart.write(CR);
+            if (event_debug)
+            {
+                uart.write_P(STR_EVENT);
+                uart.write_P(STR_EVT_J1772_STATE);
+                uart.write('A' - 1 + event.param);
+                uart.write(CR);
+            }
             break;
 
         case EVENT_CONTROLLER_STATE:
-            uart.write_P(STR_EVENT);
-            uart.write_P(STR_EVT_CONTROLLER_STATE);
-            uart.write('0' + evse::State::get().controller);
-            uart.write(CR);
+            if (event_debug)
+            {
+                uart.write_P(STR_EVENT);
+                uart.write_P(STR_EVT_CONTROLLER_STATE);
+                uart.write('0' + evse::State::get().controller);
+                uart.write(CR);
+            }
             break;
 
         case EVENT_GFCI_TRIPPED:
@@ -153,28 +165,27 @@ void SerialConsole::onEvent(const event::Event& event)
             uart.writeln_P(STR_EVT_GFCI_TRIPPED);
             break;
 
-        case EVENT_UPDATE:
-            update();
-            break;
-
         default:
         {
-            char params[6] = {0};
+            if (event_debug)
+            {
+                char params[6] = {0};
 
-            utoa(event.id, params, 10);
-            uart.write_P(STR_EVENT);
-            uart.write_P(STR_EVT_DEFAULT1);
-            uart.write(params);
+                utoa(event.id, params, 10);
+                uart.write_P(STR_EVENT);
+                uart.write_P(STR_EVT_DEFAULT1);
+                uart.write(params);
 
-            utoa(event.param, params, 10);
-            uart.write_P(STR_EVT_DEFAULT2);
-            uart.writeln(params);
+                utoa(event.param, params, 10);
+                uart.write_P(STR_EVT_DEFAULT2);
+                uart.writeln(params);
+            }
             break;
         }
     }
 }
 
-SerialConsole::State SerialConsole::handleCommand()
+SerialConsole::SerialState SerialConsole::handleCommand()
 {
     if (buffer[0] == 0)
         return CONSOLE_READY;
@@ -208,6 +219,7 @@ void SerialConsole::commandHelp()
     uart.writeln_P(STR_HELP_RESET);
     uart.writeln_P(STR_HELP_SETTIME);
     uart.writeln_P(STR_HELP_STATUS);
+    uart.writeln_P(STR_HELP_DEBUG);
     uart.write(CR);
 }
 
@@ -240,6 +252,19 @@ void SerialConsole::commandSetTime()
 
     DS3231 &rtc = DS3231::get();
     rtc.writeRaw(buffer, 8);
+}
+
+void SerialConsole::commandDebug()
+{
+    const uint8_t cmd_len = strlen_P(STR_CMD_DEBUG);
+
+    if (len != cmd_len + 2)
+    {
+        uart.writeln_P(STR_ERR_PARAM);
+        return;
+    }
+
+    event_debug = buffer[cmd_len] != '0';
 }
 
 void SerialConsole::commandStatus()
