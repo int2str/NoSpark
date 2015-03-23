@@ -16,19 +16,32 @@
 #include <util/delay.h>
 #include <stdlib.h>
 
+#include "devices/ds3231.h"
+#include "event/loop.h"
+#include "evse/state.h"
 #include "system/timer.h"
 #include "system/watchdog.h"
 #include "customcharacters.h"
+#include "events.h"
 #include "lcdstatesettings.h"
 #include "strings.h"
 
-#define SETTINGS_PAGES          4
 #define SETTINGS_TIMEOUT    10000
-#define ADJUST_TIMEOUT       5000
 
+using devices::DS3231;
 using devices::LCD16x2;
+using evse::State;
 using system::Timer;
 using system::Watchdog;
+
+namespace
+{
+    void write_digits(devices::LCD16x2 &lcd, const uint8_t bcd)
+    {
+        lcd.write('0' + (bcd >> 4));
+        lcd.write('0' + (bcd & 0x0F));
+    }
+}
 
 namespace ui
 {
@@ -41,6 +54,13 @@ LcdStateSettings::LcdStateSettings(devices::LCD16x2 &lcd)
     , lastAction(0)
     , lastUpdate(0)
     , uiState(0)
+    , pageHandlers {
+        &LcdStateSettings::pageSetTime
+      , &LcdStateSettings::pageSetDate
+      , &LcdStateSettings::pageSetCurrent
+      , &LcdStateSettings::pageReset
+      , &LcdStateSettings::pageExit
+    }
 {
 }
 
@@ -51,42 +71,93 @@ bool LcdStateSettings::draw()
 
     lcd.setBacklight(LCD16x2::WHITE);
 
-    switch (page)
-    {
-        case 0:
-            pageSetClock();
-            break;
+    if (page >= SETTINGS_PAGES)
+        page = 0;
 
-        case 1:
-            pageSetCurrent();
-            break;
-
-        case 2:
-            pageReset();
-            break;
-
-        case 3:
-            pageExit();
-            if (adjusting)
-                return false;
-            break;
-    }
-
-    return true;
+    return (this->*pageHandlers[page])();
 }
 
-void LcdStateSettings::pageSetClock()
+bool LcdStateSettings::pageSetTime()
 {
+    // Draw screen
+
     lcd.move(0,0);
     lcd.write(CUSTOM_CHAR_CLOCK);
     lcd.write_P(STR_SET_CLOCK);
+
+    lcd.move(2, 1);
+    if (!adjusting || uiState)
+    {
+        uint8_t buffer[7] = {0};
+        DS3231::get().readRaw(buffer, 7);
+
+        write_digits(lcd, buffer[2]);
+        lcd.write(':');
+        write_digits(lcd, buffer[1]);
+    } else {
+        lcd.write("             ");
+    }
+
+    updateUIState();
+    return true;
 }
 
-void LcdStateSettings::pageSetCurrent()
+bool LcdStateSettings::pageSetDate()
 {
-    uint8_t current = 24 + option;
-    char buffer[4] = {0};
-    utoa(current, buffer, 10);
+    // Draw screen
+
+    lcd.move(0,0);
+    lcd.write(CUSTOM_CHAR_CALENDAR);
+    lcd.write_P(STR_SET_DATE);
+
+    lcd.move(2, 1);
+    if (!adjusting || uiState)
+    {
+        uint8_t buffer[7] = {0};
+        DS3231::get().readRaw(buffer, 7);
+
+        write_digits(lcd, buffer[4]);
+        lcd.write('.');
+        write_digits(lcd, buffer[5]);
+        lcd.write(".20");
+        write_digits(lcd, buffer[6]);
+    } else {
+        lcd.write("             ");
+    }
+
+    updateUIState();
+    return true;
+}
+
+bool LcdStateSettings::pageSetCurrent()
+{
+    const uint8_t currents[] = {10, 16, 20, 24, 30, 35, 40, 45, 50};
+
+    // Initialize amps
+    if (option == 0)
+        option = State::get().max_amps;
+
+    // Save new state if we're done adjusting
+    if (!adjusting && option != State::get().max_amps)
+    {
+        State::get().max_amps = option;
+        event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, option));
+    }
+
+    // Snap to currents above if we're still adjusting
+    if (adjusting)
+    {
+        if (option > currents[sizeof(currents) - 1])
+            option = currents[0];
+
+        // Snap
+        uint8_t i = 0;
+        while (currents[i] < option)
+            ++i;
+        option = currents[i];
+    }
+
+    // Draw screen, flashing option while adjusting
 
     lcd.move(0, 0);
     lcd.write(CUSTOM_CHAR_BOLT);
@@ -95,33 +166,34 @@ void LcdStateSettings::pageSetCurrent()
     lcd.move(2, 1);
     if (!adjusting || uiState)
     {
+        char buffer[4] = {0};
+        utoa(option, buffer, 10);
         lcd.write(buffer);
-        lcd.write(" Ampere ");
+        lcd.write('A');
     } else {
         lcd.write("             ");
     }
 
-    if (Timer::millis() - lastUpdate > 500)
-    {
-        uiState = !uiState;
-        lastUpdate = Timer::millis();
-    }
+    updateUIState();
+    return true;
 }
 
-void LcdStateSettings::pageReset()
+bool LcdStateSettings::pageReset()
 {
     lcd.move(0, 0);
     lcd.write('!');
     lcd.write_P(STR_SET_RESET);
     if (adjusting)
         Watchdog::forceRestart();
+    return true;
 }
 
-void LcdStateSettings::pageExit()
+bool LcdStateSettings::pageExit()
 {
     lcd.move(0, 0);
     lcd.write(0x7F); // <- back arrow
     lcd.write_P(STR_SET_EXIT);
+    return !adjusting;
 }
 
 void LcdStateSettings::select()
@@ -129,8 +201,7 @@ void LcdStateSettings::select()
     if (!adjusting)
     {
         lcd.clear();
-        if (++page == SETTINGS_PAGES)
-            page = 0;
+        ++page;
         option = 0;
     } else {
         ++option;
@@ -156,6 +227,15 @@ bool LcdStateSettings::timedOut()
 void LcdStateSettings::resetTimeout()
 {
     lastAction = Timer::millis();
+}
+
+void LcdStateSettings::updateUIState()
+{
+    if (Timer::millis() - lastUpdate > 500)
+    {
+        uiState = !uiState;
+        lastUpdate = Timer::millis();
+    }
 }
 
 }

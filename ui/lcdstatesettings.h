@@ -20,8 +20,13 @@
 #include "devices/lcd1602.h"
 #include "lcdstate.h"
 
+#define SETTINGS_PAGES          5
+
 namespace ui
 {
+
+class LcdStateSettings;
+typedef bool (LcdStateSettings::*PageHandler) ();
 
 class LcdStateSettings : public LcdState
 {
@@ -30,10 +35,11 @@ public:
 
     bool draw();
 
-    void pageSetClock();
-    void pageSetCurrent();
-    void pageReset();
-    void pageExit();
+    bool pageSetTime();
+    bool pageSetDate();
+    bool pageSetCurrent();
+    bool pageReset();
+    bool pageExit();
 
     // Forwarded keyboard events
     virtual void select();
@@ -43,6 +49,8 @@ private:
     bool timedOut();
     void resetTimeout();
 
+    void updateUIState();
+
     uint8_t page;
     uint8_t option;
     bool adjusting;
@@ -50,6 +58,8 @@ private:
     uint32_t lastAction;
     uint32_t lastUpdate;
     uint8_t uiState;
+
+    PageHandler pageHandlers[SETTINGS_PAGES];
 };
 
 }
