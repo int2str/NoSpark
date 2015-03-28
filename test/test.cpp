@@ -1,7 +1,9 @@
 #include <cassert>
+#include <cstring>
 #include <iostream>
 
 #include "../utils/math.h"
+#include "../utils/pair.h"
 #include "../utils/queue.h"
 
 using std::cout;
@@ -29,6 +31,14 @@ int main()
         assert(utils::max('A', 'Z') == 'Z');
     }
 
+    cout << "Testing utils::Pair()" << endl;
+
+    {
+        const char *meaning = "Meaning of life\0";
+        utils::Pair<int, const char*> p {42, meaning};
+        assert(p.first == 42);
+        assert(strcmp(meaning, p.second) == 0);
+    }
     
     cout << "Testing utils::queue()" << endl;
 
