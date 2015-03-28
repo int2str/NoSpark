@@ -37,10 +37,8 @@ void Loop::dispatch()
 
 Loop& Loop::get()
 {
-    static Loop* i = 0;
-    if (i == 0)
-        i = new Loop();
-    return *i;
+    static Loop loop;
+    return loop;
 }
 
 Loop::Loop()
