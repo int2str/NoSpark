@@ -20,12 +20,14 @@ namespace event
 
 void Loop::post(const Event &event)
 {
-    get().q_event.push(event);
+    auto& events = get().events;
+    events.push(event);
 }
 
 void Loop::addHandler(Handler *ph)
 {
-    get().q_handler.push(ph);
+    auto& handlers = get().handlers;
+    handlers.push(ph);
 }
 
 void Loop::dispatch()
@@ -47,20 +49,12 @@ Loop::Loop()
 
 void Loop::dispatch_impl()
 {
-    while (!q_event.empty())
+    while (!events.empty())
     {
-        const Event& event = q_event.front();
-        Handler* handler = q_handler.front();
-
-        while (1)
-        {
+        auto event = events.front();
+        for (auto handler : handlers)
             handler->onEvent(event);
-            if (!q_handler.has_next())
-            break;
-            handler = q_handler.next();
-        }
-
-        q_event.pop();
+        events.pop();
     }
 }
 

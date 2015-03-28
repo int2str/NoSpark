@@ -49,8 +49,8 @@ private:
     static Loop &get();
     void dispatch_impl();
 
-    utils::Queue<Event> q_event;
-    utils::Queue<Handler*> q_handler;
+    utils::Queue<Event> events;
+    utils::Queue<Handler*> handlers;
 
     DISALLOW_COPY_AND_ASSIGN(Loop);
 };

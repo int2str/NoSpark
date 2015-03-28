@@ -19,43 +19,48 @@ namespace utils
 {
 
 template<typename T>
-struct Node
-{
-    T data;
-    Node *next;
-};
-
-template<typename T>
 class Queue
 {
+    struct Node
+    {
+        T data;
+        Node *next;
+    };
+
 public:
     Queue()
         : head(0)
     {
     }
 
+    ~Queue()
+    {
+        while (!empty())
+            pop();
+    }
+
     void push(const T& data)
     {
         if (!head)
         {
-            head = new Node<T> {data, 0};
+            head = new Node {data, 0};
 
         } else {
             auto n = head;
             while (n->next)
                 n = n->next;
-            n->next = new Node<T> {data, 0};
+            n->next = new Node {data, 0};
         }
     }
 
     void pop()
     {
-        if (head)
-        {
-            auto n = head;
-            head = head->next;
-            delete n;
-        }
+        if (empty())
+            return;
+
+        auto n = head;
+        head = head->next;
+        delete n;
     }
 
     bool empty() const
@@ -65,29 +70,50 @@ public:
 
     const T& front()
     {
-        if (empty())
-        {
-            const T& e = T();
-            return e;
-        }
-        it = head;
         return head->data;
     }
 
-    bool has_next() const
+    class const_iterator
     {
-        return !!it->next;
+        explicit const_iterator(Node *p)
+            : it(p)
+        {
+        }
+
+    public:
+        bool operator!= (const const_iterator& rhs)
+        {
+            return this->it != rhs.it;
+        }
+
+        const const_iterator& operator++ ()
+        {
+            it = it->next;
+            return *this;
+        }
+
+        const T& operator* ()
+        {
+            return it->data;
+        }
+
+    private:
+        friend class Queue;
+        Node *it;
+    };
+
+    const_iterator begin()
+    {
+        return const_iterator(head);
     }
 
-    const T& next()
+    const_iterator end()
     {
-        it = it->next;
-        return it->data;
+        return const_iterator(0);
     }
 
 private:
-    Node<T> *head;
-    Node<T> *it;
+    Node *head;
 };
 
 }
