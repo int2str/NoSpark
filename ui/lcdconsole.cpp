@@ -73,7 +73,10 @@ void LcdConsole::update()
     if (!keepState && inSettings)
     {
         inSettings = false;
-        setState(new LcdStateRunning(lcd));
+        if (State::get().fault == State::NOTHING_WRONG)
+            setState(new LcdStateRunning(lcd));
+        else
+            setState(new LcdStateError(lcd));
     }
 }
 

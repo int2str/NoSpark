@@ -15,16 +15,19 @@
 
 #include <util/delay.h>
 
+#include "evse/state.h"
+#include "system/watchdog.h"
 #include "lcdstateerror.h"
 #include "strings.h"
 
-
 using devices::LCD16x2;
+using evse::State;
+using system::Watchdog;
 
 namespace ui
 {
 
-LcdStateError::LcdStateError(devices::LCD16x2 &lcd)
+LcdStateError::LcdStateError(LCD16x2 &lcd)
     : LcdState(lcd)
 {
 }
@@ -33,8 +36,29 @@ bool LcdStateError::draw()
 {
     lcd.setBacklight(LCD16x2::RED);
 
-    lcd.home();
+    lcd.move(0, 0);
     lcd.write_P(STR_ERROR_STATE);
+
+    lcd.move(0, 1);
+
+    switch (State::get().fault)
+    {
+        case State::FAULT_POST_GFCI:
+            lcd.write_P(STR_FAULT_POST_GFCI);
+            break;
+
+        case State::FAULT_POST_RELAY:
+            lcd.write_P(STR_FAULT_POST_RELAY);
+            break;
+
+        case State::FAULT_GFCI_TRIPPED:
+            lcd.write_P(STR_FAULT_GFCI_TRIPPED);
+            break;
+
+        case State::NOTHING_WRONG:
+            // Then why are we here?!
+            break;
+    }
     return true;
 }
 

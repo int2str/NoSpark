@@ -15,6 +15,8 @@
 
 #pragma once
 
+// 16-char LCD ruler --->                |01234567890123456|
+
 // General UI
 #define STR_NOT_CONNECTED           PSTR("EV not connected")
 #define STR_CONNECTED               PSTR("EV ready")
@@ -30,12 +32,17 @@
 #define STR_SET_RESET               PSTR(" Force restart")
 #define STR_SET_EXIT                PSTR(" Exit settings")
 
+// Faults
+#define STR_FAULT_POST_GFCI         PSTR("GFI test failed")
+#define STR_FAULT_POST_RELAY        PSTR("Relay test failed")
+#define STR_FAULT_GFCI_TRIPPED      STR_EVT_GFCI_TRIPPED
+
 // Console strings
 #define STR_PROMPT                  PSTR("nospark> ")
 #define STR_EVENT                   PSTR("\r[Event] ")
 #define STR_EVT_CONTROLLER_STATE    PSTR("Controller state changed: ")
 #define STR_EVT_J1772_STATE         PSTR("J1772 state changed: ")
-#define STR_EVT_GFCI_TRIPPED        PSTR("GFCI tripped")
+#define STR_EVT_GFCI_TRIPPED        PSTR("GFI tripped")
 #define STR_EVT_DEFAULT1            PSTR("ID: ")
 #define STR_EVT_DEFAULT2            PSTR(", param: ")
 #define STR_STATUS_TIME             PSTR("Time: ")
