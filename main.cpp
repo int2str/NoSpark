@@ -15,6 +15,7 @@
 
 #include <avr/interrupt.h>
 
+#include "board/heartbeat.h"
 #include "event/loop.h"
 #include "evse/controller.h"
 #include "system/watchdog.h"
@@ -41,5 +42,6 @@ int main()
         event::Loop::dispatch();
 
         system::Watchdog::reset();
+        board::Heartbeat::toggle();
     }
 }

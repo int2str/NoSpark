@@ -47,7 +47,6 @@ protected:
 
 private:
     static Loop &get();
-    void dispatch_impl();
 
     utils::Queue<Event> events;
     utils::Queue<Handler*> handlers;

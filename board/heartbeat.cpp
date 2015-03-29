@@ -13,22 +13,24 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#pragma once
+#include <avr/wdt.h>
 
-#include "utils/cpp.h"
+#include "heartbeat.h"
+#include "pins.h"
 
-namespace system
+namespace board
 {
 
-class Watchdog
+void Heartbeat::toggle()
 {
-public:
-    static void enable();
-    static void reset();
-    static void forceRestart();
+    static Heartbeat heartbeat;
+    heartbeat.pin = !heartbeat.pin;
+}
 
-private:
-    DISALLOW_COPY_AND_ASSIGN(Watchdog);
-};
+Heartbeat::Heartbeat()
+    : pin(PIN_MISO)
+{
+    pin.io(Pin::OUT);
+}
 
 }

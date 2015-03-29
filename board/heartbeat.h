@@ -15,20 +15,24 @@
 
 #pragma once
 
+#include "board/pin.h"
 #include "utils/cpp.h"
 
-namespace system
+namespace board
 {
 
-class Watchdog
+class Heartbeat
 {
+    Heartbeat();
+
 public:
-    static void enable();
-    static void reset();
-    static void forceRestart();
+    static void toggle();
 
 private:
-    DISALLOW_COPY_AND_ASSIGN(Watchdog);
+    static Heartbeat& get();
+    void toggle_impl();
+
+    Pin pin;
 };
 
 }

@@ -84,7 +84,8 @@ LcdStateRunning::LcdStateRunning(devices::LCD16x2 &lcd)
 bool LcdStateRunning::draw()
 {
     DS3231& rtc = DS3231::get();
-    const uint8_t max_amps = State::get().max_amps;
+    const State& state = State::get();
+    const uint8_t max_amps = state.max_amps;
 
     lcd.move(0,0);
     write_time(lcd, rtc);
@@ -100,7 +101,7 @@ bool LcdStateRunning::draw()
 
     lcd.move(0,1);
 
-    switch (State::get().j1772)
+    switch (state.j1772)
     {
         case J1772Status::UNKNOWN:
         case J1772Status::STATE_E:

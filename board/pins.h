@@ -35,3 +35,7 @@
 // GFCI sense pin uses interrupt INT0 (=PD2; see gfci.cpp)
 #define PIN_GFCI_SENSE      MAKEPIN(D,2)
 #define PIN_GFCI_TEST       MAKEPIN(D,6)
+
+// Debug/testing pins
+#define PIN_MISO            MAKEPIN(B,4)
+#define PIN_MOSI            MAKEPIN(B,3)

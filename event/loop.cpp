@@ -32,7 +32,17 @@ void Loop::addHandler(Handler *ph)
 
 void Loop::dispatch()
 {
-    get().dispatch_impl();
+    Loop &loop = get();
+    auto& events = loop.events;
+    auto& handlers = loop.handlers;
+
+    while (!events.empty())
+    {
+        auto event = events.front();
+        for (auto handler : handlers)
+            handler->onEvent(event);
+        events.pop();
+    }
 }
 
 Loop& Loop::get()
@@ -43,17 +53,6 @@ Loop& Loop::get()
 
 Loop::Loop()
 {
-}
-
-void Loop::dispatch_impl()
-{
-    while (!events.empty())
-    {
-        auto event = events.front();
-        for (auto handler : handlers)
-            handler->onEvent(event);
-        events.pop();
-    }
 }
 
 }

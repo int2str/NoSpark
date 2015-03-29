@@ -20,36 +20,20 @@
 namespace system
 {
 
-Watchdog& Watchdog::get()
-{
-    static Watchdog watchdog;
-    return watchdog;
-}
-
-Watchdog::Watchdog()
+void Watchdog::enable()
 {
     wdt_enable(WDTO_8S);
 }
 
-void Watchdog::enable()
-{
-    get();
-}
-
 void Watchdog::reset()
 {
-    get().reset_impl();
+    wdt_reset();
 }
 
 void Watchdog::forceRestart()
 {
     wdt_enable(WDTO_15MS);
     while(1) {}
-}
-
-void Watchdog::reset_impl()
-{
-    wdt_reset();
 }
 
 }
