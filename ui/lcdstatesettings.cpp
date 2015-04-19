@@ -135,12 +135,12 @@ bool LcdStateSettings::pageSetCurrent()
 
     // Initialize amps
     if (option == 0)
-        option = State::get().max_amps;
+        option = State::get().max_amps_target;
 
     // Save new state if we're done adjusting
-    if (!adjusting && option != State::get().max_amps)
+    if (!adjusting && option != State::get().max_amps_target)
     {
-        State::get().max_amps = option;
+        State::get().max_amps_target = option;
         event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, option));
     }
 

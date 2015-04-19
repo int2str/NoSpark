@@ -29,7 +29,8 @@ State::State()
     : controller(BOOTUP)
     , fault(NOTHING_WRONG)
     , j1772(board::J1772Status::UNKNOWN)
-    , max_amps(40) // TODO: Read from EEPROM
+    , max_amps_target(40) // TODO: Read from EEPROM
+    , max_amps_limit(max_amps_target)
     , charge_start_time(0)
 {
 }

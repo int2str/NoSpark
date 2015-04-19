@@ -49,7 +49,14 @@ public:
     ControllerState controller;
     ControllerFault fault;
     board::J1772Status::J1772State j1772;
-    uint8_t max_amps;
+
+    // Desired maximum charge current
+    uint8_t max_amps_target;
+
+    // Current limit in effect
+    // This value will be <= max_amps_target and is
+    // affected by temperature monitoring etc.
+    uint8_t max_amps_limit;
 
     uint32_t charge_start_time;
 

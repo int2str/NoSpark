@@ -249,7 +249,7 @@ void SerialConsole::commandSetCurrent()
     int amps = atoi(buffer + cmd_len);
     if (amps > 0)
     {
-        State::get().max_amps = amps;
+        State::get().max_amps_target = amps;
         event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, amps));
 
     } else {
@@ -314,7 +314,10 @@ void SerialConsole::commandStatus()
     uart.write(CR);
 
     uart.write_P(STR_STATUS_MAX_CURRENT);
-    write_decimal(uart, state.max_amps);
+    write_decimal(uart, state.max_amps_limit);
+    uart.write('A');
+    uart.write('/');
+    write_decimal(uart, state.max_amps_target);
     uart.write('A');
     uart.write(CR);
 

@@ -110,7 +110,7 @@ bool LcdStateRunning::draw()
 {
     DS3231& rtc = DS3231::get();
     const State& state = State::get();
-    const uint8_t max_amps = state.max_amps;
+    const uint8_t max_amps = state.max_amps_limit;
 
     lcd.move(0,0);
     write_time(lcd, rtc);

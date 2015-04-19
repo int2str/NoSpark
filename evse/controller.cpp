@@ -17,6 +17,7 @@
 #include "event/loop.h"
 #include "evse/temperaturemonitor.h"
 #include "system/timer.h"
+#include "utils/math.h"
 #include "controller.h"
 #include "events.h"
 #include "post.h"
@@ -33,6 +34,21 @@ using event::Loop;
 namespace
 {
     using evse::State;
+    using evse::TemperatureMonitor;
+
+    uint8_t getMaxChargeCurrent()
+    {
+        uint8_t amps = State::get().max_amps_target;
+        const TemperatureMonitor::TemperatureState temp_state = TemperatureMonitor::getState();
+
+        if (temp_state == TemperatureMonitor::ELEVATED)
+            amps = utils::max(amps/2, MINIMUM_CHARGE_CURRENT);
+
+        else if (temp_state == TemperatureMonitor::HIGH)
+            amps = MINIMUM_CHARGE_CURRENT;
+
+        return amps;
+    }
 
     void setControllerState(const State::ControllerState state)
     {
@@ -207,16 +223,13 @@ void Controller::enableCharge(const bool enable)
 
 void Controller::updateChargeCurrent(const bool enablePwm)
 {
-    uint8_t amps = State::get().max_amps;
-    const TemperatureMonitor::TemperatureState temp_state = TemperatureMonitor::getState();
+    const uint8_t max_amps = getMaxChargeCurrent();
 
-    if (temp_state == TemperatureMonitor::ELEVATED)
-        amps /= 2; // Half power on elevated temperature
-    else if (temp_state == TemperatureMonitor::HIGH)
-        amps = MINIMUM_CHARGE_CURRENT;
+    State &state = State::get();
+    state.max_amps_limit = utils::min(state.max_amps_target, max_amps);
 
     if (enablePwm || J1772Pilot::getMode() == J1772Pilot::PWM)
-        J1772Pilot::pwmAmps(amps);
+        J1772Pilot::pwmAmps(max_amps);
 }
 
 void Controller::setFault(const State::ControllerFault fault)
