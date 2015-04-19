@@ -21,7 +21,7 @@
 #include "events.h"
 #include "pins.h"
 
-#define RELAY_TOGGLE_DELAY_MS   250
+#define RELAY_TOGGLE_DELAY_MS   500
 
 using event::Event;
 using event::Loop;
@@ -79,6 +79,8 @@ void ACRelay::selfTest(const bool evPresent)
         _delay_ms(RELAY_TOGGLE_DELAY_MS);
 
         const bool active = isActive();
+        _delay_ms(RELAY_TOGGLE_DELAY_MS);
+
         disable();
 
         Loop::post(Event(active ? EVENT_POST_SUCCESS : EVENT_POST_FAILED));
