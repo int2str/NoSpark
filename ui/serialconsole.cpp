@@ -87,7 +87,7 @@ SerialConsole& SerialConsole::init()
 SerialConsole::SerialConsole()
     : uart(serial::Usart::get())
     , state(CONSOLE_STARTUP)
-    , event_debug(true) // TODO: Read from EEPROM? Default false?
+    , event_debug(false) // TODO: Read from EEPROM?
     , len(0)
     , commands({
         { STR_CMD_HELP,      false, &SerialConsole::commandHelp }
@@ -299,6 +299,7 @@ void SerialConsole::commandDebug()
 void SerialConsole::commandStatus()
 {
     DS3231 &rtc = DS3231::get();
+    State &state = State::get();
 
     uart.write_P(STR_STATUS_TIME);
     write_time(uart, rtc);
@@ -308,9 +309,15 @@ void SerialConsole::commandStatus()
     write_temp(uart, rtc.readTemp());
     uart.write(CR);
 
+    uart.write_P(STR_STATUS_J1772);
+    uart.write('A' - 1 + state.j1772);
+    uart.write(CR);
+
     uart.write_P(STR_STATUS_MAX_CURRENT);
-    write_decimal(uart, State::get().max_amps);
+    write_decimal(uart, state.max_amps);
     uart.write('A');
+    uart.write(CR);
+
     uart.write(CR);
 }
 

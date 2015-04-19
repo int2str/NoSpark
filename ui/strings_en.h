@@ -47,6 +47,7 @@
 #define STR_EVT_DEFAULT2            PSTR(", param: ")
 #define STR_STATUS_TIME             PSTR("Time: ")
 #define STR_STATUS_TEMP             PSTR("Temp: ")
+#define STR_STATUS_J1772            PSTR("J1772 state: ")
 #define STR_STATUS_MAX_CURRENT      PSTR("Max. current: ")
 
 // Console commands
