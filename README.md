@@ -36,5 +36,6 @@ programmer. The programmer and upload protocol can be set in the top level
 Makefile.inc.
 
 ## Revision history
+* v0.02 - First charge milestone
 * v0.01 - Initial development release
 
