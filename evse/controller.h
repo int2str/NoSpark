@@ -20,6 +20,7 @@
 #include "board/acrelay.h"
 #include "board/gfci.h"
 #include "board/j1772status.h"
+#include "evse/state.h"
 #include "event/handler.h"
 #include "utils/cpp.h"
 
@@ -41,6 +42,9 @@ private:
     void updateRunning();
 
     void enableCharge(const bool enable);
+    void updateChargeCurrent(const bool enablePwm = false);
+
+    void setFault(const State::ControllerFault fault);
 
     // This toggles the pilot pin, so this function
     // should never be called during normal operation.

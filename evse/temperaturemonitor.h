@@ -13,25 +13,42 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include "utils/eeprom.h"
-#include "state.h"
+#pragma once
+
+#include <stdint.h>
+
+#include "event/handler.h"
+#include "utils/cpp.h"
 
 namespace evse
 {
 
-State& State::get()
+// Reads a temperature source (or more down the road?)
+// and fires over-temperature events (defined in events.h).
+// TODO: Use dependency injection to provide temperatue source
+class TemperatureMonitor : public event::Handler
 {
-    static State state;
-    return state;
-}
+    TemperatureMonitor();
 
-State::State()
-    : controller(BOOTUP)
-    , fault(NOTHING_WRONG)
-    , j1772(board::J1772Status::UNKNOWN)
-    , max_amps(40) // TODO: Read from EEPROM
-    , charge_start_time(0)
-{
-}
+public:
+    enum TemperatureState
+    {
+        NOMINAL
+      , ELEVATED
+      , HIGH
+      , CRITICAL
+    };
+
+    static TemperatureMonitor& init();
+    static TemperatureState getState();
+
+private:
+    void update();
+    void onEvent(const event::Event &event);
+
+    uint8_t last_temp;
+
+    DISALLOW_COPY_AND_ASSIGN(TemperatureMonitor);
+};
 
 }

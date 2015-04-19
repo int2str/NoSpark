@@ -55,6 +55,10 @@ bool LcdStateError::draw()
             lcd.write_P(STR_FAULT_GFCI_TRIPPED);
             break;
 
+        case State::FAULT_TEMPERATURE_CRITICAL:
+            lcd.write_P(STR_FAULT_TEMPERATURE);
+            break;
+
         case State::NOTHING_WRONG:
             // Then why are we here?!
             break;

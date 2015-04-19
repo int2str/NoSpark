@@ -15,10 +15,13 @@
 
 #include "board/j1772pilot.h"
 #include "event/loop.h"
+#include "evse/temperaturemonitor.h"
+#include "system/timer.h"
 #include "controller.h"
 #include "events.h"
 #include "post.h"
-#include "state.h"
+
+#define MINIMUM_CHARGE_CURRENT 6
 
 using board::ACRelay;
 using board::GFCI;
@@ -26,10 +29,11 @@ using board::J1772Pilot;
 using board::J1772Status;
 using event::Event;
 using event::Loop;
-using evse::State;
 
 namespace
 {
+    using evse::State;
+
     void setControllerState(const State::ControllerState state)
     {
         State::get().controller = state;
@@ -117,12 +121,12 @@ void Controller::updateRunning()
         case J1772Status::STATE_D:              // Vent required :(
         case J1772Status::DIODE_CHECK_FAILED:   // Keep PWM up so we can re-check
             enableCharge(false);
-            J1772Pilot::pwmAmps(state.max_amps);
+            updateChargeCurrent(true);
             // TODO: Debounce state changes to avoid relay clicking hell?
             break;
 
         case J1772Status::STATE_C:
-            J1772Pilot::pwmAmps(state.max_amps);
+            updateChargeCurrent(true);
             enableCharge(true);
             break;
 
@@ -154,22 +158,28 @@ void Controller::onEvent(const event::Event &event)
             break;
 
         case EVENT_POST_COMPLETED:
-            if (event.param != 0)
-                State::get().fault = postEventToFaultCode(event.param);
-            J1772Pilot::set(event.param == 0 ? J1772Pilot::HIGH : J1772Pilot::LOW);
-            setControllerState(event.param == 0 ? State::RUNNING : State::FAULT);
+            if (event.param == 0)
+            {
+                J1772Pilot::set(J1772Pilot::HIGH);
+                setControllerState(State::RUNNING);
+            } else {
+                setFault(postEventToFaultCode(event.param));
+            }
             break;
 
         case EVENT_GFCI_TRIPPED:
-            enableCharge(false);
-            J1772Pilot::set(J1772Pilot::LOW);
-            State::get().fault = State::FAULT_GFCI_TRIPPED;
-            setControllerState(State::FAULT);
+            setFault(State::FAULT_GFCI_TRIPPED);
             break;
 
         case EVENT_MAX_AMPS_CHANGED:
-            if (J1772Pilot::getMode() == J1772Pilot::PWM)
-                J1772Pilot::pwmAmps(event.param);
+            updateChargeCurrent();
+            break;
+
+        case EVENT_TEMPERATURE_ALERT:
+            if (event.param == TemperatureMonitor::CRITICAL)
+                setFault(State::FAULT_TEMPERATURE_CRITICAL);
+            else
+                updateChargeCurrent();
             break;
     }
 }
@@ -186,9 +196,35 @@ bool Controller::checkEVPresent()
 void Controller::enableCharge(const bool enable)
 {
     if (enable)
+    {
         acRelay.enable();
-    else
+        State::get().charge_start_time = system::Timer::millis();
+    } else {
         acRelay.disable();
+        State::get().charge_start_time = 0;
+    }
+}
+
+void Controller::updateChargeCurrent(const bool enablePwm)
+{
+    uint8_t amps = State::get().max_amps;
+    const TemperatureMonitor::TemperatureState temp_state = TemperatureMonitor::getState();
+
+    if (temp_state == TemperatureMonitor::ELEVATED)
+        amps /= 2; // Half power on elevated temperature
+    else if (temp_state == TemperatureMonitor::HIGH)
+        amps = MINIMUM_CHARGE_CURRENT;
+
+    if (enablePwm || J1772Pilot::getMode() == J1772Pilot::PWM)
+        J1772Pilot::pwmAmps(amps);
+}
+
+void Controller::setFault(const State::ControllerFault fault)
+{
+    enableCharge(false);
+    J1772Pilot::set(J1772Pilot::LOW);
+    State::get().fault = fault;
+    setControllerState(State::FAULT);
 }
 
 }

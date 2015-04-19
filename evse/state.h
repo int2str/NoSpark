@@ -41,6 +41,7 @@ public:
       , FAULT_POST_GFCI
       , FAULT_POST_RELAY
       , FAULT_GFCI_TRIPPED
+      , FAULT_TEMPERATURE_CRITICAL
     };
 
     static State& get();
@@ -49,6 +50,8 @@ public:
     ControllerFault fault;
     board::J1772Status::J1772State j1772;
     uint8_t max_amps;
+
+    uint32_t charge_start_time;
 
 private:
     DISALLOW_COPY_AND_ASSIGN(State);

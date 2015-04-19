@@ -20,7 +20,7 @@
 // General UI
 #define STR_NOT_CONNECTED           PSTR("EV not connected")
 #define STR_CONNECTED               PSTR("EV ready")
-#define STR_CHARGING                PSTR("Charging")
+#define STR_CHARGING                PSTR("Charging  ")
 #define STR_VENT_REQUIRED           PSTR("Vent required")
 #define STR_ERROR_STATE             PSTR("ERROR")
 #define STR_DIODE_CHECK_FAILED      PSTR("DIODE CHECK FAIL")
@@ -36,6 +36,7 @@
 #define STR_FAULT_POST_GFCI         PSTR("GFI test failed")
 #define STR_FAULT_POST_RELAY        PSTR("Relay test failed")
 #define STR_FAULT_GFCI_TRIPPED      STR_EVT_GFCI_TRIPPED
+#define STR_FAULT_TEMPERATURE       PSTR("Temperature alarm")
 
 // Console strings
 #define STR_PROMPT                  PSTR("nospark> ")

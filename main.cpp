@@ -18,6 +18,7 @@
 #include "board/heartbeat.h"
 #include "event/loop.h"
 #include "evse/controller.h"
+#include "evse/temperaturemonitor.h"
 #include "system/watchdog.h"
 #include "ui/keyboard.h"
 #include "ui/lcdconsole.h"
@@ -35,6 +36,7 @@ int main()
     ui::Keyboard::init();
     ui::SerialConsole::init();
     evse::Controller::init();
+    evse::TemperatureMonitor::init();
 
     while (1)
     {
