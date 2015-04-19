@@ -80,7 +80,6 @@ namespace
         write_dec(lcd, mins / 60);
         lcd.write(":");
         write_dec(lcd, mins % 60);
-
     }
 
     void spaces(LCD16x2 &lcd, const uint8_t num)
@@ -89,12 +88,14 @@ namespace
             lcd.write(' ');
     }
 
-    void center_P(LCD16x2 &lcd, const char *str)
+    uint8_t center_P(LCD16x2 &lcd, const char *str, const uint8_t offset = 0)
     {
-        const uint8_t len = strlen_P(str);
-        spaces(lcd, (LCD_COLUMNS - len) / 2);
+        const uint8_t len = strlen_P(str) + offset;
+        const uint8_t padding = (LCD_COLUMNS - len) / 2;
+        spaces(lcd, padding);
         lcd.write_P(str);
-        spaces(lcd, (LCD_COLUMNS - len) / 2 + 1);
+        spaces(lcd, padding + 1);
+        return padding;
     }
 }
 
@@ -141,7 +142,14 @@ bool LcdStateRunning::draw()
 
         case J1772Status::STATE_B:
             lcd.setBacklight(LCD16x2::GREEN);
-            center_P(lcd, STR_CONNECTED);
+            if (state.charge_start_time == 0)
+            {
+                center_P(lcd, STR_CONNECTED);
+            } else {
+                const uint8_t offset = center_P(lcd, STR_CHARGED, 5) + 5;
+                lcd.move(LCD_COLUMNS - offset, 1);
+                write_charge_time(lcd, state.charge_start_time);
+            }
             break;
 
         case J1772Status::STATE_C:

@@ -126,26 +126,28 @@ void Controller::updateRunning()
 
     switch (j1772)
     {
-        case J1772Status::STATE_A:
-        case J1772Status::STATE_E:
+        case J1772Status::STATE_A: // <-- EV not connected
+        case J1772Status::STATE_E: // <-- Error
         case J1772Status::NOT_READY:
+            State::get().charge_start_time = 0;
             enableCharge(false);
             J1772Pilot::set(J1772Pilot::HIGH);
             break;
 
-        case J1772Status::STATE_B:
-        case J1772Status::STATE_D:              // Vent required :(
-        case J1772Status::DIODE_CHECK_FAILED:   // Keep PWM up so we can re-check
+        case J1772Status::STATE_B: // <-- EV Connected
+        case J1772Status::DIODE_CHECK_FAILED:
+            // For diode failure, keep PWM up so we can re-check
             enableCharge(false);
             updateChargeCurrent(true);
             // TODO: Debounce state changes to avoid relay clicking hell?
             break;
 
-        case J1772Status::STATE_C:
+        case J1772Status::STATE_C: // <-- Charging
             updateChargeCurrent(true);
             enableCharge(true);
             break;
 
+        case J1772Status::STATE_D: // <-- Vent required :(
         case J1772Status::UNKNOWN:
         case J1772Status::IMPLAUSIBLE:
             enableCharge(false);
@@ -217,7 +219,6 @@ void Controller::enableCharge(const bool enable)
         State::get().charge_start_time = system::Timer::millis();
     } else {
         acRelay.disable();
-        State::get().charge_start_time = 0;
     }
 }
 
