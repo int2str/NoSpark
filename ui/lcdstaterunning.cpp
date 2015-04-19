@@ -19,6 +19,7 @@
 #include "board/j1772status.h"
 #include "devices/ds3231.h"
 #include "evse/state.h"
+#include "system/timer.h"
 #include "customcharacters.h"
 #include "lcdstaterunning.h"
 #include "strings.h"
@@ -32,10 +33,19 @@ using evse::State;
 
 namespace
 {
-    void write_digits(LCD16x2 &lcd, const uint8_t d)
+    void write_bcd(LCD16x2 &lcd, const uint8_t bcd)
     {
-        lcd.write('0' + (d >> 4));
-        lcd.write('0' + (d & 0x0F));
+        lcd.write('0' + (bcd >> 4));
+        lcd.write('0' + (bcd & 0x0F));
+    }
+
+    void write_dec(LCD16x2 &lcd, const uint8_t dec)
+    {
+        if (dec < 10)
+            lcd.write('0');
+        else
+            lcd.write('0' + (dec / 10));
+        lcd.write('0' + (dec % 10));
     }
 
     void write_temp(LCD16x2 &lcd, const uint8_t temp)
@@ -53,9 +63,24 @@ namespace
         uint8_t buffer[7] = {0};
         rtc.readRaw(buffer, 7);
 
-        write_digits(lcd, buffer[2]);
+        write_bcd(lcd, buffer[2]);
         lcd.write(':');
-        write_digits(lcd, buffer[1]);
+        write_bcd(lcd, buffer[1]);
+    }
+
+    void write_charge_time(LCD16x2 &lcd, const uint32_t start_time)
+    {
+        if (!start_time)
+        {
+            lcd.write("--:--");
+            return;
+        }
+
+        const uint32_t mins = (system::Timer::millis() - start_time) / 60000;
+        write_dec(lcd, mins / 60);
+        lcd.write(":");
+        write_dec(lcd, mins % 60);
+
     }
 
     void spaces(LCD16x2 &lcd, const uint8_t num)
@@ -122,9 +147,8 @@ bool LcdStateRunning::draw()
         case J1772Status::STATE_C:
             lcd.setBacklight(LCD16x2::CYAN);
             lcd.write_P(STR_CHARGING);
-            lcd.write("  ");
             lcd.write(CUSTOM_CHAR_SEPARATOR);
-            lcd.write("00:00");
+            write_charge_time(lcd, state.charge_start_time);
             break;
 
         case J1772Status::STATE_D:
