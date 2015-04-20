@@ -121,12 +121,12 @@ bool LcdStateRunning::draw()
     // The current sensing and averaging is here
     // temporarily. Ultimately all charge time/energy
     // monitoring will go in it's own module.
-    static MovingAverage<uint16_t, 25> ma;
+    static MovingAverage<uint32_t, 25> ma;
 
     if (state.j1772 == J1772Status::STATE_C)
     {
         ma.push(Ammeter::sample());
-        amps = ma.get() / 10;
+        amps = ma.get() / 1000;
     } else {
         ma.clear();
     }
