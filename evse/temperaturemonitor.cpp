@@ -19,8 +19,8 @@
 #include "temperaturemonitor.h"
 
 #define TEMPERATURE_ALARM_LEVEL1    50
-#define TEMPERATURE_ALARM_LEVEL2    65
-#define TEMPERATURE_ALARM_LEVEL3    70
+#define TEMPERATURE_ALARM_LEVEL2    55
+#define TEMPERATURE_ALARM_LEVEL3    60
 
 using event::Event;
 using event::Loop;
