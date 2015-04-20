@@ -84,6 +84,8 @@ void ACRelay::selfTest(const bool evPresent)
         disable();
 
         Loop::post(Event(active ? EVENT_POST_SUCCESS : EVENT_POST_FAILED));
+    } else {
+        Loop::post(Event(EVENT_POST_SUCCESS));
     }
 }
 
