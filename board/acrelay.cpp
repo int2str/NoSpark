@@ -21,7 +21,7 @@
 #include "events.h"
 #include "pins.h"
 
-#define RELAY_TOGGLE_DELAY_MS   500
+#define RELAY_TOGGLE_DELAY_MS   250
 
 using event::Event;
 using event::Loop;
