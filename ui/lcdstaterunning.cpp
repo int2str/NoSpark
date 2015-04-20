@@ -21,6 +21,7 @@
 #include "devices/ds3231.h"
 #include "evse/state.h"
 #include "system/timer.h"
+#include "utils/movingaverage.h"
 #include "customcharacters.h"
 #include "lcdstaterunning.h"
 #include "strings.h"
@@ -32,6 +33,7 @@ using board::J1772Status;
 using devices::DS3231;
 using devices::LCD16x2;
 using evse::State;
+using utils::MovingAverage;
 
 namespace
 {
@@ -115,8 +117,19 @@ bool LcdStateRunning::draw()
     const State& state = State::get();
     uint8_t amps = state.max_amps_limit;
 
+    // TODO:
+    // The current sensing and averaging is here
+    // temporarily. Ultimately all charge time/energy
+    // monitoring will go in it's own module.
+    static MovingAverage<uint16_t, 25> ma;
+
     if (state.j1772 == J1772Status::STATE_C)
-        amps = Ammeter::sample() / 10;
+    {
+        ma.push(Ammeter::sample());
+        amps = ma.get() / 10;
+    } else {
+        ma.clear();
+    }
 
     lcd.move(0,0);
     write_time(lcd, rtc);
