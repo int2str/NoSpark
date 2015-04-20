@@ -16,6 +16,18 @@
 #include "ammeter.h"
 #include "pins.h"
 
+#include <stdlib.h>
+#include "serial/usart.h"
+
+// Apparently this is calculated from the burden
+// resistor (22 Ohm in the OpenEVSE v3) and the
+// number of ADC steps.
+//     5V / 1024 steps = 4.882mV/step
+//     22 Ohm / 4.882mV = 4.5056
+//     1 / 4.5056 * 1000 (to get to mA) = 222
+// Slightly tweaked for accuracy...
+#define CURRENT_SCALE_FACTOR 220l
+
 namespace
 {
     inline uint16_t normalize(const uint16_t adc)
@@ -36,7 +48,7 @@ namespace
             return val;
 
         uint16_t min = 1;
-        uint16_t max = 8192; // <-- This is optimized; not a univeral function!
+        uint16_t max = 512; // <-- This is optimized; not a univeral function!
 
         uint16_t test = 0;
         while (1)
@@ -83,6 +95,11 @@ uint32_t Ammeter::sample_impl()
     uint32_t sum = 0;
     uint16_t last_sample = 0;
     uint16_t sample = pin.analogRead();
+
+    // The uint8_t roll-over is really useful here since
+    // 255 samples at 0.11ms is about 28ms. Thus we don't
+    // need to use millis() or anything to make the timeout
+    // happen.
     uint8_t samples = 1;
 
     uint8_t zero_crossings = 0;
@@ -105,20 +122,19 @@ uint32_t Ammeter::sample_impl()
                 continue;
             }
         }
-        
+
         sum += square(normalize(sample));
     }
-    
-    // During debugging, this calculated Vrms correctly:
-    // const uint32_t mv_rms = square_root(sum) 25 / 71;
 
-    // The aquare root of the sum of all samples of a 5V
-    // sine wave comes out to around 5020. Mapping a 100A
-    // range onto this value, we arrive at this formula:
-    //         amps = sqr(sum) / 5020 * 100
-    // To make this more integer math friendly, we can
-    // rearrange and reduct this to (and convert to 100mA's):
-    return square_root(sum) * 50l / 251l;
+    if (samples)
+        sum /= samples;
+    else
+        sum = 0;
+
+    // During debugging, this calculated Vrms correctly
+    // return square_root(sum) * 884l / 186l;
+
+    return square_root(sum) * CURRENT_SCALE_FACTOR;
 }
 
 }
