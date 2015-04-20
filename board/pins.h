@@ -29,6 +29,9 @@
 #define PIN_AC_TEST1        MAKEPIN(D,3)
 #define PIN_AC_TEST2        MAKEPIN(D,4)
 
+// Current probe
+#define PIN_AMMETER         MAKEPIN(C,0)
+
 // J1772 pilot uses PB2 for PWM (see j1772pilot.cpp)
 #define PIN_J1772_STATUS    MAKEPIN(C,1)
 

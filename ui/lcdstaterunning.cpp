@@ -16,6 +16,7 @@
 #include <util/delay.h>
 #include <stdlib.h>
 
+#include "board/ammeter.h"
 #include "board/j1772status.h"
 #include "devices/ds3231.h"
 #include "evse/state.h"
@@ -26,6 +27,7 @@
 
 #define LCD_COLUMNS 16
 
+using board::Ammeter;
 using board::J1772Status;
 using devices::DS3231;
 using devices::LCD16x2;
@@ -111,7 +113,10 @@ bool LcdStateRunning::draw()
 {
     DS3231& rtc = DS3231::get();
     const State& state = State::get();
-    const uint8_t max_amps = state.max_amps_limit;
+    uint8_t amps = state.max_amps_limit;
+
+    if (state.j1772 == J1772Status::STATE_C)
+        amps = Ammeter::sample() / 10;
 
     lcd.move(0,0);
     write_time(lcd, rtc);
@@ -121,8 +126,14 @@ bool LcdStateRunning::draw()
     lcd.write(' ');
     lcd.write(CUSTOM_CHAR_SEPARATOR);
     lcd.write(' ');
-    lcd.write(max_amps >= 10 ? '0' + max_amps / 10 : ' ');
-    lcd.write('0' + max_amps % 10);
+
+    if (amps > 5)
+    {
+        lcd.write(amps >= 10 ? '0' + amps / 10 : ' ');
+        lcd.write('0' + amps % 10);
+    } else {
+        lcd.write("--");
+    }
     lcd.write('A');
 
     lcd.move(0,1);
