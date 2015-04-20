@@ -213,11 +213,14 @@ bool Controller::checkEVPresent()
 
 void Controller::enableCharge(const bool enable)
 {
+    State &state = State::get();
     if (enable)
     {
+        state.charge_start_time = system::Timer::millis();
+        state.charge_stop_time = 0;
         acRelay.enable();
-        State::get().charge_start_time = system::Timer::millis();
     } else {
+        state.charge_stop_time = system::Timer::millis();
         acRelay.disable();
     }
 }

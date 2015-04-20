@@ -32,6 +32,7 @@ State::State()
     , max_amps_target(40) // TODO: Read from EEPROM
     , max_amps_limit(max_amps_target)
     , charge_start_time(0)
+    , charge_stop_time(0)
 {
 }
 

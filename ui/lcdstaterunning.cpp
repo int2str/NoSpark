@@ -72,15 +72,15 @@ namespace
         write_bcd(lcd, buffer[1]);
     }
 
-    void write_charge_time(LCD16x2 &lcd, const uint32_t start_time)
+    void write_time(LCD16x2 &lcd, const uint32_t ms)
     {
-        if (!start_time)
+        if (!ms)
         {
             lcd.write("--:--");
             return;
         }
 
-        const uint32_t mins = (system::Timer::millis() - start_time) / 60000;
+        const uint32_t mins = ms / 60000;
         write_dec(lcd, mins / 60);
         lcd.write(":");
         write_dec(lcd, mins % 60);
@@ -140,7 +140,7 @@ bool LcdStateRunning::draw()
     lcd.write(CUSTOM_CHAR_SEPARATOR);
     lcd.write(' ');
 
-    if (amps > 5)
+    if (amps)
     {
         lcd.write(amps >= 10 ? '0' + amps / 10 : ' ');
         lcd.write('0' + amps % 10);
@@ -172,7 +172,7 @@ bool LcdStateRunning::draw()
             } else {
                 const uint8_t offset = center_P(lcd, STR_CHARGED, 5) + 5;
                 lcd.move(LCD_COLUMNS - offset, 1);
-                write_charge_time(lcd, state.charge_start_time);
+                write_time(lcd, state.charge_stop_time - state.charge_start_time);
             }
             break;
 
@@ -180,7 +180,7 @@ bool LcdStateRunning::draw()
             lcd.setBacklight(LCD16x2::CYAN);
             lcd.write_P(STR_CHARGING);
             lcd.write(CUSTOM_CHAR_SEPARATOR);
-            write_charge_time(lcd, state.charge_start_time);
+            write_time(lcd, system::Timer::millis() - state.charge_start_time);
             break;
 
         case J1772Status::STATE_D:
