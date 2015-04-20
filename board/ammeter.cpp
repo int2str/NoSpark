@@ -108,7 +108,7 @@ uint32_t Ammeter::sample_impl()
         last_sample = sample;
         sample = pin.analogRead();
         ++samples;
-    
+
         if ( (sample >= 512 && last_sample < 512)
           || (sample < 512 && last_sample >= 512))
         {
@@ -116,11 +116,7 @@ uint32_t Ammeter::sample_impl()
                 ++zero_crossings;
 
             if (zero_crossings == 1)
-            {
                 samples = 1;
-                sum = square(normalize(sample));
-                continue;
-            }
         }
 
         sum += square(normalize(sample));
