@@ -3,75 +3,110 @@
 #include <iostream>
 
 #include "../utils/math.h"
+#include "../utils/movingaverage.h"
 #include "../utils/pair.h"
 #include "../utils/queue.h"
 
 using std::cout;
 using std::endl;
 
-int main()
+void test_utils_min()
 {
     cout << "Testing utils::min()" << endl;
 
-    {
-        assert(utils::min(10, 5) == 5);
-        assert(utils::min(1, -1) == -1);
-        assert(utils::min(45, 45) == 45);
-        assert(utils::min(4, 5) == 4);
-        assert(utils::min('A', 'Z') == 'A');
-    }
- 
+    assert(utils::min(10, 5) == 5);
+    assert(utils::min(1, -1) == -1);
+    assert(utils::min(45, 45) == 45);
+    assert(utils::min(4, 5) == 4);
+    assert(utils::min('A', 'Z') == 'A');
+}
+
+void test_utils_max()
+{
     cout << "Testing utils::max()" << endl;
 
-    {
-        assert(utils::max(10, 5) == 10);
-        assert(utils::max(1, -1) == 1);
-        assert(utils::max(45, 45) == 45);
-        assert(utils::min(4, 5) == 4);
-        assert(utils::max('A', 'Z') == 'Z');
-    }
+    assert(utils::max(10, 5) == 10);
+    assert(utils::max(1, -1) == 1);
+    assert(utils::max(45, 45) == 45);
+    assert(utils::min(4, 5) == 4);
+    assert(utils::max('A', 'Z') == 'Z');
+}
 
+void test_utils_pair()
+{
     cout << "Testing utils::Pair()" << endl;
 
-    {
-        const char *meaning = "Meaning of life\0";
-        utils::Pair<int, const char*> p {42, meaning};
-        assert(p.first == 42);
-        assert(strcmp(meaning, p.second) == 0);
-    }
-    
-    cout << "Testing utils::queue()" << endl;
+    const char *meaning = "Meaning of life\0";
+    utils::Pair<int, const char*> p {42, meaning};
+    assert(p.first == 42);
+    assert(strcmp(meaning, p.second) == 0);
+}
 
-    {
-        utils::Queue<int> q;
-        assert(q.empty());
+void test_utils_queue()
+{
+    cout << "Testing utils::Queue()" << endl;
 
-        q.push(1);
-        q.push(2);
-        q.push(3);
+    utils::Queue<int> q;
+    assert(q.empty());
 
-        auto i = 1;
-        for (auto it = q.begin(); it != q.end(); ++it)
-            assert(*it == i++);
+    q.push(1);
+    q.push(2);
+    q.push(3);
 
-        assert(!q.empty());
-        assert(q.front() == 1);
+    auto i = 1;
+    for (auto it = q.begin(); it != q.end(); ++it)
+        assert(*it == i++);
 
-        q.pop();
+    assert(!q.empty());
+    assert(q.front() == 1);
 
-        assert(!q.empty());
-        assert(q.front() == 2);
+    q.pop();
 
-        q.pop();
+    assert(!q.empty());
+    assert(q.front() == 2);
 
-        assert(!q.empty());
-        assert(q.front() == 3);
+    q.pop();
 
-        q.pop();
-        assert(q.empty());
-    }
+    assert(!q.empty());
+    assert(q.front() == 3);
 
-    // All done!
- 
+    q.pop();
+    assert(q.empty());
+}
+
+void test_utils_movingaverage()
+{
+    cout << "Testing utils::MovingAverage()" << endl;
+
+    utils::MovingAverage<int, 3> ma;
+
+    assert(ma.get() == 0);
+
+    ma.push(3);
+    ma.push(1);
+    assert(ma.get() == 2);
+
+    ma.push(8);
+    assert(ma.get() == 4);
+
+    ma.push(3);
+    assert(ma.get() == 4);
+
+    ma.clear();
+    assert(ma.get() == 0);
+
+    ma.push(3);
+    ma.push(11);
+    assert(ma.get() == 7);
+}
+
+int main()
+{
+    test_utils_min();
+    test_utils_max();
+    test_utils_movingaverage();
+    test_utils_pair();
+    test_utils_queue();
+
     std::cout << "All tests passed.\n";
 }
