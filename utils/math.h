@@ -43,21 +43,20 @@ T square_root(T val)
     T min = 1;
     T max = max_seed;
 
-    T test = 0;
-    while (1)
+    while ((max - min) > 1)
     {
-        test = (max - min) / 2 + min;
+        const T test = (max - min) / 2 + min;
+        const T sq = test * test;
 
-        if (max - min < 2)
-          break;
-
-        if ((test * test) > val)
+        if (sq == val)
+            return test;
+        else if (sq > val)
             max = test;
         else
             min = test;
     }
 
-    return test;
+    return min;
 }
 
 }
