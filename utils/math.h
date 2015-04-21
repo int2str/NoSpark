@@ -48,13 +48,13 @@ T square_root(T val)
     {
         test = (max - min) / 2 + min;
 
+        if (max - min < 2)
+          break;
+
         if ((test * test) > val)
             max = test;
         else
             min = test;
-
-        if (max - min < 2)
-          break;
     }
 
     return test;
