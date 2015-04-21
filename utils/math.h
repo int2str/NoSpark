@@ -34,4 +34,30 @@ const T& max(const T& a, const T& b)
     return a;
 }
 
+template <typename T, const T max_seed>
+T square_root(T val)
+{
+    if (val < 2)
+        return val;
+
+    T min = 1;
+    T max = max_seed;
+
+    T test = 0;
+    while (1)
+    {
+        test = (max - min) / 2 + min;
+
+        if ((test * test) > val)
+            max = test;
+        else
+            min = test;
+
+        if (max - min < 2)
+          break;
+    }
+
+    return test;
+}
+
 }

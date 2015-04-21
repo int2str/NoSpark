@@ -32,6 +32,13 @@ void test_utils_max()
     assert(utils::max('A', 'Z') == 'Z');
 }
 
+void test_utils_square_root()
+{
+    cout << "Test utils::square_root()" << endl;
+
+    assert((utils::square_root<uint16_t, 255>(81) == 9));
+}
+
 void test_utils_pair()
 {
     cout << "Testing utils::Pair()" << endl;
@@ -104,6 +111,7 @@ int main()
 {
     test_utils_min();
     test_utils_max();
+    test_utils_square_root();
     test_utils_movingaverage();
     test_utils_pair();
     test_utils_queue();

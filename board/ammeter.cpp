@@ -13,11 +13,9 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "utils/math.h"
 #include "ammeter.h"
 #include "pins.h"
-
-#include <stdlib.h>
-#include "serial/usart.h"
 
 // Apparently this is calculated from the burden
 // resistor (22 Ohm in the OpenEVSE v3) and the
@@ -40,34 +38,6 @@ namespace
     inline uint32_t square(const uint16_t val)
     {
         return static_cast<uint32_t>(val) * val;
-    }
-
-    uint16_t square_root(uint32_t val)
-    {
-        if (val < 2)
-            return val;
-
-        uint16_t min = 1;
-        uint16_t max = 512; // <-- This is optimized; not a univeral function!
-
-        uint16_t test = 0;
-        while (1)
-        {
-            test = (max - min) / 2 + min;
-
-            const uint32_t sq_t1 = square(test);
-            const uint32_t sq_t2 = square(test+1);
-
-            if ((sq_t1 > val) != (sq_t2 > val))
-                break;
-
-            if (sq_t1 > val)
-                max = test;
-            else
-                min = test;
-        }
-
-        return test;
     }
 }
 
@@ -128,9 +98,9 @@ uint32_t Ammeter::sample_impl()
         sum = 0;
 
     // During debugging, this calculated Vrms correctly
-    // return square_root(sum) * 884l / 186l;
+    // return utils::square_root<uint32_t, 512>(sum) * 884l / 186l;
 
-    return square_root(sum) * CURRENT_SCALE_FACTOR;
+    return utils::square_root<uint32_t, 512>(sum) * CURRENT_SCALE_FACTOR;
 }
 
 }
