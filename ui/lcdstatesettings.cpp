@@ -18,6 +18,7 @@
 
 #include "devices/ds3231.h"
 #include "event/loop.h"
+#include "evse/settings.h"
 #include "evse/state.h"
 #include "system/timer.h"
 #include "system/watchdog.h"
@@ -36,6 +37,17 @@ using system::Watchdog;
 
 namespace
 {
+    using evse::EepromSettings;
+    using evse::Settings;
+
+    void saveMaxAmps(const uint8_t max_amps)
+    {
+        Settings settings;
+        EepromSettings::load(settings);
+        settings.max_current = max_amps;
+        EepromSettings::save(settings);
+    }
+
     void write_digits(devices::LCD16x2 &lcd, const uint8_t bcd)
     {
         lcd.write('0' + (bcd >> 4));
@@ -140,6 +152,7 @@ bool LcdStateSettings::pageSetCurrent()
     // Save new state if we're done adjusting
     if (!adjusting && option != State::get().max_amps_target)
     {
+        saveMaxAmps(option);
         State::get().max_amps_target = option;
         event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, option));
     }

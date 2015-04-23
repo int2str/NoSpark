@@ -58,9 +58,6 @@ public:
     // affected by temperature monitoring etc.
     uint8_t max_amps_limit;
 
-    uint32_t charge_start_time;
-    uint32_t charge_stop_time;
-
 private:
     DISALLOW_COPY_AND_ASSIGN(State);
 };

@@ -13,6 +13,7 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "evse/settings.h"
 #include "utils/eeprom.h"
 #include "state.h"
 
@@ -29,11 +30,11 @@ State::State()
     : controller(BOOTUP)
     , fault(NOTHING_WRONG)
     , j1772(board::J1772Status::UNKNOWN)
-    , max_amps_target(40) // TODO: Read from EEPROM
-    , max_amps_limit(max_amps_target)
-    , charge_start_time(0)
-    , charge_stop_time(0)
 {
+    Settings settings;
+    EepromSettings::load(settings);
+    max_amps_target = settings.max_current;
+    max_amps_limit = max_amps_target;
 }
 
 }

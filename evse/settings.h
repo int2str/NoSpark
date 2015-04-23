@@ -17,19 +17,28 @@
 
 #include <stdint.h>
 
-#define SETTINGS_OFFSET     0x80
-#define SETTINGS_MARKER     0xAEAE
-#define SETTINGS_REVISION   0x01
-
 namespace evse
 {
 
-struct EvseSettings
+struct Settings
 {
-    uint16_t id;
-    uint8_t rev;
+    uint16_t marker;
+    uint8_t revision;
 
-    uint8_t current;
+    uint8_t max_current;
+
+	void defaults()
+	{
+		max_current = 16;
+	}
+};
+
+
+class EepromSettings
+{
+public:
+	static void load(Settings &settings);
+	static void save(const Settings &settings);
 };
 
 }
