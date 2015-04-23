@@ -13,30 +13,34 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include <util/delay.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include "board/ammeter.h"
 #include "board/j1772status.h"
 #include "devices/ds3231.h"
+#include "evse/chargemonitor.h"
 #include "evse/state.h"
 #include "system/timer.h"
-#include "utils/movingaverage.h"
 #include "customcharacters.h"
 #include "lcdstaterunning.h"
 #include "strings.h"
 
 #define LCD_COLUMNS 16
 
-using board::Ammeter;
 using board::J1772Status;
 using devices::DS3231;
 using devices::LCD16x2;
+using evse::ChargeMonitor;
 using evse::State;
-using utils::MovingAverage;
 
 namespace
 {
+    void spaces(LCD16x2 &lcd, const uint8_t num)
+    {
+        for(uint8_t i = 0; i != num; ++i)
+            lcd.write(' ');
+    }
+
     void write_bcd(LCD16x2 &lcd, const uint8_t bcd)
     {
         lcd.write('0' + (bcd >> 4));
@@ -86,10 +90,16 @@ namespace
         write_dec(lcd, mins % 60);
     }
 
-    void spaces(LCD16x2 &lcd, const uint8_t num)
+    void write_kwh(LCD16x2 &lcd, const uint32_t wh)
     {
-        for(uint8_t i = 0; i != num; ++i)
-            lcd.write(' ');
+        char buffer[10] = {0};
+        ltoa(wh / 1000, buffer, 10);
+
+        spaces(lcd, 3 - strlen(buffer));
+        lcd.write(buffer);
+        lcd.write('.');
+        lcd.write('0' + ((wh / 100) % 10));
+        lcd.write(" kWh ");
     }
 
     uint8_t center_P(LCD16x2 &lcd, const char *str, const uint8_t offset = 0)
@@ -108,28 +118,20 @@ namespace ui
 
 LcdStateRunning::LcdStateRunning(devices::LCD16x2 &lcd)
     : LcdState(lcd)
+    , display_state(0)
+    , last_change(0)
 {
 }
 
 bool LcdStateRunning::draw()
 {
-    DS3231& rtc = DS3231::get();
-    const State& state = State::get();
+    const State &state = State::get();
+    const ChargeMonitor &chargeMonitor = ChargeMonitor::get();
+    DS3231 &rtc = DS3231::get();
+
     uint8_t amps = state.max_amps_limit;
-
-    // TODO:
-    // The current sensing and averaging is here
-    // temporarily. Ultimately all charge time/energy
-    // monitoring will go in it's own module.
-    static MovingAverage<uint32_t, 25> ma;
-
-    if (state.j1772 == J1772Status::STATE_C)
-    {
-        ma.push(Ammeter::sample());
-        amps = ma.get() / 1000;
-    } else {
-        ma.clear();
-    }
+    if (ChargeMonitor::get().isCharging())
+        amps = chargeMonitor.chargeCurrent() / 1000;
 
     lcd.move(0,0);
     write_time(lcd, rtc);
@@ -166,22 +168,37 @@ bool LcdStateRunning::draw()
 
         case J1772Status::STATE_B:
             lcd.setBacklight(LCD16x2::GREEN);
-            if (state.charge_start_time == 0)
+            last_change = 0;
+            if (!ChargeMonitor::get().isCharging())
             {
                 center_P(lcd, STR_CONNECTED);
             } else {
                 const uint8_t offset = center_P(lcd, STR_CHARGED, 5) + 5;
                 lcd.move(LCD_COLUMNS - offset, 1);
-                write_time(lcd, state.charge_stop_time - state.charge_start_time);
+                write_time(lcd, chargeMonitor.chargeDuration());
             }
             break;
 
         case J1772Status::STATE_C:
+        {
             lcd.setBacklight(LCD16x2::CYAN);
-            lcd.write_P(STR_CHARGING);
+
+            const uint32_t now = system::Timer::millis();
+            if (now - last_change > 5000)
+            {
+                display_state = !display_state;
+                last_change = now;
+            }
+
+            if (display_state)
+                lcd.write_P(STR_CHARGING);
+            else
+                write_kwh(lcd, chargeMonitor.wattHours());
+
             lcd.write(CUSTOM_CHAR_SEPARATOR);
-            write_time(lcd, system::Timer::millis() - state.charge_start_time);
+            write_time(lcd, chargeMonitor.chargeDuration());
             break;
+        }
 
         case J1772Status::STATE_D:
             lcd.setBacklight(LCD16x2::RED);

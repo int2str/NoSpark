@@ -129,7 +129,6 @@ void Controller::updateRunning()
         case J1772Status::STATE_A: // <-- EV not connected
         case J1772Status::STATE_E: // <-- Error
         case J1772Status::NOT_READY:
-            State::get().charge_start_time = 0;
             enableCharge(false);
             J1772Pilot::set(J1772Pilot::HIGH);
             break;
@@ -213,14 +212,12 @@ bool Controller::checkEVPresent()
 
 void Controller::enableCharge(const bool enable)
 {
-    State &state = State::get();
     if (enable)
     {
-        state.charge_start_time = system::Timer::millis();
-        state.charge_stop_time = 0;
+        Loop::post(Event(EVENT_CHARGE_STATE, 1));
         acRelay.enable();
     } else {
-        state.charge_stop_time = system::Timer::millis();
+        Loop::post(Event(EVENT_CHARGE_STATE, 0));
         acRelay.disable();
     }
 }

@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <stdbool.h>
+#include <stdint.h>
 
 #include "devices/lcd1602.h"
 #include "evse/state.h"
@@ -30,6 +30,10 @@ public:
     LcdStateRunning(devices::LCD16x2 &lcd);
 
     bool draw();
+
+private:
+    uint8_t display_state;
+    uint32_t last_change;
 };
 
 }
