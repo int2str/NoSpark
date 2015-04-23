@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <string.h>
+#include <stdlib.h>
 
 namespace utils
 {
@@ -46,7 +46,9 @@ public:
 
     T get() const
     {
-        if (items == 0 || sum == 0)
+        // Make sure we have sufficient data
+        // to avoid initial spikes
+        if (items < (size/2))
             return 0;
         return sum / items;
     }
@@ -55,7 +57,6 @@ public:
     {
         sum = 0;
         items = 0;
-        memset(buffer, 0, sizeof(T) * size);
     }
 
 private:
