@@ -16,6 +16,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "board/acrelay.h"
 #include "board/gfci.h"
@@ -54,7 +55,7 @@ private:
     board::GFCI& gfci;
     board::J1772Status& j1772Status;
 
-    board::J1772Status::J1772State lastState;
+    uint32_t lastStateChange;
 
     DISALLOW_COPY_AND_ASSIGN(Controller);
 };
