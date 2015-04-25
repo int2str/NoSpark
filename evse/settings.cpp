@@ -26,22 +26,22 @@ namespace evse
 
 void EepromSettings::load(Settings &settings)
 {
-	const void* addr = reinterpret_cast<void*>(SETTINGS_OFFSET);
-	eeprom_read_block(&settings, addr, sizeof(Settings));
-	
-	if (settings.marker != SETTINGS_MARKER || settings.revision != SETTINGS_REVISION)
-	{
-		settings.marker = SETTINGS_MARKER;
-		settings.revision = SETTINGS_REVISION;
-		settings.defaults();
-		EepromSettings::save(settings);
-	}
+    const void* addr = reinterpret_cast<void*>(SETTINGS_OFFSET);
+    eeprom_read_block(&settings, addr, sizeof(Settings));
+
+    if (settings.marker != SETTINGS_MARKER || settings.revision != SETTINGS_REVISION)
+    {
+        settings.marker = SETTINGS_MARKER;
+        settings.revision = SETTINGS_REVISION;
+        settings.defaults();
+        EepromSettings::save(settings);
+    }
 }
 
 void EepromSettings::save(const Settings &settings)
 {
-	void* addr = reinterpret_cast<void*>(SETTINGS_OFFSET);
-	eeprom_write_block(&settings, addr, sizeof(Settings));
+    void* addr = reinterpret_cast<void*>(SETTINGS_OFFSET);
+    eeprom_write_block(&settings, addr, sizeof(Settings));
 }
 
 }

@@ -47,11 +47,11 @@ private:
     uint32_t time_start_ms;
     uint32_t time_stop_ms;
     uint32_t last_sample;
-    
+
     uint32_t watt_seconds;
 
     utils::MovingAverage<uint32_t, MOVING_AVERAGE_WINDOW> current_samples;
-    
+
     DISALLOW_COPY_AND_ASSIGN(ChargeMonitor);
 };
 
