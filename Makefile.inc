@@ -55,6 +55,7 @@ OBJCOPY = avr-objcopy
 AVRDUDE = avrdude
 
 DUDEFLAGS = -V -p $(BUILD_MCU) $(PORT) -c $(UPLOAD_PROTOCOL) -b $(UPLOAD_SPEED)
+FUSES = -U lfuse:w:0xFF:m -U hfuse:w:0xD6:m -U efuse:w:0x05:m
 
 SIZEFLAGS = 
 

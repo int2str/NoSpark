@@ -40,6 +40,10 @@ upload: $(TARGET)
 	@echo [UPL] $<
 	@$(AVRDUDE) $(DUDEFLAGS) -U flash:w:$<
 
+fuses:
+	@echo [FUS] Settings fuses: $(FUSES)
+	@$(AVRDUDE) $(DUDEFLAGS) $(FUSES)
+
 clean:
 	-@rm $(TARGET)
 	-@rm -rf .dep
