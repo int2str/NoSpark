@@ -163,20 +163,20 @@ bool LcdStateRunning::draw()
 
         case J1772Status::STATE_A:
             lcd.setBacklight(LCD16x2::GREEN);
-            center_P(lcd, STR_NOT_CONNECTED);
-            break;
-
-        case J1772Status::STATE_B:
-            lcd.setBacklight(LCD16x2::GREEN);
-            last_change = 0;
-            if (!ChargeMonitor::get().isCharging())
+            if (chargeMonitor.chargeDuration() == 0)
             {
-                center_P(lcd, STR_CONNECTED);
+                center_P(lcd, STR_NOT_CONNECTED);
             } else {
                 const uint8_t offset = center_P(lcd, STR_CHARGED, 5) + 5;
                 lcd.move(LCD_COLUMNS - offset, 1);
                 write_time(lcd, chargeMonitor.chargeDuration());
             }
+            last_change = 0;
+            break;
+
+        case J1772Status::STATE_B:
+            lcd.setBacklight(LCD16x2::GREEN);
+            center_P(lcd, STR_CONNECTED);
             break;
 
         case J1772Status::STATE_C:
