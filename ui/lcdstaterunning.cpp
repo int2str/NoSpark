@@ -133,6 +133,13 @@ bool LcdStateRunning::draw()
     if (ChargeMonitor::get().isCharging())
         amps = chargeMonitor.chargeCurrent() / 1000;
 
+    const uint32_t now = system::Timer::millis();
+    if (now - last_change > 5000)
+    {
+        display_state = !display_state;
+        last_change = now;
+    }
+
     lcd.move(0,0);
     write_time(lcd, rtc);
     lcd.write(' ');
@@ -167,11 +174,16 @@ bool LcdStateRunning::draw()
             {
                 center_P(lcd, STR_NOT_CONNECTED);
             } else {
-                const uint8_t offset = center_P(lcd, STR_CHARGED, 5) + 5;
-                lcd.move(LCD_COLUMNS - offset, 1);
-                write_time(lcd, chargeMonitor.chargeDuration());
+                lcd.write_P(STR_CHARGED);
+                if (display_state == 0)
+                {
+                    lcd.write(' ');
+                    write_time(lcd, chargeMonitor.chargeDuration());
+                    lcd.write("   ");
+                } else {
+                    write_kwh(lcd, chargeMonitor.wattHours());
+                }
             }
-            last_change = 0;
             break;
 
         case J1772Status::STATE_B:
@@ -182,19 +194,10 @@ bool LcdStateRunning::draw()
         case J1772Status::STATE_C:
         {
             lcd.setBacklight(LCD16x2::CYAN);
-
-            const uint32_t now = system::Timer::millis();
-            if (now - last_change > 5000)
-            {
-                display_state = !display_state;
-                last_change = now;
-            }
-
             if (display_state)
                 lcd.write_P(STR_CHARGING);
             else
                 write_kwh(lcd, chargeMonitor.wattHours());
-
             lcd.write(CUSTOM_CHAR_SEPARATOR);
             write_time(lcd, chargeMonitor.chargeDuration());
             break;
