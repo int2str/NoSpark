@@ -83,10 +83,12 @@ uint32_t Ammeter::sample_impl()
           || (sample < 512 && last_sample >= 512))
         {
             if (zero_crossings == 0 || samples > 25)
+            {
+                if (zero_crossings == 0)
+                    samples = 1;
                 ++zero_crossings;
+            }
 
-            if (zero_crossings == 1)
-                samples = 1;
         }
 
         sum += square(normalize(sample));
