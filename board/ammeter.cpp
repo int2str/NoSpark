@@ -99,9 +99,6 @@ uint32_t Ammeter::sample_impl()
     else
         sum = 0;
 
-    // During debugging, this calculated Vrms correctly
-    // return utils::square_root<uint32_t, 512>(sum) * 884l / 186l;
-
     return utils::square_root<uint32_t, 512>(sum) * CURRENT_SCALE_FACTOR;
 }
 
