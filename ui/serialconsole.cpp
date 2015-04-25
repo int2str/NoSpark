@@ -18,6 +18,7 @@
 
 #include "devices/ds3231.h"
 #include "event/loop.h"
+#include "evse/settings.h"
 #include "evse/state.h"
 #include "system/timer.h"
 #include "system/watchdog.h"
@@ -25,6 +26,8 @@
 #include "events.h"
 #include "strings.h"
 
+using evse::EepromSettings;
+using evse::Settings;
 using evse::State;
 using serial::Usart;
 using devices::DS3231;
@@ -72,6 +75,16 @@ namespace
         write_digits(uart, buffer[5]);
         uart.write(".20");
         write_digits(uart, buffer[6]);
+    }
+
+    // TODO: Duplicate code is duplicate...
+    // Save on event change somehow? Simplify code?
+    void saveMaxAmps(const uint8_t max_amps)
+    {
+        Settings settings;
+        EepromSettings::load(settings);
+        settings.max_current = max_amps;
+        EepromSettings::save(settings);
     }
 }
 
@@ -250,6 +263,7 @@ void SerialConsole::commandSetCurrent()
     if (amps > 0)
     {
         State::get().max_amps_target = amps;
+        saveMaxAmps(amps);
         event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, amps));
 
     } else {
