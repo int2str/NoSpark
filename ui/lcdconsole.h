@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "devices/lcd1602.h"
@@ -41,7 +42,9 @@ private:
     void update();
     void setState(LcdState *newState);
 
-    bool inSettings;
+    bool in_settings;
+    bool sleeping;
+    uint32_t last_event;
 
     LcdState *lcdState;
     devices::LCD16x2 lcd;

@@ -238,6 +238,8 @@ void LcdStateRunning::drawKwhStats()
     Settings settings;
     EepromSettings::load(settings);
 
+    lcd.setBacklight(LCD16x2::WHITE);
+
     lcd.move(0,0);
     lcd.write_P(STR_STATS_KWH);
 

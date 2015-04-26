@@ -27,6 +27,8 @@
 #include "lcdstatesettings.h"
 #include "strings.h"
 
+#define SLEEP_DELAY_MS (900l * 1000l)
+
 using devices::LCD16x2;
 using evse::State;
 using system::Timer;
@@ -50,7 +52,9 @@ LcdConsole& LcdConsole::init()
 }
 
 LcdConsole::LcdConsole()
-    : inSettings(false)
+    : in_settings(false)
+    , sleeping(false)
+    , last_event(Timer::millis())
     , lcdState(new LcdStateBootup(lcd))
 {
     loadCustomCharacters(lcd);
@@ -63,16 +67,21 @@ void LcdConsole::setState(LcdState *newState)
 
     lcd.clear();
     lcdState = newState;
-    lcdState->draw();
+
+    if (!sleeping)
+        lcdState->draw();
 }
 
 
 void LcdConsole::update()
 {
+    if (sleeping)
+        return;
+
     const bool keepState = lcdState->draw();
-    if (!keepState && inSettings)
+    if (!keepState && in_settings)
     {
-        inSettings = false;
+        in_settings = false;
         if (State::get().fault == State::NOTHING_WRONG)
             setState(new LcdStateRunning(lcd));
         else
@@ -96,18 +105,36 @@ void LcdConsole::onEvent(const event::Event &event)
             break;
 
         case EVENT_KEYHOLD:
-            if (!inSettings)
+            if (!sleeping)
             {
-                inSettings = true;
-                setState(new LcdStateSettings(lcd));
-            } else {
-                lcdState->advance();
+                if (!in_settings)
+                {
+                    in_settings = true;
+                    setState(new LcdStateSettings(lcd));
+                } else {
+                    lcdState->advance();
+                }
             }
             break;
 
         case EVENT_KEYUP:
-            lcdState->select();
+            if (!sleeping)
+                lcdState->select();
             break;
+    }
+
+    // Check for "sleep" mode...
+    if (event.id == EVENT_UPDATE)
+    {
+        if (!sleeping && (Timer::millis() - last_event) > SLEEP_DELAY_MS)
+        {
+            lcd.setBacklight(LCD16x2::OFF);
+            sleeping = 1;
+        }
+
+    } else if (event.id != EVENT_KEYDOWN) {
+        last_event = Timer::millis();
+        sleeping = 0;
     }
 }
 
