@@ -19,6 +19,7 @@
 #include "board/j1772status.h"
 #include "devices/ds3231.h"
 #include "evse/chargemonitor.h"
+#include "evse/settings.h"
 #include "evse/state.h"
 #include "system/timer.h"
 #include "customcharacters.h"
@@ -31,6 +32,8 @@ using board::J1772Status;
 using devices::DS3231;
 using devices::LCD16x2;
 using evse::ChargeMonitor;
+using evse::Settings;
+using evse::EepromSettings;
 using evse::State;
 
 namespace
@@ -118,12 +121,23 @@ namespace ui
 
 LcdStateRunning::LcdStateRunning(devices::LCD16x2 &lcd)
     : LcdState(lcd)
+    , page(PAGE_DEFAULT)
     , display_state(0)
     , last_change(0)
 {
 }
 
 bool LcdStateRunning::draw()
+{
+    if (page == PAGE_DEFAULT)
+        drawDefault();
+    else
+        drawKwhStats();
+
+    return true;
+}
+
+void LcdStateRunning::drawDefault()
 {
     const State &state = State::get();
     const ChargeMonitor &chargeMonitor = ChargeMonitor::get();
@@ -179,7 +193,7 @@ bool LcdStateRunning::draw()
                 {
                     lcd.write(' ');
                     write_time(lcd, chargeMonitor.chargeDuration());
-                    lcd.write("   ");
+                    spaces(lcd, 3);
                 } else {
                     write_kwh(lcd, chargeMonitor.wattHours());
                 }
@@ -217,8 +231,57 @@ bool LcdStateRunning::draw()
         case J1772Status::IMPLAUSIBLE:
             break;
     }
+}
 
-    return true;
+void LcdStateRunning::drawKwhStats()
+{
+    Settings settings;
+    EepromSettings::load(settings);
+
+    lcd.move(0,0);
+    lcd.write_P(STR_STATS_KWH);
+
+    lcd.move(0,1);
+    uint16_t *p = 0;
+    switch (page)
+    {
+        case PAGE_KWH_WEEK:
+            lcd.write_P(STR_STATS_WEEK);
+            p = &settings.kwh_week;
+            break;
+
+        case PAGE_KWH_MONTH:
+            lcd.write_P(STR_STATS_MONTH);
+            p = &settings.kwh_month;
+            break;
+
+        case PAGE_KWH_YEAR:
+            lcd.write_P(STR_STATS_YEAR);
+            p = &settings.kwh_year;
+            break;
+
+        case PAGE_KWH_TOTAL:
+            lcd.write_P(STR_STATS_TOTAL);
+            p = &settings.kwh_total;
+            break;
+
+        default:
+            break;
+    }
+
+    char buffer[10] = {0};
+    ltoa(p ? *p : 0, buffer, 10);
+
+    lcd.write(": ");
+    lcd.write(buffer);
+    spaces(lcd, 5);
+}
+
+void LcdStateRunning::select()
+{
+    lcd.clear();
+    if (++page == PAGE_MAX)
+        page = PAGE_DEFAULT;
 }
 
 }

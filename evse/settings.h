@@ -20,25 +20,33 @@
 namespace evse
 {
 
-struct Settings
+class Settings
 {
+public:
     uint16_t marker;
     uint8_t revision;
 
+    // Rev 1
     uint8_t max_current;
 
-	void defaults()
-	{
-		max_current = 16;
-	}
+    // Rev 2
+    uint16_t kwh_total;
+    uint16_t kwh_year;
+    uint16_t kwh_month;
+    uint16_t kwh_week;
+    uint16_t kwh_index;
+
+    Settings();
+    void defaults();
+    void upgrade();
 };
 
 
 class EepromSettings
 {
 public:
-	static void load(Settings &settings);
-	static void save(const Settings &settings);
+    static void load(Settings &settings);
+    static void save(const Settings &settings);
 };
 
 }

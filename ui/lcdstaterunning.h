@@ -28,10 +28,24 @@ class LcdStateRunning : public LcdState
 {
 public:
     LcdStateRunning(devices::LCD16x2 &lcd);
-
     bool draw();
 
 private:
+    enum RunningPages
+    {
+        PAGE_DEFAULT,
+        PAGE_KWH_WEEK,
+        PAGE_KWH_MONTH,
+        PAGE_KWH_YEAR,
+        PAGE_KWH_TOTAL,
+        PAGE_MAX
+    };
+
+    void drawDefault();
+    void drawKwhStats();
+    void select();
+
+    uint8_t page;
     uint8_t display_state;
     uint32_t last_change;
 };

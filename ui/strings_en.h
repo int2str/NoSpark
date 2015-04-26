@@ -17,7 +17,7 @@
 
 // 16-char LCD ruler --->                |01234567890123456|
 
-// General UI
+// General UI                            |01234567890123456|
 #define STR_NOT_CONNECTED           PSTR("EV not connected")
 #define STR_CONNECTED               PSTR("EV ready")
 #define STR_CHARGING                PSTR("Charging  ")
@@ -26,18 +26,25 @@
 #define STR_ERROR_STATE             PSTR("ERROR")
 #define STR_DIODE_CHECK_FAILED      PSTR("DIODE CHECK FAIL")
 
-// Settings
+// Settings                              |01234567890123456|
 #define STR_SET_CLOCK               PSTR(" Set time")
 #define STR_SET_DATE                PSTR(" Set date")
 #define STR_SET_CURRENT             PSTR(" Max. current")
 #define STR_SET_RESET               PSTR(" Force restart")
 #define STR_SET_EXIT                PSTR(" Exit settings")
 
-// Faults
+// Faults                                |01234567890123456|
 #define STR_FAULT_POST_GFCI         PSTR("GFI test failed")
 #define STR_FAULT_POST_RELAY        PSTR("Relay test failed")
 #define STR_FAULT_GFCI_TRIPPED      STR_EVT_GFCI_TRIPPED
 #define STR_FAULT_TEMPERATURE       PSTR("Temperature alarm")
+
+// Stats                                 |01234567890123456|
+#define STR_STATS_KWH               PSTR("Total kWh charged")
+#define STR_STATS_WEEK              PSTR("This week")
+#define STR_STATS_MONTH             PSTR("This month")
+#define STR_STATS_YEAR              PSTR("This year")
+#define STR_STATS_TOTAL             PSTR("Lifetime")
 
 // Console strings
 #define STR_PROMPT                  PSTR("nospark> ")

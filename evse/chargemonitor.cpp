@@ -14,12 +14,45 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "board/ammeter.h"
+#include "devices/ds3231.h"
 #include "event/loop.h"
+#include "evse/settings.h"
 #include "system/timer.h"
 #include "chargemonitor.h"
 #include "events.h"
 
 #define VOLTAGE 240
+
+namespace
+{
+    using devices::DS3231;
+    using evse::Settings;
+    using evse::EepromSettings;
+
+    void saveChargeStats(const uint32_t kwh)
+    {
+        DS3231 &rtc = DS3231::get();
+        rtc.read();
+
+        Settings settings;
+        EepromSettings::load(settings);
+
+        if (rtc.year != (settings.kwh_index & 0xFF))
+            settings.kwh_year = 0;
+        if (rtc.month != ((settings.kwh_index >> 8) & 0xF))
+            settings.kwh_month = 0;
+        if (rtc.weekday != ((settings.kwh_index >> 12) & 0xF))
+            settings.kwh_week = 0;
+
+        settings.kwh_total += kwh;
+        settings.kwh_year += kwh;
+        settings.kwh_month += kwh;
+        settings.kwh_week += kwh;
+        settings.kwh_index = (rtc.weekday << 12) | (rtc.month << 8) | rtc.year;
+
+        EepromSettings::save(settings);
+    }
+}
 
 namespace evse
 {
@@ -89,7 +122,10 @@ void ChargeMonitor::chargeStateChanged(const bool charging)
         // This avoids an unecessary millis() call for
         // initialization etc.
         if (time_start_ms != 0)
+        {
             time_stop_ms = system::Timer::millis();
+            saveChargeStats(wattHours() / 1000);
+        }
     }
 
     current_samples.clear();

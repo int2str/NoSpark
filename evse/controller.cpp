@@ -225,8 +225,8 @@ void Controller::enableCharge(const bool enable)
         Loop::post(Event(EVENT_CHARGE_STATE, 1));
         acRelay.enable();
     } else {
-        Loop::post(Event(EVENT_CHARGE_STATE, 0));
         acRelay.disable();
+        Loop::post(Event(EVENT_CHARGE_STATE, 0));
     }
 }
 
