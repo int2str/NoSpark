@@ -22,7 +22,7 @@
 
 #define EVENT_J1772_STATE        10
 #define EVENT_CONTROLLER_STATE   11
-#define EVENT_CHARGE_STATE       60
+#define EVENT_CHARGE_STATE       12
 
 #define EVENT_GFCI_TRIPPED       20
 
