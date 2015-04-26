@@ -66,10 +66,16 @@ void EepromSettings::load(Settings &settings)
     eeprom_read_block(&settings, addr, sizeof(Settings));
 
     if (settings.marker != SETTINGS_MARKER || settings.revision > SETTINGS_REVISION)
+    {
         settings.defaults();
+        save(settings);
+    }
 
     if (settings.revision < SETTINGS_REVISION)
+    {
         settings.upgrade();
+        save(settings);
+    }
 }
 
 void EepromSettings::save(const Settings &settings)

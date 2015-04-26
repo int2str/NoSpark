@@ -118,10 +118,8 @@ void ChargeMonitor::chargeStateChanged(const bool charging)
         time_stop_ms = 0;
         watt_seconds = 0;
     } else {
-        // Record end time only if we had started before
-        // This avoids an unecessary millis() call for
-        // initialization etc.
-        if (time_start_ms != 0)
+        // Record end time
+        if (time_start_ms != 0 && time_stop_ms == 0)
         {
             time_stop_ms = system::Timer::millis();
             saveChargeStats(wattHours() / 1000);
