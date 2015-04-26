@@ -41,7 +41,7 @@ namespace
             settings.kwh_year = 0;
         if (rtc.month != ((settings.kwh_index >> 8) & 0xF))
             settings.kwh_month = 0;
-        if (rtc.weekday != ((settings.kwh_index >> 12) & 0xF))
+        if (rtc.weekday == 0 && rtc.weekday != ((settings.kwh_index >> 12) & 0xF))
             settings.kwh_week = 0;
 
         settings.kwh_total += kwh;
