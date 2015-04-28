@@ -16,6 +16,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
+#include "board/j1772status.h"
 #include "evse/state.h"
 #include "system/timer.h"
 #include "customcharacters.h"
@@ -29,6 +30,7 @@
 
 #define SLEEP_DELAY_MS (900l * 1000l)
 
+using board::J1772Status;
 using devices::LCD16x2;
 using evse::State;
 using system::Timer;
@@ -124,7 +126,7 @@ void LcdConsole::onEvent(const event::Event &event)
     }
 
     // Check for "sleep" mode...
-    if (event.id == EVENT_UPDATE)
+    if (event.id == EVENT_UPDATE && State::get().j1772 == J1772Status::STATE_A)
     {
         if (!sleeping && (Timer::millis() - last_event) > SLEEP_DELAY_MS)
         {
