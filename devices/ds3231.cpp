@@ -15,6 +15,8 @@
 
 #include "ds3231.h"
 
+#define DONT_INLINE             __attribute__((noinline))
+
 #define DS3231_I2C_ADDRESS      0x68
 
 // Registers
@@ -51,12 +53,12 @@
 
 namespace
 {
-    uint8_t bcd2dec(const uint8_t bcd)
+    DONT_INLINE uint8_t bcd2dec(const uint8_t bcd)
     {
         return ((bcd >> 4) * 10) + (bcd & 0x0F);
     }
 
-    uint8_t dec2bcd(const uint8_t dec)
+    DONT_INLINE uint8_t dec2bcd(const uint8_t dec)
     {
         return ((dec / 10) << 4) + (dec % 10);
     }
