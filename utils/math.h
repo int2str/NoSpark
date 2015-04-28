@@ -34,14 +34,14 @@ const T& max(const T& a, const T& b)
     return a;
 }
 
-template <typename T, const T max_seed>
-T square_root(T val)
+template <typename T>
+T square_root(const T &val)
 {
     if (val < 2)
         return val;
 
     T min = 1;
-    T max = max_seed;
+    T max = val / 2 + 1;
 
     while ((max - min) > 1)
     {

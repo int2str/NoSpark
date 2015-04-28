@@ -36,7 +36,7 @@ void test_utils_square_root()
 {
     cout << "Test utils::square_root()" << endl;
 
-    assert((utils::square_root<uint16_t, 255>(81) == 9));
+    assert((utils::square_root(81) == 9));
 }
 
 void test_utils_pair()
