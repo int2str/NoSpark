@@ -13,7 +13,6 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include "utils/math.h"
 #include "ammeter.h"
 #include "pins.h"
 
@@ -28,16 +27,42 @@
 
 namespace
 {
-    inline uint16_t normalize(const uint16_t adc)
+    uint16_t normalize(const uint16_t adc)
     {
         if (adc > 512)
             return adc - 512;
         return 512 - adc;
     }
 
-    inline uint32_t square(const uint16_t val)
+    uint32_t square(const uint16_t val)
     {
         return static_cast<uint32_t>(val) * val;
+    }
+
+    // Code by Wilco Dijkstra, found here:
+    // http://www.finesse.demon.co.uk/steven/sqrt.html
+    //
+    // Note that this function is actually SLOWER than
+    // utils::square_root(), even the new, un-optimized
+    // version of that function. However, this function
+    // complies to much less code. Largely because of the
+    // lack of large unsigned multiplication.
+    uint32_t square_root(uint32_t val)
+    {
+        uint32_t root = 0;
+        uint32_t bit = (val >= 0x10000) ? (1l << 30) : (1l << 14);
+        do
+        {
+            const uint32_t trial = root + bit;
+            if (val >= trial)
+            {
+                val -= trial;
+                root = trial + bit;
+            }
+            root >>= 1;
+            bit >>= 2;
+        } while (bit);
+        return root;
     }
 }
 
@@ -99,7 +124,7 @@ uint32_t Ammeter::sample_impl()
     else
         sum = 0;
 
-    return utils::square_root<uint32_t, 512>(sum) * CURRENT_SCALE_FACTOR;
+    return square_root(sum) * CURRENT_SCALE_FACTOR;
 }
 
 }
