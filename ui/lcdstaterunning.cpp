@@ -22,6 +22,7 @@
 #include "evse/settings.h"
 #include "evse/state.h"
 #include "system/timer.h"
+#include "utils/bcd.h"
 #include "customcharacters.h"
 #include "lcdstaterunning.h"
 #include "strings.h"
@@ -44,29 +45,13 @@ namespace
             lcd.write(' ');
     }
 
-    void write_bcd(LCD16x2 &lcd, const uint8_t bcd)
+    void write_num(LCD16x2 &lcd, const uint8_t num, const char pad=' ')
     {
-        lcd.write('0' + (bcd >> 4));
-        lcd.write('0' + (bcd & 0x0F));
-    }
-
-    void write_dec(LCD16x2 &lcd, const uint8_t dec)
-    {
-        if (dec < 10)
-            lcd.write('0');
+        if (num < 10)
+            lcd.write(pad);
         else
-            lcd.write('0' + (dec / 10));
-        lcd.write('0' + (dec % 10));
-    }
-
-    void write_temp(LCD16x2 &lcd, const uint8_t temp)
-    {
-        if (temp < 10)
-            lcd.write(' ');
-        else
-            lcd.write('0' + (temp / 10));
-        lcd.write('0' + (temp % 10));
-        lcd.write(0xDF);
+            lcd.write('0' + num / 10);
+        lcd.write('0' + num % 10);
     }
 
     void write_time(LCD16x2 &lcd, DS3231 &rtc)
@@ -74,9 +59,9 @@ namespace
         uint8_t buffer[7] = {0};
         rtc.readRaw(buffer, 7);
 
-        write_bcd(lcd, buffer[2]);
+        write_num(lcd, utils::bcd2dec(buffer[2]));
         lcd.write(':');
-        write_bcd(lcd, buffer[1]);
+        write_num(lcd, utils::bcd2dec(buffer[1]));
     }
 
     void write_time(LCD16x2 &lcd, const uint32_t ms)
@@ -88,9 +73,9 @@ namespace
         }
 
         const uint32_t mins = ms / 60000;
-        write_dec(lcd, mins / 60);
+        write_num(lcd, mins / 60, '0');
         lcd.write(":");
-        write_dec(lcd, mins % 60);
+        write_num(lcd, mins % 60, '0');
     }
 
     void write_kwh(LCD16x2 &lcd, const uint32_t wh)
@@ -157,19 +142,17 @@ void LcdStateRunning::drawDefault()
     lcd.move(0,0);
     write_time(lcd, rtc);
     lcd.write(' ');
-    write_temp(lcd, rtc.readTemp());
+    write_num(lcd, rtc.readTemp());
+    lcd.write(0xDF);
 
     lcd.write(' ');
     lcd.write(CUSTOM_CHAR_SEPARATOR);
     lcd.write(' ');
 
     if (amps)
-    {
-        lcd.write(amps >= 10 ? '0' + amps / 10 : ' ');
-        lcd.write('0' + amps % 10);
-    } else {
+        write_num(lcd, amps);
+    else
         lcd.write("--");
-    }
     lcd.write('A');
 
     lcd.move(0,1);

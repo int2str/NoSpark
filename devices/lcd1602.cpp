@@ -126,23 +126,15 @@ LCD16x2::LCD16x2()
     _delay_ms(100);
 
     uint8_t fn = LCD_FN_SET | LCD_FN_4BIT | LCD_FN_2LINE;
+    for (uint8_t i = 0; i != 4; ++i)
+    {
+        if (i == 3)
+            fn &= ~LCD_FN_4BIT;
+        pulse(data4bit(fn >> 4));
+        _delay_us(50);
+    }
 
-    pulse(data4bit(fn >> 4));
-    _delay_us(50);
-
-    pulse(data4bit(fn >> 4));
-    _delay_us(50);
-
-    pulse(data4bit(fn >> 4));
-    _delay_us(50);
-
-    fn &= ~LCD_FN_4BIT;
-
-    pulse(data4bit(fn >> 4));
-    _delay_us(50);
-
-    const uint8_t ctrl = LCD_CTRL | LCD_CTRL_DISPLAY;
-    writeCommand(ctrl);
+    writeCommand(LCD_CTRL | LCD_CTRL_DISPLAY);
     _delay_us(50);
 
     clear();

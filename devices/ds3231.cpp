@@ -14,8 +14,7 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "ds3231.h"
-
-#define DONT_INLINE             __attribute__((noinline))
+#include "utils/bcd.h"
 
 #define DS3231_I2C_ADDRESS      0x68
 
@@ -51,19 +50,6 @@
 #define DS3231_A2F              1
 #define DS3231_A1F              0
 
-namespace
-{
-    DONT_INLINE uint8_t bcd2dec(const uint8_t bcd)
-    {
-        return ((bcd >> 4) * 10) + (bcd & 0x0F);
-    }
-
-    DONT_INLINE uint8_t dec2bcd(const uint8_t dec)
-    {
-        return ((dec / 10) << 4) + (dec % 10);
-    }
-}
-
 namespace devices
 {
 
@@ -95,13 +81,13 @@ void DS3231::read()
     uint8_t buffer[7] = {0};
     readRaw(buffer, 7);
 
-    second  = bcd2dec(buffer[0]);
-    minute  = bcd2dec(buffer[1]);
-    hour    = bcd2dec(buffer[2]);
-    weekday = bcd2dec(buffer[3]);
-    day     = bcd2dec(buffer[4]);
-    month   = bcd2dec(buffer[5]);
-    year    = bcd2dec(buffer[6]);
+    second  = utils::bcd2dec(buffer[0]);
+    minute  = utils::bcd2dec(buffer[1]);
+    hour    = utils::bcd2dec(buffer[2]);
+    weekday = utils::bcd2dec(buffer[3]);
+    day     = utils::bcd2dec(buffer[4]);
+    month   = utils::bcd2dec(buffer[5]);
+    year    = utils::bcd2dec(buffer[6]);
 }
 
 void DS3231::writeRaw(uint8_t *buffer, const uint8_t len)
@@ -113,13 +99,13 @@ void DS3231::write()
 {
     uint8_t buffer[8] = {
         DS3231_REG_SECOND
-      , dec2bcd(second)
-      , dec2bcd(minute)
-      , dec2bcd(hour)
-      , dec2bcd(weekday)
-      , dec2bcd(day)
-      , dec2bcd(month)
-      , dec2bcd(year)
+      , utils::dec2bcd(second)
+      , utils::dec2bcd(minute)
+      , utils::dec2bcd(hour)
+      , utils::dec2bcd(weekday)
+      , utils::dec2bcd(day)
+      , utils::dec2bcd(month)
+      , utils::dec2bcd(year)
     };
     writeRaw(buffer, 8);
 }
