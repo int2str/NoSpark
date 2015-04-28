@@ -15,6 +15,7 @@
 
 #include <avr/eeprom.h>
 
+#include "devices/ds3231.h"
 #include "settings.h"
 
 #define SETTINGS_OFFSET     0x08
@@ -60,6 +61,26 @@ void Settings::upgrade()
     revision = SETTINGS_REVISION;
 }
 
+void Settings::postLoad()
+{
+    devices::DS3231 &rtc = devices::DS3231::get();
+    rtc.read();
+
+    if (rtc.year != (kwh_index & 0xFF))
+        kwh_year = 0;
+    if (rtc.month != ((kwh_index >> 8) & 0xF))
+        kwh_month = 0;
+    if (rtc.weekday == 0 && rtc.weekday != ((kwh_index >> 12) & 0xF))
+        kwh_week = 0;
+}
+
+void Settings::preSave()
+{
+    devices::DS3231 &rtc = devices::DS3231::get();
+    rtc.read();
+    kwh_index = (rtc.weekday << 12) | (rtc.month << 8) | rtc.year;
+}
+
 void EepromSettings::load(Settings &settings)
 {
     const void* addr = reinterpret_cast<void*>(SETTINGS_OFFSET);
@@ -76,11 +97,14 @@ void EepromSettings::load(Settings &settings)
         settings.upgrade();
         save(settings);
     }
+
+    settings.postLoad();
 }
 
-void EepromSettings::save(const Settings &settings)
+void EepromSettings::save(Settings &settings)
 {
     void* addr = reinterpret_cast<void*>(SETTINGS_OFFSET);
+    settings.preSave();
     eeprom_write_block(&settings, addr, sizeof(Settings));
 }
 

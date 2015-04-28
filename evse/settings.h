@@ -37,8 +37,11 @@ public:
     uint16_t kwh_index;
 
     Settings();
+
     void defaults();
     void upgrade();
+    void postLoad();
+    void preSave();
 };
 
 
@@ -46,7 +49,7 @@ class EepromSettings
 {
 public:
     static void load(Settings &settings);
-    static void save(const Settings &settings);
+    static void save(Settings &settings);
 };
 
 }

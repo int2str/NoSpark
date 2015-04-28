@@ -14,7 +14,6 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "board/ammeter.h"
-#include "devices/ds3231.h"
 #include "event/loop.h"
 #include "evse/settings.h"
 #include "system/timer.h"
@@ -25,32 +24,17 @@
 
 namespace
 {
-    using devices::DS3231;
-    using evse::Settings;
-    using evse::EepromSettings;
-
     void saveChargeStats(const uint32_t kwh)
     {
-        DS3231 &rtc = DS3231::get();
-        rtc.read();
-
-        Settings settings;
-        EepromSettings::load(settings);
-
-        if (rtc.year != (settings.kwh_index & 0xFF))
-            settings.kwh_year = 0;
-        if (rtc.month != ((settings.kwh_index >> 8) & 0xF))
-            settings.kwh_month = 0;
-        if (rtc.weekday == 0 && rtc.weekday != ((settings.kwh_index >> 12) & 0xF))
-            settings.kwh_week = 0;
+        evse::Settings settings;
+        evse::EepromSettings::load(settings);
 
         settings.kwh_total += kwh;
         settings.kwh_year += kwh;
         settings.kwh_month += kwh;
         settings.kwh_week += kwh;
-        settings.kwh_index = (rtc.weekday << 12) | (rtc.month << 8) | rtc.year;
 
-        EepromSettings::save(settings);
+        evse::EepromSettings::save(settings);
     }
 }
 
