@@ -54,17 +54,22 @@ namespace
         lcd.write('0' + num % 10);
     }
 
+    void write_time(LCD16x2 &lcd, uint8_t hh, uint8_t mm)
+    {
+        write_num(lcd, hh, '0');
+        lcd.write(':');
+        write_num(lcd, mm, '0');
+    }
+
     void write_time(LCD16x2 &lcd, DS3231 &rtc)
     {
         uint8_t buffer[7] = {0};
         rtc.readRaw(buffer, 7);
 
-        write_num(lcd, utils::bcd2dec(buffer[2]));
-        lcd.write(':');
-        write_num(lcd, utils::bcd2dec(buffer[1]));
+        write_time(lcd, utils::bcd2dec(buffer[2]), utils::bcd2dec(buffer[1]));
     }
 
-    void write_time(LCD16x2 &lcd, const uint32_t ms)
+    void write_duration(LCD16x2 &lcd, const uint32_t ms)
     {
         if (!ms)
         {
@@ -73,9 +78,7 @@ namespace
         }
 
         const uint32_t mins = ms / 60000;
-        write_num(lcd, mins / 60, '0');
-        lcd.write(":");
-        write_num(lcd, mins % 60, '0');
+        write_time(lcd, mins / 60, mins % 60);
     }
 
     void write_kwh(LCD16x2 &lcd, const uint32_t wh)
@@ -175,7 +178,7 @@ void LcdStateRunning::drawDefault()
                 if (display_state == 0)
                 {
                     lcd.write(' ');
-                    write_time(lcd, chargeMonitor.chargeDuration());
+                    write_duration(lcd, chargeMonitor.chargeDuration());
                     spaces(lcd, 3);
                 } else {
                     write_kwh(lcd, chargeMonitor.wattHours());
@@ -196,7 +199,7 @@ void LcdStateRunning::drawDefault()
             else
                 write_kwh(lcd, chargeMonitor.wattHours());
             lcd.write(CUSTOM_CHAR_SEPARATOR);
-            write_time(lcd, chargeMonitor.chargeDuration());
+            write_duration(lcd, chargeMonitor.chargeDuration());
             break;
         }
 
