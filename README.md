@@ -36,6 +36,7 @@ programmer. The programmer and upload protocol can be set in the top level
 Makefile.inc.
 
 ## Revision history
+* v0.06 - Changed statistics roll-over; compile size improvements
 * v0.05 - Added kWh statistics
 * v0.04 - End-of-charge display and critical fixes
 * v0.03 - Added charge timer and current measurement
