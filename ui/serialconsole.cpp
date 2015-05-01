@@ -60,21 +60,21 @@ namespace
 
     void write_time(Usart& uart, DS3231 &rtc)
     {
-        uint8_t buffer[7] = {0};
-        rtc.readRaw(buffer, 7);
+        uint8_t buffer[8] = {0};
+        rtc.readRaw(buffer, 8);
 
+        write_digits(uart, buffer[3]);
+        uart.write(':');
         write_digits(uart, buffer[2]);
         uart.write(':');
         write_digits(uart, buffer[1]);
-        uart.write(':');
-        write_digits(uart, buffer[0]);
         uart.write(' ');
 
-        write_digits(uart, buffer[4]);
-        uart.write('.');
         write_digits(uart, buffer[5]);
-        uart.write(".20");
+        uart.write('.');
         write_digits(uart, buffer[6]);
+        uart.write(".20");
+        write_digits(uart, buffer[7]);
     }
 
     // TODO: Duplicate code is duplicate...

@@ -53,7 +53,7 @@ private:
 
     uint8_t page;
     uint8_t option;
-    bool adjusting;
+    uint8_t value;
 
     uint32_t lastAction;
     uint32_t lastUpdate;

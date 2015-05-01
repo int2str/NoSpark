@@ -71,23 +71,24 @@ DS3231::~DS3231()
 
 void DS3231::readRaw(uint8_t *buffer, const uint8_t len)
 {
-    uint8_t reg_select[1] = {DS3231_REG_SECOND};
-    i2c.write(i2c_addr, reg_select, 1);
-    i2c.read(i2c_addr, buffer, len);
+    i2c.write(i2c_addr, buffer++, 1);
+    i2c.read(i2c_addr, buffer, len-1);
 }
 
 void DS3231::read()
 {
-    uint8_t buffer[7] = {0};
-    readRaw(buffer, 7);
+    uint8_t buffer[8] = {0};
+    buffer[0] = DS3231_REG_SECOND;
 
-    second  = utils::bcd2dec(buffer[0]);
-    minute  = utils::bcd2dec(buffer[1]);
-    hour    = utils::bcd2dec(buffer[2]);
-    weekday = utils::bcd2dec(buffer[3]);
-    day     = utils::bcd2dec(buffer[4]);
-    month   = utils::bcd2dec(buffer[5]);
-    year    = utils::bcd2dec(buffer[6]);
+    readRaw(buffer, 8);
+
+    second  = utils::bcd2dec(buffer[1]);
+    minute  = utils::bcd2dec(buffer[2]);
+    hour    = utils::bcd2dec(buffer[3]);
+    weekday = utils::bcd2dec(buffer[4]);
+    day     = utils::bcd2dec(buffer[5]);
+    month   = utils::bcd2dec(buffer[6]);
+    year    = utils::bcd2dec(buffer[7]);
 }
 
 void DS3231::writeRaw(uint8_t *buffer, const uint8_t len)

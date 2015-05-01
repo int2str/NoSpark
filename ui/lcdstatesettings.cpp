@@ -22,12 +22,25 @@
 #include "evse/state.h"
 #include "system/timer.h"
 #include "system/watchdog.h"
+#include "utils/bcd.h"
+#include "utils/math.h"
 #include "customcharacters.h"
 #include "events.h"
 #include "lcdstatesettings.h"
 #include "strings.h"
 
 #define SETTINGS_TIMEOUT    10000
+
+#define NOT_ADJUSTING       0x00
+
+#define ADJUST_AMPS         0x01
+
+#define ADJUST_HH           0x01
+#define ADJUST_MM           0x02
+
+#define ADJUST_DD           0x01
+#define ADJUST_MM           0x02
+#define ADJUST_YY           0x03
 
 using devices::DS3231;
 using devices::LCD16x2;
@@ -61,8 +74,8 @@ namespace ui
 LcdStateSettings::LcdStateSettings(devices::LCD16x2 &lcd)
     : LcdState(lcd)
     , page(0)
-    , option(0)
-    , adjusting(false)
+    , option(NOT_ADJUSTING)
+    , value(0)
     , lastAction(0)
     , lastUpdate(0)
     , uiState(0)
@@ -91,52 +104,88 @@ bool LcdStateSettings::draw()
 
 bool LcdStateSettings::pageSetTime()
 {
-    // Draw screen
-
     lcd.move(0,0);
     lcd.write(CUSTOM_CHAR_CLOCK);
     lcd.write_P(STR_SET_CLOCK);
-
     lcd.move(2, 1);
-    if (!adjusting || uiState)
-    {
-        uint8_t buffer[7] = {0};
-        DS3231::get().readRaw(buffer, 7);
 
-        write_digits(lcd, buffer[2]);
-        lcd.write(':');
-        write_digits(lcd, buffer[1]);
-    } else {
-        lcd.write("             ");
+    static uint8_t time_buffer[8] = {0};
+    if (option > ADJUST_MM)
+    {
+        DS3231::get().writeRaw(time_buffer, 8);
+        option = NOT_ADJUSTING;
     }
 
+    if (option == NOT_ADJUSTING)
+        DS3231::get().readRaw(time_buffer, 8);
+
+    const uint8_t hh = utils::bcd2dec(time_buffer[3]);
+    if (option == ADJUST_HH)
+        time_buffer[3] = utils::dec2bcd((hh + value) % 24);
+
+    const uint8_t mm = utils::bcd2dec(time_buffer[2]);
+    if (option == ADJUST_MM)
+        time_buffer[2] = utils::dec2bcd((mm + value) % 60);
+
+    write_digits(lcd, time_buffer[3]);
+    lcd.write(':');
+    write_digits(lcd, time_buffer[2]);
+
+    if (option != NOT_ADJUSTING && !uiState)
+    {
+        const uint8_t offset[2] = {2, 5};
+        lcd.move(offset[option - 1], 1);
+        lcd.write("  ");
+    }
+
+    value = 0;
     updateUIState();
     return true;
 }
 
 bool LcdStateSettings::pageSetDate()
 {
-    // Draw screen
-
     lcd.move(0,0);
     lcd.write(CUSTOM_CHAR_CALENDAR);
     lcd.write_P(STR_SET_DATE);
-
     lcd.move(2, 1);
-    if (!adjusting || uiState)
-    {
-        uint8_t buffer[7] = {0};
-        DS3231::get().readRaw(buffer, 7);
 
-        write_digits(lcd, buffer[4]);
-        lcd.write('.');
-        write_digits(lcd, buffer[5]);
-        lcd.write(".20");
-        write_digits(lcd, buffer[6]);
-    } else {
-        lcd.write("             ");
+    static uint8_t time_buffer[8] = {0};
+    if (option > ADJUST_YY)
+    {
+        DS3231::get().writeRaw(time_buffer, 8);
+        option = NOT_ADJUSTING;
     }
 
+    if (option == NOT_ADJUSTING)
+        DS3231::get().readRaw(time_buffer, 8);
+
+    const uint8_t dd = utils::bcd2dec(time_buffer[5]);
+    if (option == ADJUST_DD)
+        time_buffer[5] = utils::dec2bcd(utils::max((dd + value) % 32, 1));
+
+    const uint8_t mm = utils::bcd2dec(time_buffer[6]);
+    if (option == ADJUST_MM)
+        time_buffer[6] = utils::dec2bcd(utils::max((mm + value) % 13, 1));
+
+    const uint8_t yy = utils::bcd2dec(time_buffer[7]);
+    if (option == ADJUST_YY)
+        time_buffer[7] = utils::dec2bcd((yy + value) % 30); // <-- Year 2030 issue :)
+
+    write_digits(lcd, time_buffer[5]);
+    lcd.write('.');
+    write_digits(lcd, time_buffer[6]);
+    lcd.write(".20");
+    write_digits(lcd, time_buffer[7]);
+
+    if (option != NOT_ADJUSTING && !uiState)
+    {
+        const uint8_t offset[3] = {2, 5, 8};
+        lcd.move(offset[option - 1], 1);
+        lcd.write(option == ADJUST_YY ? "    " : "  ");
+    }
+
+    value = 0;
     updateUIState();
     return true;
 }
@@ -146,41 +195,45 @@ bool LcdStateSettings::pageSetCurrent()
     const uint8_t currents[] = {10, 16, 20, 24, 30, 35, 40, 45, 50};
 
     // Initialize amps
-    if (option == 0)
-        option = State::get().max_amps_target;
+    if (value == 0)
+        value = State::get().max_amps_target;
 
     // Save new state if we're done adjusting
-    if (!adjusting && option != State::get().max_amps_target)
+    if (option > ADJUST_AMPS)
     {
-        saveMaxAmps(option);
-        State::get().max_amps_target = option;
-        event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, option));
+        if (value != State::get().max_amps_target)
+        {
+            saveMaxAmps(value);
+            State::get().max_amps_target = value;
+            event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, value));
+        }
+        option = NOT_ADJUSTING;
     }
 
     // Snap to currents above if we're still adjusting
-    if (adjusting)
+    if (option == ADJUST_AMPS)
     {
-        if (option > currents[sizeof(currents) - 1])
-            option = currents[0];
+        if (value > currents[sizeof(currents) - 1])
+            value = currents[0];
 
         // Snap
         uint8_t i = 0;
-        while (currents[i] < option)
+        while (currents[i] < value)
             ++i;
-        option = currents[i];
+        value = currents[i];
     }
 
-    // Draw screen, flashing option while adjusting
+    // Draw screen, flashing value while adjusting
 
     lcd.move(0, 0);
     lcd.write(CUSTOM_CHAR_BOLT);
     lcd.write_P(STR_SET_CURRENT);
 
     lcd.move(2, 1);
-    if (!adjusting || uiState)
+    if (option == NOT_ADJUSTING || uiState)
     {
         char buffer[4] = {0};
-        utoa(option, buffer, 10);
+        utoa(value, buffer, 10);
         lcd.write(buffer);
         lcd.write('A');
     } else {
@@ -196,7 +249,7 @@ bool LcdStateSettings::pageReset()
     lcd.move(0, 0);
     lcd.write('!');
     lcd.write_P(STR_SET_RESET);
-    if (adjusting)
+    if (option != NOT_ADJUSTING)
         Watchdog::forceRestart();
     return true;
 }
@@ -206,18 +259,18 @@ bool LcdStateSettings::pageExit()
     lcd.move(0, 0);
     lcd.write(0x7F); // <- back arrow
     lcd.write_P(STR_SET_EXIT);
-    return !adjusting;
+    return (option == NOT_ADJUSTING);
 }
 
 void LcdStateSettings::select()
 {
-    if (!adjusting)
+    if (option == NOT_ADJUSTING)
     {
-        lcd.clear();
         ++page;
-        option = 0;
+        value = 0;
+        lcd.clear();
     } else {
-        ++option;
+        ++value;
     }
 
     resetTimeout();
@@ -226,7 +279,7 @@ void LcdStateSettings::select()
 void LcdStateSettings::advance()
 {
     uiState = 0;
-    adjusting = !adjusting;
+    ++option;
     resetTimeout();
 }
 

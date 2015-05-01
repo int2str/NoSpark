@@ -63,10 +63,10 @@ namespace
 
     void write_time(LCD16x2 &lcd, DS3231 &rtc)
     {
-        uint8_t buffer[7] = {0};
-        rtc.readRaw(buffer, 7);
+        uint8_t buffer[8] = {0};
+        rtc.readRaw(buffer, 8);
 
-        write_time(lcd, utils::bcd2dec(buffer[2]), utils::bcd2dec(buffer[1]));
+        write_time(lcd, utils::bcd2dec(buffer[3]), utils::bcd2dec(buffer[2]));
     }
 
     void write_duration(LCD16x2 &lcd, const uint32_t ms)
