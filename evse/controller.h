@@ -55,8 +55,6 @@ private:
     board::GFCI& gfci;
     board::J1772Status& j1772Status;
 
-    uint32_t lastStateChange;
-
     DISALLOW_COPY_AND_ASSIGN(Controller);
 };
 

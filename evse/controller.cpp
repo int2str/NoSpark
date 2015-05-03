@@ -24,8 +24,6 @@
 
 #define MINIMUM_CHARGE_CURRENT 6
 
-#define DEBOUNCE_STATE_CHANGE  40
-
 using board::ACRelay;
 using board::GFCI;
 using board::J1772Pilot;
@@ -90,7 +88,6 @@ Controller::Controller()
     : acRelay(ACRelay::get())
     , gfci(GFCI::get())
     , j1772Status(J1772Status::get())
-    , lastStateChange(0)
 {
     enableCharge(false);
 }
@@ -126,12 +123,6 @@ void Controller::updateRunning()
     if (state.j1772 == j1772)
         return; // State hasn't changed...
 
-    if (state.j1772 == J1772Status::STATE_C || j1772 == J1772Status::STATE_C)
-    {
-        if ((system::Timer::millis() - lastStateChange) < DEBOUNCE_STATE_CHANGE)
-            return; // Not time to change yet ;)
-    }
-
     switch (j1772)
     {
         case J1772Status::STATE_A: // <-- EV not connected
@@ -162,7 +153,6 @@ void Controller::updateRunning()
             break;
     }
 
-    lastStateChange = system::Timer::millis();
     setJ1772State(j1772);
 }
 
