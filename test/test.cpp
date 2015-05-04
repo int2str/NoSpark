@@ -34,9 +34,13 @@ void test_utils_max()
 
 void test_utils_square_root()
 {
-    cout << "Test utils::square_root()" << endl;
+    cout << "Testing utils::square_root()" << endl;
 
     assert((utils::square_root(81) == 9));
+    assert((utils::square_root(144) == 12));
+    assert((utils::square_root(150) == 12));
+    assert((utils::square_root(1) == 1));
+    assert((utils::square_root(0) == 0));
 }
 
 void test_utils_pair()

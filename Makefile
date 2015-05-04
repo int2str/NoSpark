@@ -50,6 +50,9 @@ clean:
 	-@rm -rf obj
 	-@for lib in $(LIBS); do (cd $$lib; $(MAKE) clean); done
 
+test: force_look
+	@cd test ; $(MAKE) ; ./test
+
 $(DEPDIR)/%.d: %.cpp
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) -MM $< > $@
