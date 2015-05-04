@@ -55,8 +55,11 @@ public:
 
     void clear()
     {
+        for(index = 0; index != size; ++index)
+            buffer[index] = 0;
         sum = 0;
         items = 0;
+        index = 0;
     }
 
 private:
