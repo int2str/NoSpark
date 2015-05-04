@@ -83,6 +83,29 @@ void test_utils_queue()
 
     q.pop();
     assert(q.empty());
+
+    q.push(2);
+    q.push(1);
+    q.push(2);
+    q.push(2);
+    q.push(3);
+    q.push(2);
+
+    for (auto it = q.begin(); it != q.end();)
+    {
+        if (*it == 2)
+            q.erase(it++);
+        else
+            ++it;
+    }
+
+    assert(q.front() == 1);
+
+    q.pop();
+    assert(q.front() == 3);
+
+    q.pop();
+    assert(q.empty());
 }
 
 void test_utils_movingaverage()

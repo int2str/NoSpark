@@ -28,6 +28,42 @@ class Queue
     };
 
 public:
+    class iterator
+    {
+        explicit iterator(Node *p)
+            : node(p)
+        {
+        }
+
+    public:
+        bool operator!= (const iterator& rhs)
+        {
+            return this->node != rhs.node;
+        }
+
+        iterator& operator++ ()
+        {
+            node = node->next;
+            return *this;
+        }
+
+        iterator operator++ (const int)
+        {
+            iterator lhs = *this;
+            node = node->next;
+            return lhs;
+        }
+
+        T& operator* ()
+        {
+            return node->data;
+        }
+
+    private:
+        friend class Queue;
+        Node *node;
+    };
+
     Queue()
         : head(0)
     {
@@ -63,6 +99,28 @@ public:
         delete n;
     }
 
+    void erase(const iterator &it)
+    {
+        if (head && head == it.node)
+        {
+            head = head->next;
+            delete it.node;
+            return;
+        }
+
+        auto n = head;
+        while (n && n->next)
+        {
+            if (n->next == it.node)
+            {
+                n->next = it.node->next;
+                delete it.node;
+                return;
+            }
+            n = n->next;
+        }
+    }
+
     bool empty() const
     {
         return !head;
@@ -73,43 +131,14 @@ public:
         return head->data;
     }
 
-    class const_iterator
+    iterator begin()
     {
-        explicit const_iterator(Node *p)
-            : it(p)
-        {
-        }
-
-    public:
-        bool operator!= (const const_iterator& rhs)
-        {
-            return this->it != rhs.it;
-        }
-
-        const const_iterator& operator++ ()
-        {
-            it = it->next;
-            return *this;
-        }
-
-        const T& operator* ()
-        {
-            return it->data;
-        }
-
-    private:
-        friend class Queue;
-        Node *it;
-    };
-
-    const_iterator begin()
-    {
-        return const_iterator(head);
+        return iterator(head);
     }
 
-    const_iterator end()
+    iterator end()
     {
-        return const_iterator(0);
+        return iterator(0);
     }
 
 private:
