@@ -31,6 +31,8 @@
 
 #define SETTINGS_TIMEOUT    10000
 
+#define KWH_LIMIT_MAX       15
+
 #define NOT_ADJUSTING       0x00
 
 #define ADJUST_AMPS         0x01
@@ -41,6 +43,8 @@
 #define ADJUST_DD           0x01
 #define ADJUST_MM           0x02
 #define ADJUST_YY           0x03
+
+#define ADJUST_KWH_LIMIT    0x01
 
 using devices::DS3231;
 using devices::LCD16x2;
@@ -83,6 +87,7 @@ LcdStateSettings::LcdStateSettings(devices::LCD16x2 &lcd)
         &LcdStateSettings::pageSetTime
       , &LcdStateSettings::pageSetDate
       , &LcdStateSettings::pageSetCurrent
+      , &LcdStateSettings::pageKwhLimit
       , &LcdStateSettings::pageReset
       , &LcdStateSettings::pageExit
     }
@@ -236,6 +241,47 @@ bool LcdStateSettings::pageSetCurrent()
         utoa(value, buffer, 10);
         lcd.write(buffer);
         lcd.write('A');
+    } else {
+        lcd.write("             ");
+    }
+
+    updateUIState();
+    return true;
+}
+
+bool LcdStateSettings::pageKwhLimit()
+{
+    // Save new state if we're done adjusting
+    if (option > ADJUST_KWH_LIMIT)
+    {
+        // TODO: Save value here
+        option = NOT_ADJUSTING;
+    }
+
+    if (option == ADJUST_KWH_LIMIT)
+    {
+        if (value > KWH_LIMIT_MAX)
+            value = 0;
+    }
+
+    // Draw screen, flashing value while adjusting
+
+    lcd.move(0, 0);
+    lcd.write(CUSTOM_CHAR_BATTERY1);
+    lcd.write_P(STR_SET_KWH_LIMIT);
+
+    lcd.move(2, 1);
+    if (option == NOT_ADJUSTING || uiState)
+    {
+        if (value == 0)
+        {
+            lcd.write_P(STR_OFF);
+        } else {
+            char buffer[4] = {0};
+            utoa(value, buffer, 10);
+            lcd.write(buffer);
+            lcd.write(" kWh  ");
+        }
     } else {
         lcd.write("             ");
     }

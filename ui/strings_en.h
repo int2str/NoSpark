@@ -25,11 +25,13 @@
 #define STR_VENT_REQUIRED           PSTR("Vent required")
 #define STR_ERROR_STATE             PSTR("ERROR")
 #define STR_DIODE_CHECK_FAILED      PSTR("DIODE CHECK FAIL")
+#define STR_OFF                     PSTR("off")
 
 // Settings                              |01234567890123456|
 #define STR_SET_CLOCK               PSTR(" Set time")
 #define STR_SET_DATE                PSTR(" Set date")
 #define STR_SET_CURRENT             PSTR(" Max. current")
+#define STR_SET_KWH_LIMIT           PSTR(" Limit kWh/charge")
 #define STR_SET_RESET               PSTR(" Force restart")
 #define STR_SET_EXIT                PSTR(" Exit settings")
 

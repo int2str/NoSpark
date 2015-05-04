@@ -20,7 +20,7 @@
 #include "devices/lcd1602.h"
 #include "lcdstate.h"
 
-#define SETTINGS_PAGES          5
+#define SETTINGS_PAGES 6
 
 namespace ui
 {
@@ -38,6 +38,7 @@ public:
     bool pageSetTime();
     bool pageSetDate();
     bool pageSetCurrent();
+    bool pageKwhLimit();
     bool pageReset();
     bool pageExit();
 

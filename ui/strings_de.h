@@ -25,17 +25,19 @@
 #define STR_VENT_REQUIRED           PSTR("Abzug notwendig")
 #define STR_ERROR_STATE             PSTR("FEHLER")
 #define STR_DIODE_CHECK_FAILED      PSTR("DIODE TEST FEHLER")
+#define STR_OFF                     PSTR("aus")
 
 // Settings                              |01234567890123456|
 #define STR_SET_CLOCK               PSTR(" Uhrzeit")
 #define STR_SET_DATE                PSTR(" Datum")
 #define STR_SET_CURRENT             PSTR(" Max. Ampere")
+#define STR_SET_KWH_LIMIT           PSTR(" kWh Limit")
 #define STR_SET_RESET               PSTR(" Neustart")
 #define STR_SET_EXIT                PSTR(" Zurueck")
 
 // Faults                                |01234567890123456|
-#define STR_FAULT_POST_GFCI         PSTR("GFI test Fehler")
-#define STR_FAULT_POST_RELAY        PSTR("Relay test Fehler")
+#define STR_FAULT_POST_GFCI         PSTR("GFI Test")
+#define STR_FAULT_POST_RELAY        PSTR("Relay Test")
 #define STR_FAULT_GFCI_TRIPPED      STR_EVT_GFCI_TRIPPED
 #define STR_FAULT_TEMPERATURE       PSTR("Temperatur Alarm")
 
