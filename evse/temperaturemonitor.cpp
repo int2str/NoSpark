@@ -15,6 +15,8 @@
 
 #include "devices/ds3231.h"
 #include "event/loop.h"
+#include "evse/state.h"
+#include "utils/math.h"
 #include "events.h"
 #include "temperaturemonitor.h"
 
@@ -22,12 +24,12 @@
 #define TEMPERATURE_ALARM_LEVEL2    55
 #define TEMPERATURE_ALARM_LEVEL3    60
 
-using event::Event;
-using event::Loop;
+#define MINIMUM_CHARGE_CURRENT       6
 
 namespace
 {
     using devices::DS3231;
+    using evse::State;
     using evse::TemperatureMonitor;
 
     uint8_t readTemp()
@@ -48,6 +50,31 @@ namespace
             return TemperatureMonitor::ELEVATED;
 
         return TemperatureMonitor::NOMINAL;
+    }
+    
+    void updateCurrentLimit(const TemperatureMonitor::TemperatureState &temp_state)
+    {
+        uint8_t amps = State::get().max_amps_target;
+
+        switch (temp_state)
+        {
+            case TemperatureMonitor::ELEVATED:
+                amps = utils::max(amps/2, MINIMUM_CHARGE_CURRENT);
+                break;
+
+            case TemperatureMonitor::HIGH:
+                amps = MINIMUM_CHARGE_CURRENT;
+                break;
+
+            case TemperatureMonitor::CRITICAL:
+                amps = 0;
+                break;
+
+            case TemperatureMonitor::NOMINAL:
+                break;
+        }
+
+        State::get().max_amps_limit = amps;
     }
 }
 
@@ -73,22 +100,33 @@ TemperatureMonitor::TemperatureMonitor()
 
 void TemperatureMonitor::onEvent(const event::Event& event)
 {
-    if (event.id == EVENT_UPDATE)
-        update();
+    switch (event.id)
+    {
+        case EVENT_UPDATE:
+            update();
+            break;
+
+        case EVENT_MAX_AMPS_CHANGED:
+            update(true);
+            break;
+    }
 }
 
-void TemperatureMonitor::update()
+void TemperatureMonitor::update(bool force_update)
 {
     const uint8_t temp = readTemp();
-
-    if (temp != last_temp)
+    if (force_update || (temp != last_temp))
     {
         const TemperatureState new_state = temp2State(temp);
         const TemperatureState old_state = temp2State(last_temp);
 
         // TODO: Debounce state changes
-        if (new_state != old_state)
-            Loop::post(Event(EVENT_TEMPERATURE_ALERT, new_state));
+        if (force_update || (new_state != old_state))
+        {
+            updateCurrentLimit(new_state);
+            event::Loop::post(event::Event(EVENT_TEMPERATURE_ALERT,
+                new_state == TemperatureMonitor::CRITICAL ? 1 : 0));
+        }
 
         last_temp = temp;
     }

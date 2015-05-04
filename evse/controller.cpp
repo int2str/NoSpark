@@ -15,14 +15,10 @@
 
 #include "board/j1772pilot.h"
 #include "event/loop.h"
-#include "evse/temperaturemonitor.h"
-#include "system/timer.h"
 #include "utils/math.h"
 #include "controller.h"
 #include "events.h"
 #include "post.h"
-
-#define MINIMUM_CHARGE_CURRENT 6
 
 using board::ACRelay;
 using board::GFCI;
@@ -34,21 +30,6 @@ using event::Loop;
 namespace
 {
     using evse::State;
-    using evse::TemperatureMonitor;
-
-    uint8_t getMaxChargeCurrent()
-    {
-        uint8_t amps = State::get().max_amps_target;
-        const TemperatureMonitor::TemperatureState temp_state = TemperatureMonitor::getState();
-
-        if (temp_state == TemperatureMonitor::ELEVATED)
-            amps = utils::max(amps/2, MINIMUM_CHARGE_CURRENT);
-
-        else if (temp_state == TemperatureMonitor::HIGH)
-            amps = MINIMUM_CHARGE_CURRENT;
-
-        return amps;
-    }
 
     void setControllerState(const State::ControllerState state)
     {
@@ -191,7 +172,7 @@ void Controller::onEvent(const event::Event &event)
             break;
 
         case EVENT_TEMPERATURE_ALERT:
-            if (event.param == TemperatureMonitor::CRITICAL)
+            if (event.param)
                 setFault(State::FAULT_TEMPERATURE_CRITICAL);
             else
                 updateChargeCurrent();
@@ -222,12 +203,13 @@ void Controller::enableCharge(const bool enable)
 
 void Controller::updateChargeCurrent(const bool enablePwm)
 {
-    const uint8_t max_amps = getMaxChargeCurrent();
+    const uint8_t max_amps = State::get().max_amps_limit;
 
-    State &state = State::get();
-    state.max_amps_limit = utils::min(state.max_amps_target, max_amps);
+    // Can't charge right now :(
+    if (max_amps == 0)
+        J1772Pilot::set(J1772Pilot::HIGH);
 
-    if (enablePwm || J1772Pilot::getMode() == J1772Pilot::PWM)
+    else if (enablePwm || J1772Pilot::getMode() == J1772Pilot::PWM)
         J1772Pilot::pwmAmps(max_amps);
 }
 

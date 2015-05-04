@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "event/handler.h"
@@ -43,8 +44,8 @@ public:
     static TemperatureState getState();
 
 private:
-    void update();
     void onEvent(const event::Event &event);
+    void update(bool force_update = false);
 
     uint8_t last_temp;
 
