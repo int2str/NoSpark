@@ -13,6 +13,7 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "system/timer.h"
 #include "loop.h"
 
 namespace event
@@ -24,6 +25,23 @@ void Loop::post(const Event &event)
     events.push(event);
 }
 
+void Loop::postDelayed(Event &e, const uint32_t ms)
+{
+    e.delay = ms;
+    e.posted = system::Timer::millis();
+}
+
+void Loop::remove(const Event &event)
+{
+    for (auto it = events.begin(); it != events.end();)
+    {
+        if (event == *it)
+            events.erase(it++);
+        else
+            ++it;
+    }
+}
+
 void Loop::addHandler(Handler *ph)
 {
     auto& handlers = get().handlers;
@@ -32,17 +50,7 @@ void Loop::addHandler(Handler *ph)
 
 void Loop::dispatch()
 {
-    Loop &loop = get();
-    auto& events = loop.events;
-    auto& handlers = loop.handlers;
-
-    while (!events.empty())
-    {
-        auto event = events.front();
-        for (auto handler : handlers)
-            handler->onEvent(event);
-        events.pop();
-    }
+    get().dispatch_impl();
 }
 
 Loop& Loop::get()
@@ -53,6 +61,30 @@ Loop& Loop::get()
 
 Loop::Loop()
 {
+}
+
+void Loop::dispatch_impl()
+{
+    uint32_t now = 0;
+    for (auto it = events.begin(); it != events.end();)
+    {
+        const auto event = *it;
+
+        // Only read the current time if a delayed event
+        // was found in the queue.
+        if (now == 0 && event.delay != 0)
+            now = system::Timer::millis();
+
+        // Process and erase events
+        if (event.delay == 0 || ((now - event.posted) >= event.delay))
+        {
+            for (auto handler : handlers)
+                handler->onEvent(event);
+            events.erase(it++);
+        } else {
+            ++it;
+        }
+    }
 }
 
 }

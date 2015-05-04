@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <stdbool.h>
 #include <stdint.h>
 
 namespace event
@@ -26,9 +27,12 @@ public:
     Event();
     Event(const uint16_t id, const uint32_t param = 0);
 
+    bool operator== (const Event &rhs) const;
+
     const uint16_t id;
     const uint32_t param;
     uint32_t delay;
+    uint32_t posted;
 };
 
 }

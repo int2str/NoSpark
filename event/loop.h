@@ -36,7 +36,12 @@ public:
 
     // Posts to all registered handlers when |dispatch| is called after
     // |ms| have elapsed
-    static void postDelayed(const Event &e, const uint32_t ms);
+    static void postDelayed(Event &e, const uint32_t ms);
+
+    // Remove an |event| from the event loop
+    // Should be most helpful to remove delayed event before they are
+    // fired.
+    void remove(const Event &event);
 
     // Must be called regularly to dispatch events
     static void dispatch();
@@ -47,6 +52,7 @@ protected:
 
 private:
     static Loop &get();
+    void dispatch_impl();
 
     utils::Queue<Event> events;
     utils::Queue<Handler*> handlers;
