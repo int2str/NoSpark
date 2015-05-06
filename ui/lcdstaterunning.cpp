@@ -21,13 +21,14 @@
 #include "evse/chargemonitor.h"
 #include "evse/settings.h"
 #include "evse/state.h"
-#include "system/timer.h"
 #include "utils/bcd.h"
 #include "customcharacters.h"
 #include "lcdstaterunning.h"
 #include "strings.h"
 
 #define LCD_COLUMNS 16
+
+#define PAGE_TIMEOUT 5000
 
 using board::J1772Status;
 using devices::DS3231;
@@ -110,9 +111,9 @@ namespace ui
 LcdStateRunning::LcdStateRunning(devices::LCD16x2 &lcd)
     : LcdState(lcd)
     , page(PAGE_DEFAULT)
-    , display_state(0)
-    , last_change(0)
+    , display_state(PAGE_TIMEOUT)
 {
+    CustomCharacters::loadCustomChars(lcd);
 }
 
 bool LcdStateRunning::draw()
@@ -135,13 +136,6 @@ void LcdStateRunning::drawDefault()
     if (ChargeMonitor::get().isCharging())
         amps = chargeMonitor.chargeCurrent() / 1000;
 
-    const uint32_t now = system::Timer::millis();
-    if (now - last_change > 5000)
-    {
-        display_state = !display_state;
-        last_change = now;
-    }
-
     lcd.move(0,0);
     write_time(lcd, rtc);
     lcd.write(' ');
@@ -149,7 +143,7 @@ void LcdStateRunning::drawDefault()
     lcd.write(0xDF);
 
     lcd.write(' ');
-    lcd.write(CUSTOM_CHAR_SEPARATOR);
+    lcd.write(CustomCharacters::SEPARATOR);
     lcd.write(' ');
 
     if (amps)
@@ -175,7 +169,7 @@ void LcdStateRunning::drawDefault()
                 center_P(lcd, STR_NOT_CONNECTED);
             } else {
                 lcd.write_P(STR_CHARGED);
-                if (display_state == 0)
+                if (display_state.get())
                 {
                     lcd.write(' ');
                     write_duration(lcd, chargeMonitor.chargeDuration());
@@ -194,11 +188,11 @@ void LcdStateRunning::drawDefault()
         case J1772Status::STATE_C:
         {
             lcd.setBacklight(LCD16x2::CYAN);
-            if (display_state)
+            if (display_state.get())
                 lcd.write_P(STR_CHARGING);
             else
                 write_kwh(lcd, chargeMonitor.wattHours());
-            lcd.write(CUSTOM_CHAR_SEPARATOR);
+            lcd.write(CustomCharacters::SEPARATOR);
             write_duration(lcd, chargeMonitor.chargeDuration());
             break;
         }

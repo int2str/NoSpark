@@ -19,7 +19,8 @@
 
 #include "devices/lcd1602.h"
 #include "evse/state.h"
-#include "lcdstate.h"
+#include "ui/lcdstate.h"
+#include "ui/timedflipflop.h"
 
 namespace ui
 {
@@ -46,8 +47,7 @@ private:
     void select();
 
     uint8_t page;
-    uint8_t display_state;
-    uint32_t last_change;
+    TimedFlipFlop display_state;
 };
 
 }

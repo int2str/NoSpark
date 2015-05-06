@@ -32,6 +32,10 @@
 #define STR_SET_DATE                PSTR(" Datum")
 #define STR_SET_CURRENT             PSTR(" Max. Ampere")
 #define STR_SET_KWH_LIMIT           PSTR(" kWh Limit")
+#define STR_SET_SLEEPMODE           PSTR(" Schlaf modus")
+#define STR_SET_SLEEPMODE_TIME      PSTR("Zeit anzeigen")
+#define STR_SET_SLEEPMODE_OFF       PSTR("Display aus")
+#define STR_SET_SLEEPMODE_DISABLED  PSTR("Immer an")
 #define STR_SET_RESET               PSTR(" Neustart")
 #define STR_SET_EXIT                PSTR(" Zurueck")
 

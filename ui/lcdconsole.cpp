@@ -17,32 +17,26 @@
 #include <util/delay.h>
 
 #include "board/j1772status.h"
+#include "evse/settings.h"
 #include "evse/state.h"
 #include "system/timer.h"
-#include "customcharacters.h"
 #include "events.h"
 #include "lcdconsole.h"
 #include "lcdstatebootup.h"
 #include "lcdstateerror.h"
 #include "lcdstaterunning.h"
 #include "lcdstatesettings.h"
+#include "lcdstatesleeping.h"
 #include "strings.h"
 
 #define SLEEP_DELAY_MS (900l * 1000l)
 
 using board::J1772Status;
 using devices::LCD16x2;
+using evse::EepromSettings;
+using evse::Settings;
 using evse::State;
 using system::Timer;
-
-namespace
-{
-    void loadCustomCharacters(LCD16x2 &lcd)
-    {
-        for (uint8_t i=0; i != NUM_CUSTOM_CHARS; ++i)
-            lcd.createChar_P(i, &ui::CUSTOM_CHAR_MAP[i][0], 8);
-    }
-}
 
 namespace ui
 {
@@ -59,7 +53,6 @@ LcdConsole::LcdConsole()
     , last_event(Timer::millis())
     , lcdState(new LcdStateBootup(lcd))
 {
-    loadCustomCharacters(lcd);
 }
 
 void LcdConsole::setState(LcdState *newState)
@@ -69,17 +62,12 @@ void LcdConsole::setState(LcdState *newState)
 
     lcd.clear();
     lcdState = newState;
-
-    if (!sleeping)
-        lcdState->draw();
+    lcdState->draw();
 }
 
 
 void LcdConsole::update()
 {
-    if (sleeping)
-        return;
-
     const bool keepState = lcdState->draw();
     if (!keepState && in_settings)
     {
@@ -125,18 +113,34 @@ void LcdConsole::onEvent(const event::Event &event)
             break;
     }
 
-    // Check for "sleep" mode...
+    updateSleepState(event);
+}
+
+void LcdConsole::updateSleepState(const event::Event &event)
+{
     if (event.id == EVENT_UPDATE && State::get().j1772 == J1772Status::STATE_A)
     {
         if (!sleeping && (Timer::millis() - last_event) > SLEEP_DELAY_MS)
         {
-            lcd.setBacklight(LCD16x2::OFF);
-            sleeping = 1;
+            Settings settings;
+            EepromSettings::load(settings);
+            if (settings.sleep_mode != 2) // 2 = No sleepmode...
+            {
+                sleeping = 1;
+                setState(new LcdStateSleeping(lcd));
+            } else {
+                last_event = Timer::millis();
+            }
         }
 
     } else if (event.id != EVENT_KEYDOWN) {
         last_event = Timer::millis();
-        sleeping = 0;
+        if (sleeping)
+        {
+            setState(new LcdStateRunning(lcd));
+            in_settings = false;
+            sleeping = 0;
+        }
     }
 }
 

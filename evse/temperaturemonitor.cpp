@@ -51,7 +51,7 @@ namespace
 
         return TemperatureMonitor::NOMINAL;
     }
-    
+
     void updateCurrentLimit(const TemperatureMonitor::TemperatureState &temp_state)
     {
         uint8_t amps = State::get().max_amps_target;

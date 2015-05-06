@@ -78,7 +78,7 @@ namespace
     {
         return reverse_tuple(b) << LCD_D4_OFFSET;
     }
-    
+
     Pair<uint8_t,uint8_t> bits4color(const LCD16x2::Backlight color)
     {
         uint8_t a = LCD_BL_R | LCD_BL_G;
@@ -86,7 +86,7 @@ namespace
 
         if (color == LCD16x2::OFF)
             return Pair<uint8_t,uint8_t>(a, b);
-        
+
         if (color == LCD16x2::WHITE)
             return Pair<uint8_t,uint8_t>(0, 0);
 

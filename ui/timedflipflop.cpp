@@ -13,44 +13,28 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#pragma once
-
-#include <stdbool.h>
-#include <stdint.h>
-
-#include "devices/lcd1602.h"
-#include "event/handler.h"
-#include "utils/cpp.h"
-#include "lcdstate.h"
+#include "system/timer.h"
+#include "ui/timedflipflop.h"
 
 namespace ui
 {
 
-// LCD UI.
-// This is a singleton; there shall be only one.
-class LcdConsole : public event::Handler
+TimedFlipFlop::TimedFlipFlop(const uint16_t duration)
+    : duration(duration)
+    , last_state(false)
+    , last_change(0)
 {
-    LcdConsole();
+}
 
-public:
-    static LcdConsole& init();
-
-protected:
-    void onEvent(const event::Event &event);
-
-private:
-    void update();
-    void updateSleepState(const event::Event &event);
-    void setState(LcdState *newState);
-
-    bool in_settings;
-    bool sleeping;
-    uint32_t last_event;
-
-    LcdState *lcdState;
-    devices::LCD16x2 lcd;
-
-    DISALLOW_COPY_AND_ASSIGN(LcdConsole);
-};
+bool TimedFlipFlop::get()
+{
+    const uint32_t now = system::Timer::millis();
+    if (now - last_change > duration)
+    {
+        last_state = !last_state;
+        last_change = now;
+    }
+    return last_state;
+}
 
 }

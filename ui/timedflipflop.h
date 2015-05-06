@@ -18,39 +18,20 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "devices/lcd1602.h"
-#include "event/handler.h"
-#include "utils/cpp.h"
-#include "lcdstate.h"
-
 namespace ui
 {
 
-// LCD UI.
-// This is a singleton; there shall be only one.
-class LcdConsole : public event::Handler
+// Toggle the state of a simple boolean at a given |duration|.
+class TimedFlipFlop
 {
-    LcdConsole();
-
 public:
-    static LcdConsole& init();
-
-protected:
-    void onEvent(const event::Event &event);
+    TimedFlipFlop(const uint16_t duration);
+    bool get();
 
 private:
-    void update();
-    void updateSleepState(const event::Event &event);
-    void setState(LcdState *newState);
-
-    bool in_settings;
-    bool sleeping;
-    uint32_t last_event;
-
-    LcdState *lcdState;
-    devices::LCD16x2 lcd;
-
-    DISALLOW_COPY_AND_ASSIGN(LcdConsole);
+    const uint16_t duration;
+    bool last_state;
+    uint32_t last_change;
 };
 
 }

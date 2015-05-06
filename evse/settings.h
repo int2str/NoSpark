@@ -36,6 +36,10 @@ public:
     uint16_t kwh_week;
     uint16_t kwh_index;
 
+    // Rev 3
+    uint8_t kwh_limit;
+    uint8_t sleep_mode;
+
     Settings();
 
     void defaults();

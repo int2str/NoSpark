@@ -18,7 +18,6 @@
 
 #include "devices/ds3231.h"
 #include "event/loop.h"
-#include "evse/settings.h"
 #include "evse/state.h"
 #include "system/timer.h"
 #include "system/watchdog.h"
@@ -30,12 +29,14 @@
 #include "strings.h"
 
 #define SETTINGS_TIMEOUT    10000
+#define BLINK_TIMEOUT       500
 
 #define KWH_LIMIT_MAX       15
 
-#define NOT_ADJUSTING       0x00
+#define UNINITIALIZED       0xFF
 
-#define ADJUST_AMPS         0x01
+#define NOT_ADJUSTING       0x00
+#define ADJUST_SINGLE       0x01
 
 #define ADJUST_HH           0x01
 #define ADJUST_MM           0x02
@@ -44,27 +45,15 @@
 #define ADJUST_MM           0x02
 #define ADJUST_YY           0x03
 
-#define ADJUST_KWH_LIMIT    0x01
-
 using devices::DS3231;
 using devices::LCD16x2;
+using evse::EepromSettings;
 using evse::State;
 using system::Timer;
 using system::Watchdog;
 
 namespace
 {
-    using evse::EepromSettings;
-    using evse::Settings;
-
-    void saveMaxAmps(const uint8_t max_amps)
-    {
-        Settings settings;
-        EepromSettings::load(settings);
-        settings.max_current = max_amps;
-        EepromSettings::save(settings);
-    }
-
     void write_digits(devices::LCD16x2 &lcd, const uint8_t bcd)
     {
         lcd.write('0' + (bcd >> 4));
@@ -79,19 +68,21 @@ LcdStateSettings::LcdStateSettings(devices::LCD16x2 &lcd)
     : LcdState(lcd)
     , page(0)
     , option(NOT_ADJUSTING)
-    , value(0)
-    , lastAction(0)
-    , lastUpdate(0)
-    , uiState(0)
+    , value(UNINITIALIZED)
+    , last_action(0)
+    , blink_state(BLINK_TIMEOUT)
     , pageHandlers {
         &LcdStateSettings::pageSetTime
       , &LcdStateSettings::pageSetDate
       , &LcdStateSettings::pageSetCurrent
       , &LcdStateSettings::pageKwhLimit
+      , &LcdStateSettings::pageSleepmode
       , &LcdStateSettings::pageReset
       , &LcdStateSettings::pageExit
     }
 {
+    CustomCharacters::loadCustomChars(lcd);
+    EepromSettings::load(settings);
 }
 
 bool LcdStateSettings::draw()
@@ -110,7 +101,7 @@ bool LcdStateSettings::draw()
 bool LcdStateSettings::pageSetTime()
 {
     lcd.move(0,0);
-    lcd.write(CUSTOM_CHAR_CLOCK);
+    lcd.write(CustomCharacters::CLOCK);
     lcd.write_P(STR_SET_CLOCK);
     lcd.move(2, 1);
 
@@ -124,6 +115,9 @@ bool LcdStateSettings::pageSetTime()
     if (option == NOT_ADJUSTING)
         DS3231::get().readRaw(time_buffer, 8);
 
+    if (value == UNINITIALIZED)
+        value = 0;
+
     const uint8_t hh = utils::bcd2dec(time_buffer[3]);
     if (option == ADJUST_HH)
         time_buffer[3] = utils::dec2bcd((hh + value) % 24);
@@ -136,7 +130,7 @@ bool LcdStateSettings::pageSetTime()
     lcd.write(':');
     write_digits(lcd, time_buffer[2]);
 
-    if (option != NOT_ADJUSTING && !uiState)
+    if (option != NOT_ADJUSTING && !blink_state.get())
     {
         const uint8_t offset[2] = {2, 5};
         lcd.move(offset[option - 1], 1);
@@ -144,14 +138,13 @@ bool LcdStateSettings::pageSetTime()
     }
 
     value = 0;
-    updateUIState();
     return true;
 }
 
 bool LcdStateSettings::pageSetDate()
 {
     lcd.move(0,0);
-    lcd.write(CUSTOM_CHAR_CALENDAR);
+    lcd.write(CustomCharacters::CALENDAR);
     lcd.write_P(STR_SET_DATE);
     lcd.move(2, 1);
 
@@ -164,6 +157,9 @@ bool LcdStateSettings::pageSetDate()
 
     if (option == NOT_ADJUSTING)
         DS3231::get().readRaw(time_buffer, 8);
+
+    if (value == UNINITIALIZED)
+        value = 0;
 
     const uint8_t dd = utils::bcd2dec(time_buffer[5]);
     if (option == ADJUST_DD)
@@ -183,7 +179,7 @@ bool LcdStateSettings::pageSetDate()
     lcd.write(".20");
     write_digits(lcd, time_buffer[7]);
 
-    if (option != NOT_ADJUSTING && !uiState)
+    if (option != NOT_ADJUSTING && !blink_state.get())
     {
         const uint8_t offset[3] = {2, 5, 8};
         lcd.move(offset[option - 1], 1);
@@ -191,7 +187,6 @@ bool LcdStateSettings::pageSetDate()
     }
 
     value = 0;
-    updateUIState();
     return true;
 }
 
@@ -200,15 +195,17 @@ bool LcdStateSettings::pageSetCurrent()
     const uint8_t currents[] = {10, 16, 20, 24, 30, 35, 40, 45, 50};
 
     // Initialize amps
-    if (value == 0)
+    if (value == UNINITIALIZED)
         value = State::get().max_amps_target;
 
     // Save new state if we're done adjusting
-    if (option > ADJUST_AMPS)
+    if (option > ADJUST_SINGLE)
     {
         if (value != State::get().max_amps_target)
         {
-            saveMaxAmps(value);
+            settings.max_current = value;
+            EepromSettings::save(settings);
+
             State::get().max_amps_target = value;
             event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, value));
         }
@@ -216,7 +213,7 @@ bool LcdStateSettings::pageSetCurrent()
     }
 
     // Snap to currents above if we're still adjusting
-    if (option == ADJUST_AMPS)
+    if (option == ADJUST_SINGLE)
     {
         if (value > currents[sizeof(currents) - 1])
             value = currents[0];
@@ -231,11 +228,11 @@ bool LcdStateSettings::pageSetCurrent()
     // Draw screen, flashing value while adjusting
 
     lcd.move(0, 0);
-    lcd.write(CUSTOM_CHAR_BOLT);
+    lcd.write(CustomCharacters::BOLT);
     lcd.write_P(STR_SET_CURRENT);
 
     lcd.move(2, 1);
-    if (option == NOT_ADJUSTING || uiState)
+    if (option == NOT_ADJUSTING || blink_state.get())
     {
         char buffer[4] = {0};
         utoa(value, buffer, 10);
@@ -245,20 +242,24 @@ bool LcdStateSettings::pageSetCurrent()
         lcd.write("             ");
     }
 
-    updateUIState();
     return true;
 }
 
 bool LcdStateSettings::pageKwhLimit()
 {
     // Save new state if we're done adjusting
-    if (option > ADJUST_KWH_LIMIT)
+    if (option > ADJUST_SINGLE)
     {
-        // TODO: Save value here
+        settings.kwh_limit = value;
+        EepromSettings::save(settings);
+        // TODO: Signal controller to enforce limit
         option = NOT_ADJUSTING;
     }
 
-    if (option == ADJUST_KWH_LIMIT)
+    if (value == UNINITIALIZED)
+        value = 0;
+
+    if (option == ADJUST_SINGLE)
     {
         if (value > KWH_LIMIT_MAX)
             value = 0;
@@ -267,11 +268,11 @@ bool LcdStateSettings::pageKwhLimit()
     // Draw screen, flashing value while adjusting
 
     lcd.move(0, 0);
-    lcd.write(CUSTOM_CHAR_BATTERY1);
+    lcd.write(CustomCharacters::BATTERY1);
     lcd.write_P(STR_SET_KWH_LIMIT);
 
     lcd.move(2, 1);
-    if (option == NOT_ADJUSTING || uiState)
+    if (option == NOT_ADJUSTING || blink_state.get())
     {
         if (value == 0)
         {
@@ -286,7 +287,50 @@ bool LcdStateSettings::pageKwhLimit()
         lcd.write("             ");
     }
 
-    updateUIState();
+    return true;
+}
+
+bool LcdStateSettings::pageSleepmode()
+{
+    // Save new state if we're done adjusting
+    if (option > ADJUST_SINGLE)
+    {
+        settings.sleep_mode = value;
+        EepromSettings::save(settings);
+        option = NOT_ADJUSTING;
+    }
+
+    if (value == UNINITIALIZED)
+        value = settings.sleep_mode;
+
+    // Draw screen, flashing value while adjusting
+
+    lcd.move(0, 0);
+    lcd.write(CustomCharacters::ZZ);
+    lcd.write_P(STR_SET_SLEEPMODE);
+
+    lcd.move(2, 1);
+    if (option == NOT_ADJUSTING || blink_state.get())
+    {
+        switch (value)
+        {
+            default:
+                value = 0;
+                // fall-through intended
+            case 0:
+                lcd.write_P(STR_SET_SLEEPMODE_TIME);
+                break;
+            case 1:
+                lcd.write_P(STR_SET_SLEEPMODE_OFF);
+                break;
+            case 2:
+                lcd.write_P(STR_SET_SLEEPMODE_DISABLED);
+                break;
+        }
+    } else {
+        lcd.write("             ");
+    }
+
     return true;
 }
 
@@ -313,7 +357,7 @@ void LcdStateSettings::select()
     if (option == NOT_ADJUSTING)
     {
         ++page;
-        value = 0;
+        value = UNINITIALIZED;
         lcd.clear();
     } else {
         ++value;
@@ -324,30 +368,20 @@ void LcdStateSettings::select()
 
 void LcdStateSettings::advance()
 {
-    uiState = 0;
     ++option;
     resetTimeout();
 }
 
 bool LcdStateSettings::timedOut()
 {
-    if (lastAction == 0)
+    if (last_action == 0)
         resetTimeout();
-    return (Timer::millis() - lastAction) > SETTINGS_TIMEOUT;
+    return (Timer::millis() - last_action) > SETTINGS_TIMEOUT;
 }
 
 void LcdStateSettings::resetTimeout()
 {
-    lastAction = Timer::millis();
-}
-
-void LcdStateSettings::updateUIState()
-{
-    if (Timer::millis() - lastUpdate > 500)
-    {
-        uiState = !uiState;
-        lastUpdate = Timer::millis();
-    }
+    last_action = Timer::millis();
 }
 
 }

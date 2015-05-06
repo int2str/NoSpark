@@ -18,9 +18,11 @@
 #include <stdbool.h>
 
 #include "devices/lcd1602.h"
-#include "lcdstate.h"
+#include "evse/settings.h"
+#include "ui/lcdstate.h"
+#include "ui/timedflipflop.h"
 
-#define SETTINGS_PAGES 6
+#define SETTINGS_PAGES 7
 
 namespace ui
 {
@@ -39,6 +41,7 @@ public:
     bool pageSetDate();
     bool pageSetCurrent();
     bool pageKwhLimit();
+    bool pageSleepmode();
     bool pageReset();
     bool pageExit();
 
@@ -50,15 +53,17 @@ private:
     bool timedOut();
     void resetTimeout();
 
-    void updateUIState();
+    void load();
+    void save();
+
+    evse::Settings settings;
 
     uint8_t page;
     uint8_t option;
     uint8_t value;
 
-    uint32_t lastAction;
-    uint32_t lastUpdate;
-    uint8_t uiState;
+    uint32_t last_action;
+    TimedFlipFlop blink_state;
 
     PageHandler pageHandlers[SETTINGS_PAGES];
 };

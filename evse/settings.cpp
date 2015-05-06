@@ -20,7 +20,7 @@
 
 #define SETTINGS_OFFSET     0x08
 #define SETTINGS_MARKER     0xAEAE
-#define SETTINGS_REVISION   0x02
+#define SETTINGS_REVISION   0x03
 
 namespace evse
 {
@@ -44,6 +44,10 @@ void Settings::defaults()
     kwh_month = 0;
     kwh_week = 0;
     kwh_index = 0;
+
+    // Rev 3
+    kwh_limit = 0;
+    sleep_mode = 0;
 }
 
 void Settings::upgrade()
@@ -56,6 +60,13 @@ void Settings::upgrade()
         kwh_month = 0;
         kwh_week = 0;
         kwh_index = 0;
+    }
+
+    // Rev 3
+    if (revision < 3)
+    {
+        kwh_limit = 0;
+        sleep_mode = 0;
     }
 
     revision = SETTINGS_REVISION;

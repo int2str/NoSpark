@@ -19,38 +19,21 @@
 #include <stdint.h>
 
 #include "devices/lcd1602.h"
-#include "event/handler.h"
-#include "utils/cpp.h"
-#include "lcdstate.h"
+#include "ui/lcdstate.h"
+#include "ui/timedflipflop.h"
 
 namespace ui
 {
 
-// LCD UI.
-// This is a singleton; there shall be only one.
-class LcdConsole : public event::Handler
+class LcdStateSleeping : public LcdState
 {
-    LcdConsole();
-
 public:
-    static LcdConsole& init();
-
-protected:
-    void onEvent(const event::Event &event);
+    LcdStateSleeping(devices::LCD16x2 &lcd);
+    bool draw();
 
 private:
-    void update();
-    void updateSleepState(const event::Event &event);
-    void setState(LcdState *newState);
-
-    bool in_settings;
-    bool sleeping;
-    uint32_t last_event;
-
-    LcdState *lcdState;
-    devices::LCD16x2 lcd;
-
-    DISALLOW_COPY_AND_ASSIGN(LcdConsole);
+    TimedFlipFlop blink_state;
+    uint8_t sleep_mode;
 };
 
 }

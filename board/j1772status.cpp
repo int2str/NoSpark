@@ -29,7 +29,7 @@
 namespace
 {
     using board::J1772Status;
-    
+
     J1772Status::J1772State stateFromSample(const uint16_t sample)
     {
         if (sample < J1772_THRESHOLD_OFFSET)

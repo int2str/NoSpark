@@ -16,33 +16,29 @@
 #pragma once
 
 #include <avr/pgmspace.h>
-
-#define NUM_CUSTOM_CHARS 8
+#include "devices/lcd1602.h"
 
 namespace ui
 {
 
-const PROGMEM uint8_t CUSTOM_CHAR_MAP[NUM_CUSTOM_CHARS][8] = {
-    {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04} // CUSTOM_CHAR_SEPARATOR
-  , {0x00, 0x0e, 0x15, 0x17, 0x11, 0x0e, 0x00, 0x00} // CUSTOM_CHAR_CLOCK
-  , {0x00, 0x1f, 0x1f, 0x11, 0x11, 0x11, 0x1e, 0x00} // CUSTOM_CHAR_CALENDAR
-  , {0x07, 0x0e, 0x0c, 0x1f, 0x03, 0x06, 0x0c, 0x08} // CUSTOM_CHAR_BOLT
-  , {0x1f, 0x11, 0x0a, 0x0a, 0x04, 0x0a, 0x1f, 0x1f} // CUSTOM_CHAR_HOURGLASS
-  , {0x0e, 0x1f, 0x11, 0x11, 0x11, 0x11, 0x1f, 0x00} // CUSTOM_CHAR_BATTERY0
-  , {0x0e, 0x1f, 0x11, 0x11, 0x11, 0x1f, 0x1f, 0x00} // CUSTOM_CHAR_BATTERY1
-  , {0x0e, 0x1f, 0x11, 0x11, 0x1f, 0x1f, 0x1f, 0x00} // CUSTOM_CHAR_BATTERY2
-};
-
-enum CUSTOM_CHARS
+class CustomCharacters
 {
-    CUSTOM_CHAR_SEPARATOR
-  , CUSTOM_CHAR_CLOCK
-  , CUSTOM_CHAR_CALENDAR
-  , CUSTOM_CHAR_BOLT
-  , CUSTOM_CHAR_HOURGLASS
-  , CUSTOM_CHAR_BATTERY0
-  , CUSTOM_CHAR_BATTERY1
-  , CUSTOM_CHAR_BATTERY2
+public:
+    enum CUSTOM_CHARS_MAP
+    {
+        SEPARATOR
+      , CLOCK
+      , CALENDAR
+      , BOLT
+      , HOURGLASS
+      , ZZ
+      , BATTERY1
+      , BATTERY2
+    };
+
+    static void loadCustomChars(devices::LCD16x2 &lcd);
+    static void loadLargeDigits(devices::LCD16x2 &lcd);
+    static void largeDigit(devices::LCD16x2 &lcd, const uint8_t digit, const uint8_t offset);
 };
 
 }
