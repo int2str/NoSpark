@@ -51,8 +51,8 @@ private:
     // should never be called during normal operation.
     bool checkEVPresent();
 
-    board::ACRelay& acRelay;
-    board::GFCI& gfci;
+    board::ACRelay acRelay;
+    board::GFCI gfci;
     board::J1772Status& j1772Status;
 
     DISALLOW_COPY_AND_ASSIGN(Controller);

@@ -30,21 +30,17 @@ using event::Loop;
 
 namespace
 {
+    static board::GFCI *gfci = 0;
+
     ISR(INT0_vect)
     {
-        board::GFCI::get().trip();
+        if (gfci)
+            gfci->trip();
     }
 
-    void enablePinChangeInterrupt()
+    void sendPulses(const board::GFCI &gfci, board::Pin& pin)
     {
-        utils::Atomic _atomic;
-        EICRA = (1 << ISC00);
-        EIMSK = (1 << INT0);
-    }
-
-    void sendPulses(board::Pin& pin)
-    {
-        for (uint8_t i = 0; i != GFCI_TEST_PULSES && !board::GFCI::get().isTripped(); ++i)
+        for (uint8_t i = 0; i != GFCI_TEST_PULSES && !gfci.isTripped(); ++i)
         {
             pin = !pin;
             _delay_us(GFCI_TEST_DELAY_US);
@@ -56,12 +52,6 @@ namespace
 namespace board
 {
 
-GFCI& GFCI::get()
-{
-    static GFCI gfci;
-    return gfci;
-}
-
 GFCI::GFCI()
     : pinSense(PIN_GFCI_SENSE)
     , pinTest(PIN_GFCI_TEST)
@@ -71,7 +61,13 @@ GFCI::GFCI()
     pinSense.io(Pin::IN);
     pinTest.io(Pin::OUT);
 
-    enablePinChangeInterrupt();
+    // Pointer for ISR
+    gfci = this;
+
+    // Enable pin change interrupt
+    utils::Atomic _atomic;
+    EICRA = (1 << ISC00);
+    EIMSK = (1 << INT0);
 }
 
 void GFCI::selfTest()
@@ -79,7 +75,7 @@ void GFCI::selfTest()
     tripped = false;
     self_test = true;
 
-    sendPulses(pinTest);
+    sendPulses(*this, pinTest);
     Loop::post(Event(tripped ? EVENT_POST_SUCCESS : EVENT_POST_FAILED));
 }
 

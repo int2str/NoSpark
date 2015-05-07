@@ -18,25 +18,18 @@
 #include <stdint.h>
 
 #include "board/pin.h"
-#include "utils/cpp.h"
 
 namespace board
 {
 
 class Ammeter
 {
-    Ammeter();
-
 public:
-    static uint32_t sample();
+    Ammeter();
+    uint32_t sample();
 
 private:
-    static Ammeter& get();
-    uint32_t sample_impl();
-
     board::Pin pin;
-
-    DISALLOW_COPY_AND_ASSIGN(Ammeter);
 };
 
 }

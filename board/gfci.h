@@ -25,10 +25,8 @@ namespace board
 
 class GFCI
 {
-    GFCI();
-
 public:
-    static GFCI& get();
+    GFCI();
 
     void selfTest();
     void reset();

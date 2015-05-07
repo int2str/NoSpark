@@ -26,10 +26,8 @@ namespace board
 // AC relay control for OpenEVSE v3
 class ACRelay
 {
-    ACRelay();
-
 public:
-    static ACRelay& get();
+    ACRelay();
 
     void enable();
     void disable();

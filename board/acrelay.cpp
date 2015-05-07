@@ -29,12 +29,6 @@ using event::Loop;
 namespace board
 {
 
-ACRelay& ACRelay::get()
-{
-    static ACRelay relay;
-    return relay;
-}
-
 ACRelay::ACRelay()
     : pinRelay(PIN_AC_RELAY)
     , pinSense(PIN_AC_TEST1)

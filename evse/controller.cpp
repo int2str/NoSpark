@@ -66,9 +66,7 @@ Controller& Controller::init()
 }
 
 Controller::Controller()
-    : acRelay(ACRelay::get())
-    , gfci(GFCI::get())
-    , j1772Status(J1772Status::get())
+    : j1772Status(J1772Status::get())
 {
     enableCharge(false);
 }

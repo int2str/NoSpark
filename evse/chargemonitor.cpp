@@ -83,7 +83,7 @@ void ChargeMonitor::update()
 {
     if (isCharging())
     {
-        current_samples.push(board::Ammeter::sample());
+        current_samples.push(ammeter.sample());
         const uint32_t now = system::Timer::millis();
         if ((now - last_sample) > 1000)
         {

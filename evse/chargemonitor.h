@@ -17,6 +17,7 @@
 
 #include <stdint.h>
 
+#include "board/ammeter.h"
 #include "event/handler.h"
 #include "utils/cpp.h"
 #include "utils/movingaverage.h"
@@ -44,6 +45,7 @@ private:
 
     void onEvent(const event::Event &event);
 
+    board::Ammeter ammeter;
     uint32_t time_start_ms;
     uint32_t time_stop_ms;
     uint32_t last_sample;

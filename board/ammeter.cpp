@@ -69,23 +69,12 @@ namespace
 namespace board
 {
 
-Ammeter& Ammeter::get()
-{
-    static Ammeter meter;
-    return meter;
-}
-
-uint32_t Ammeter::sample()
-{
-   return get().sample_impl();
-}
-
 Ammeter::Ammeter()
     : pin(PIN_AMMETER)
 {
 }
 
-uint32_t Ammeter::sample_impl()
+uint32_t Ammeter::sample()
 {
     uint32_t sum = 0;
     uint16_t last_sample = 0;
