@@ -20,45 +20,26 @@
 
 #include "utils/cpp.h"
 #include "serial/usart.h"
-
-#define MAX_COMMANDS    6
+#include "ui/serialapi.h"
 
 namespace ui
 {
 
-class SerialConsole;
-typedef void (SerialConsole::*SerialCommandHandler) (const char *buffer, const uint8_t len);
-
-struct SerialCommand
-{
-    const char* command;
-    const bool hasParam;
-    SerialCommandHandler handler;
-};
-
 // Simple command line interface for control and monitoring.
-class SerialConsole
+class SerialApi
 {
 public:
-    SerialConsole(serial::Usart &uart);
+    SerialApi(serial::Usart &uart);
 
     void onEvent(const event::Event &event);
-
     bool handleCommand(const char *buffer, const uint8_t len);
 
 private:
-    void commandHelp(const char *buffer, const uint8_t len);
-    void commandReset(const char *buffer, const uint8_t len);
-    void commandSetCurrent(const char *buffer, const uint8_t len);
-    void commandSetTime(const char *buffer, const uint8_t len);
-    void commandStatus(const char *buffer, const uint8_t len);
-    void commandDebug(const char *buffer, const uint8_t len);
-
     serial::Usart &uart;
-    bool event_debug;
-    const SerialCommand commands[MAX_COMMANDS];
 
-    DISALLOW_COPY_AND_ASSIGN(SerialConsole);
+    uint8_t commandSetCurrent(const char *buffer);
+
+    DISALLOW_COPY_AND_ASSIGN(SerialApi);
 };
 
 }

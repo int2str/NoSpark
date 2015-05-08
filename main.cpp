@@ -23,7 +23,7 @@
 #include "system/watchdog.h"
 #include "ui/keyboard.h"
 #include "ui/lcdconsole.h"
-#include "ui/serialconsole.h"
+#include "ui/serialmonitor.h"
 
 #include "events.h"
 
@@ -35,7 +35,7 @@ int main()
 
     ui::LcdConsole::init();
     ui::Keyboard::init();
-    ui::SerialConsole::init();
+    ui::SerialMonitor::init();
     evse::Controller::init();
     evse::ChargeMonitor::get();
     evse::TemperatureMonitor::init();

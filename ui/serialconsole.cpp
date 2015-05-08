@@ -20,7 +20,6 @@
 #include "event/loop.h"
 #include "evse/settings.h"
 #include "evse/state.h"
-#include "system/timer.h"
 #include "system/watchdog.h"
 #include "serialconsole.h"
 #include "events.h"
@@ -29,8 +28,8 @@
 using evse::EepromSettings;
 using evse::Settings;
 using evse::State;
-using serial::Usart;
 using devices::DS3231;
+using serial::Usart;
 
 namespace
 {
@@ -91,17 +90,9 @@ namespace
 namespace ui
 {
 
-SerialConsole& SerialConsole::init()
-{
-    static SerialConsole console;
-    return console;
-}
-
-SerialConsole::SerialConsole()
-    : uart(serial::Usart::get())
-    , state(CONSOLE_STARTUP)
+SerialConsole::SerialConsole(serial::Usart &uart)
+    : uart(uart)
     , event_debug(false) // TODO: Read from EEPROM?
-    , len(0)
     , commands({
         { STR_CMD_HELP,      false, &SerialConsole::commandHelp }
       , { STR_CMD_STATUS,    false, &SerialConsole::commandStatus }
@@ -113,51 +104,11 @@ SerialConsole::SerialConsole()
 {
 }
 
-void SerialConsole::update()
-{
-    switch (state)
-    {
-        case CONSOLE_STARTUP:
-            uart.write("\r\r");
-            uart.writeln_P(STR_NOSPARK);
-            uart.writeln_P(STR_NOSPARK_BY);
-            uart.write(CR);
-            state = CONSOLE_READY;
-            break;
-
-        case CONSOLE_READY:
-            uart.write_P(STR_PROMPT);
-            len = 0;
-            state = CONSOLE_ACCUMULATING;
-            break;
-
-        case CONSOLE_ACCUMULATING:
-            while (uart.avail())
-            {
-                buffer[len++] = uart.read();
-                uart.write(buffer[len-1]); // <-- echo
-
-                if (len == CONSOLE_BUFFER-1 || buffer[len-1] == CR)
-                {
-                    buffer[len-1] = 0;
-                    state = CONSOLE_COMMAND;
-                    break;
-                }
-            }
-            break;
-
-        case CONSOLE_COMMAND:
-            state = handleCommand();
-            break;
-    }
-}
-
 void SerialConsole::onEvent(const event::Event& event)
 {
     switch (event.id)
     {
         case EVENT_UPDATE:
-            update();
             break;
 
         case EVENT_J1772_STATE:
@@ -205,10 +156,10 @@ void SerialConsole::onEvent(const event::Event& event)
     }
 }
 
-SerialConsole::SerialState SerialConsole::handleCommand()
+bool SerialConsole::handleCommand(const char *buffer, const uint8_t len)
 {
     if (buffer[0] == 0)
-        return CONSOLE_READY;
+        return false;
 
     for (uint8_t i = 0; i != MAX_COMMANDS; ++i)
     {
@@ -217,22 +168,22 @@ SerialConsole::SerialState SerialConsole::handleCommand()
             const uint8_t cmd_len = strlen_P(commands[i].command);
             if (strncmp_P(buffer, commands[i].command, cmd_len) == 0)
             {
-                (this->*commands[i].handler) ();
-                return CONSOLE_READY;
+                (this->*commands[i].handler) (buffer, len);
+                return true;
             }
 
         } else if (strcmp_P(buffer, commands[i].command) == 0) {
-            (this->*commands[i].handler) ();
-            return CONSOLE_READY;
+            (this->*commands[i].handler) (buffer, len);
+            return true;
         }
     }
 
     uart.writeln_P(STR_HELP_UNKNOWN);
 
-    return CONSOLE_READY;
+    return false;
 }
 
-void SerialConsole::commandHelp()
+void SerialConsole::commandHelp(const char *, const uint8_t)
 {
     uart.writeln_P(STR_HELP_COMMANDS);
     uart.writeln_P(STR_HELP_HELP);
@@ -244,12 +195,12 @@ void SerialConsole::commandHelp()
     uart.write(CR);
 }
 
-void SerialConsole::commandReset()
+void SerialConsole::commandReset(const char *, const uint8_t)
 {
     system::Watchdog::forceRestart();
 }
 
-void SerialConsole::commandSetCurrent()
+void SerialConsole::commandSetCurrent(const char *buffer, const uint8_t len)
 {
     const uint8_t cmd_len = strlen_P(STR_CMD_SETCURRENT);
 
@@ -271,7 +222,7 @@ void SerialConsole::commandSetCurrent()
     }
 }
 
-void SerialConsole::commandSetTime()
+void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
 {
     const uint8_t cmd_len = strlen_P(STR_CMD_SETTIME);
 
@@ -281,8 +232,8 @@ void SerialConsole::commandSetTime()
         return;
     }
 
-    char *pp = buffer + cmd_len;
-    uint8_t buffer[8] = {
+    const char *pp = buffer + cmd_len;
+    uint8_t time_buffer[8] = {
         0 // <-- Register
       , bcd_enc(pp[4], pp[5])
       , bcd_enc(pp[2], pp[3])
@@ -294,10 +245,10 @@ void SerialConsole::commandSetTime()
     };
 
     DS3231 &rtc = DS3231::get();
-    rtc.writeRaw(buffer, 8);
+    rtc.writeRaw(time_buffer, 8);
 }
 
-void SerialConsole::commandDebug()
+void SerialConsole::commandDebug(const char *buffer, const uint8_t len)
 {
     const uint8_t cmd_len = strlen_P(STR_CMD_DEBUG);
 
@@ -310,7 +261,7 @@ void SerialConsole::commandDebug()
     event_debug = buffer[cmd_len] != '0';
 }
 
-void SerialConsole::commandStatus()
+void SerialConsole::commandStatus(const char *, const uint8_t)
 {
     DS3231 &rtc = DS3231::get();
     State &state = State::get();
