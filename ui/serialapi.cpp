@@ -54,18 +54,16 @@ namespace
     {
         bool found = false;
         uint8_t val = 0xFF;
+
         while (*buffer != 0)
         {
             const char ch = *buffer++;
             if (found)
             {
-                if (ch >= '0' && ch <= '9')
-                {
-                    val *= 10;
-                    val += ch - '0';
-                } else {
-                    return val;
-                }
+                if (ch < '0' || ch > '9')
+                    break;
+                val *= 10;
+                val += ch - '0';
             }
 
             if (ch == param)

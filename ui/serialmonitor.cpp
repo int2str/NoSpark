@@ -33,8 +33,8 @@ SerialMonitor::SerialMonitor()
     , api(uart)
     , console(uart)
     , state(CONSOLE_STARTUP)
-    , len(0)
     , echo(true)
+    , len(0)
 {
 }
 
