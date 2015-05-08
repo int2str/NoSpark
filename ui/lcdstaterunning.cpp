@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "board/j1772status.h"
+#include "board/j1772pilot.h"
 #include "devices/ds3231.h"
 #include "evse/chargemonitor.h"
 #include "evse/settings.h"
@@ -30,7 +30,7 @@
 
 #define PAGE_TIMEOUT 5000
 
-using board::J1772Status;
+using board::J1772Pilot;
 using devices::DS3231;
 using devices::LCD16x2;
 using evse::ChargeMonitor;
@@ -156,13 +156,13 @@ void LcdStateRunning::drawDefault()
 
     switch (state.j1772)
     {
-        case J1772Status::UNKNOWN:
-        case J1772Status::STATE_E:
+        case J1772Pilot::UNKNOWN:
+        case J1772Pilot::STATE_E:
             lcd.setBacklight(LCD16x2::RED);
             center_P(lcd, STR_ERROR_STATE);
             break;
 
-        case J1772Status::STATE_A:
+        case J1772Pilot::STATE_A:
             lcd.setBacklight(LCD16x2::GREEN);
             if (chargeMonitor.chargeDuration() == 0)
             {
@@ -180,12 +180,12 @@ void LcdStateRunning::drawDefault()
             }
             break;
 
-        case J1772Status::STATE_B:
+        case J1772Pilot::STATE_B:
             lcd.setBacklight(LCD16x2::GREEN);
             center_P(lcd, STR_CONNECTED);
             break;
 
-        case J1772Status::STATE_C:
+        case J1772Pilot::STATE_C:
         {
             lcd.setBacklight(LCD16x2::CYAN);
             if (display_state.get())
@@ -197,18 +197,18 @@ void LcdStateRunning::drawDefault()
             break;
         }
 
-        case J1772Status::STATE_D:
+        case J1772Pilot::STATE_D:
             lcd.setBacklight(LCD16x2::RED);
             center_P(lcd, STR_VENT_REQUIRED);
             break;
 
-        case J1772Status::DIODE_CHECK_FAILED:
+        case J1772Pilot::DIODE_CHECK_FAILED:
             lcd.setBacklight(LCD16x2::RED);
             center_P(lcd, STR_DIODE_CHECK_FAILED);
             break;
 
-        case J1772Status::NOT_READY:
-        case J1772Status::IMPLAUSIBLE:
+        case J1772Pilot::NOT_READY:
+        case J1772Pilot::IMPLAUSIBLE:
             break;
     }
 }

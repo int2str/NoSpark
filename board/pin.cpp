@@ -64,7 +64,7 @@ void Pin::io(const PinDirection d)
     }
 }
 
-uint16_t Pin::analogRead()
+uint16_t Pin::analogRead() const
 {
     ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
     ADMUX = (1 << REFS0) | bit2num(b);

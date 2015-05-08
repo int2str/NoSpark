@@ -15,11 +15,22 @@
 
 #include <avr/io.h>
 
+#include "board/j1772pilot.h"
+#include "board/pins.h"
 #include "utils/atomic.h"
-#include "j1772pilot.h"
+#include "utils/math.h"
+#include "utils/pair.h"
+
+#define J1772_SAMPLES 100
+
+#define J1772_DIODE_THRESHOLD     256 // 1024 ADC_STEPS / 24V = ~43 STEPS/V
+#define J1772_THRESHOLD_OFFSET    512 // Assuming this is half range (+12 <-> -12)
+#define J1772_THRESHOLD_STEP      100 // 1023 / 10 ~= 100 :D
 
 namespace
 {
+    using board::J1772Pilot;
+
     uint8_t amp2duty(const uint8_t amp)
     {
         uint16_t d = amp;
@@ -57,40 +68,79 @@ namespace
         utils::Atomic _atomic;
         TCCR1A = 0;
     }
+
+    J1772Pilot::State stateFromSample(const uint16_t sample)
+    {
+        if (sample < J1772_THRESHOLD_OFFSET)
+            return J1772Pilot::IMPLAUSIBLE;
+
+        const J1772Pilot::State states[] = {
+            J1772Pilot::STATE_E,
+            J1772Pilot::STATE_D,
+            J1772Pilot::STATE_C,
+            J1772Pilot::STATE_B,
+            J1772Pilot::STATE_A,
+            J1772Pilot::STATE_A // Rounding up buffer
+        };
+
+        return states[(sample - J1772_THRESHOLD_OFFSET) / J1772_THRESHOLD_STEP];
+    }
+
+    utils::Pair<uint16_t, uint16_t> samplePin(const board::Pin& pin)
+    {
+        utils::Pair<uint16_t,uint16_t> reading = {1023, 0};
+
+        for (uint8_t i = 0; i != J1772_SAMPLES; ++i)
+        {
+            const uint16_t value = pin.analogRead();
+            reading.first = utils::min(reading.first, value);
+            reading.second = utils::max(reading.second, value);
+        }
+
+        return reading;
+    }
 }
 
 namespace board
 {
 
-J1772Pilot& J1772Pilot::get()
-{
-    static J1772Pilot pilot;
-    return pilot;
-}
-
 J1772Pilot::J1772Pilot()
     : mode(LOW)
+    , pinSense(PIN_J1772_STATUS)
 {
+    pinSense.io(Pin::IN);
 }
 
-void J1772Pilot::set(const J1772Mode mode)
+void J1772Pilot::setMode(const Mode mode)
 {
     if (mode == PWM)
         return;
-    get().mode = mode;
+    this->mode = mode;
     pwmDisable();
     setPinActive(mode == HIGH);
 }
 
+J1772Pilot::Mode J1772Pilot::getMode() const
+{
+    return mode;
+}
+
 void J1772Pilot::pwmAmps(const uint8_t amps)
 {
-    get().mode = PWM;
+    mode = PWM;
     pwmEnable(amp2duty(amps));
 }
 
-J1772Pilot::J1772Mode J1772Pilot::getMode()
+J1772Pilot::State J1772Pilot::getState() const
 {
-    return get().mode;
+    if (J1772Pilot::getMode() == J1772Pilot::LOW)
+        return NOT_READY;
+
+    const auto sample = samplePin(pinSense);
+    if (J1772Pilot::getMode() == J1772Pilot::PWM && sample.first > J1772_DIODE_THRESHOLD)
+        return DIODE_CHECK_FAILED;
+
+    return stateFromSample(sample.second);
 }
 
 }

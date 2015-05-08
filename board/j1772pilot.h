@@ -16,6 +16,8 @@
 #pragma once
 
 #include <stdint.h>
+
+#include "board/pin.h"
 #include "utils/cpp.h"
 
 namespace board
@@ -25,25 +27,39 @@ namespace board
 // no need to abstract it.
 class J1772Pilot
 {
-    J1772Pilot();
-
 public:
-    enum J1772Mode
+    enum Mode
     {
         HIGH
       , LOW
       , PWM
     };
 
-    // Set to HIGH or LOW only, use pwmAmps to enable PWM
-    static void set(const J1772Mode mode);
-    static void pwmAmps(const uint8_t amps);
+    enum State
+    {
+        UNKNOWN
+      , STATE_A     // 12V; Not connected
+      , STATE_B     //  9V; Connected, ready
+      , STATE_C     //  6V; Charging
+      , STATE_D     //  3V; Charging, vent required
+      , STATE_E     //  0V; Error
+      , DIODE_CHECK_FAILED
+      , NOT_READY   // Pilot held low
+      , IMPLAUSIBLE // Reading doesn't make sense
+    };
 
-    static J1772Mode getMode();
+    J1772Pilot();
+
+    // Set to HIGH or LOW only, use pwmAmps to enable PWM
+    void setMode(const Mode mode);
+    Mode getMode() const;
+    void pwmAmps(const uint8_t amps);
+
+    State getState() const;
 
 private:
-    static J1772Pilot& get();
-    J1772Mode mode;
+    Mode mode;
+    board::Pin pinSense;
 
     DISALLOW_COPY_AND_ASSIGN(J1772Pilot);
 };

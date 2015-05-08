@@ -13,7 +13,6 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include "board/j1772pilot.h"
 #include "event/loop.h"
 #include "utils/math.h"
 #include "controller.h"
@@ -23,7 +22,6 @@
 using board::ACRelay;
 using board::GFCI;
 using board::J1772Pilot;
-using board::J1772Status;
 using event::Event;
 using event::Loop;
 
@@ -37,7 +35,7 @@ namespace
         Loop::post(Event(EVENT_CONTROLLER_STATE, state));
     }
 
-    void setJ1772State(const J1772Status::J1772State j1772)
+    void setJ1772State(const J1772Pilot::State j1772)
     {
         State::get().j1772 = j1772;
         Loop::post(Event(EVENT_J1772_STATE, j1772));
@@ -66,7 +64,6 @@ Controller& Controller::init()
 }
 
 Controller::Controller()
-    : j1772Status(J1772Status::get())
 {
     enableCharge(false);
 }
@@ -98,41 +95,41 @@ void Controller::updateRunning()
 {
     State& state = State::get();
 
-    const auto j1772 = j1772Status.read();
-    if (state.j1772 == j1772)
+    const auto j1772_state = j1772.getState();
+    if (state.j1772 == j1772_state)
         return; // State hasn't changed...
 
-    switch (j1772)
+    switch (j1772_state)
     {
-        case J1772Status::STATE_A: // <-- EV not connected
-        case J1772Status::STATE_E: // <-- Error
-        case J1772Status::NOT_READY:
+        case J1772Pilot::STATE_A: // <-- EV not connected
+        case J1772Pilot::STATE_E: // <-- Error
+        case J1772Pilot::NOT_READY:
             enableCharge(false);
-            J1772Pilot::set(J1772Pilot::HIGH);
+            j1772.setMode(J1772Pilot::HIGH);
             break;
 
-        case J1772Status::STATE_B: // <-- EV Connected
-        case J1772Status::DIODE_CHECK_FAILED:
+        case J1772Pilot::STATE_B: // <-- EV Connected
+        case J1772Pilot::DIODE_CHECK_FAILED:
             // For diode failure, keep PWM up so we can re-check
             enableCharge(false);
             updateChargeCurrent(true);
             break;
 
-        case J1772Status::STATE_C: // <-- Charging
+        case J1772Pilot::STATE_C: // <-- Charging
             updateChargeCurrent(true);
             enableCharge(true);
             break;
 
-        case J1772Status::STATE_D: // <-- Vent required :(
-        case J1772Status::UNKNOWN:
-        case J1772Status::IMPLAUSIBLE:
+        case J1772Pilot::STATE_D: // <-- Vent required :(
+        case J1772Pilot::UNKNOWN:
+        case J1772Pilot::IMPLAUSIBLE:
             enableCharge(false);
-            J1772Pilot::set(J1772Pilot::LOW);
+            j1772.setMode(J1772Pilot::LOW);
             // TODO: Snap to error condition?
             break;
     }
 
-    setJ1772State(j1772);
+    setJ1772State(j1772_state);
 }
 
 void Controller::onEvent(const event::Event &event)
@@ -154,7 +151,7 @@ void Controller::onEvent(const event::Event &event)
         case EVENT_POST_COMPLETED:
             if (event.param == 0)
             {
-                J1772Pilot::set(J1772Pilot::HIGH);
+                j1772.setMode(J1772Pilot::HIGH);
                 setControllerState(State::RUNNING);
             } else {
                 setFault(postEventToFaultCode(event.param));
@@ -180,9 +177,9 @@ void Controller::onEvent(const event::Event &event)
 
 bool Controller::checkEVPresent()
 {
-    J1772Pilot::set(J1772Pilot::HIGH);
-    const bool present = (j1772Status.read() != J1772Status::STATE_A);
-    J1772Pilot::set(J1772Pilot::LOW);
+    j1772.setMode(J1772Pilot::HIGH);
+    const bool present = (j1772.getState() != J1772Pilot::STATE_A);
+    j1772.setMode(J1772Pilot::LOW);
 
     return present;
 }
@@ -205,16 +202,16 @@ void Controller::updateChargeCurrent(const bool enablePwm)
 
     // Can't charge right now :(
     if (max_amps == 0)
-        J1772Pilot::set(J1772Pilot::HIGH);
+        j1772.setMode(J1772Pilot::HIGH);
 
-    else if (enablePwm || J1772Pilot::getMode() == J1772Pilot::PWM)
-        J1772Pilot::pwmAmps(max_amps);
+    else if (enablePwm || j1772.getMode() == J1772Pilot::PWM)
+        j1772.pwmAmps(max_amps);
 }
 
 void Controller::setFault(const State::ControllerFault fault)
 {
     enableCharge(false);
-    J1772Pilot::set(J1772Pilot::LOW);
+    j1772.setMode(J1772Pilot::LOW);
     State::get().fault = fault;
     setControllerState(State::FAULT);
 }

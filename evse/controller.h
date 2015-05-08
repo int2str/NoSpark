@@ -20,7 +20,7 @@
 
 #include "board/acrelay.h"
 #include "board/gfci.h"
-#include "board/j1772status.h"
+#include "board/j1772pilot.h"
 #include "evse/state.h"
 #include "event/handler.h"
 #include "utils/cpp.h"
@@ -53,7 +53,7 @@ private:
 
     board::ACRelay acRelay;
     board::GFCI gfci;
-    board::J1772Status& j1772Status;
+    board::J1772Pilot j1772;
 
     DISALLOW_COPY_AND_ASSIGN(Controller);
 };

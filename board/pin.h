@@ -37,7 +37,7 @@ public:
     Pin(volatile uint8_t* reg_pin, const uint8_t b);
 
     void io(const PinDirection d);
-    uint16_t analogRead();
+    uint16_t analogRead() const;
 
     Pin& operator= (const uint8_t rhs);
     bool operator! () const;

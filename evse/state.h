@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "board/j1772status.h"
+#include "board/j1772pilot.h"
 #include "utils/cpp.h"
 #include "settings.h"
 
@@ -48,7 +48,7 @@ public:
 
     ControllerState controller;
     ControllerFault fault;
-    board::J1772Status::J1772State j1772;
+    board::J1772Pilot::State j1772;
 
     // Desired maximum charge current
     uint8_t max_amps_target;
