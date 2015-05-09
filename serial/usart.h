@@ -20,7 +20,7 @@
 
 #include "utils/cpp.h"
 
-#define USART_BAUD_RATE 9600
+#define USART_BAUD_RATE 57600
 
 namespace serial
 {
