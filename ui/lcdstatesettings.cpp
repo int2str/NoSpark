@@ -247,17 +247,16 @@ bool LcdStateSettings::pageSetCurrent()
 
 bool LcdStateSettings::pageKwhLimit()
 {
+    if (value == UNINITIALIZED)
+        value = settings.kwh_limit;
+
     // Save new state if we're done adjusting
     if (option > ADJUST_SINGLE)
     {
         settings.kwh_limit = value;
         EepromSettings::save(settings);
-        // TODO: Signal controller to enforce limit
         option = NOT_ADJUSTING;
     }
-
-    if (value == UNINITIALIZED)
-        value = 0;
 
     if (option == ADJUST_SINGLE)
     {
@@ -292,6 +291,9 @@ bool LcdStateSettings::pageKwhLimit()
 
 bool LcdStateSettings::pageSleepmode()
 {
+    if (value == UNINITIALIZED)
+        value = settings.sleep_mode;
+
     // Save new state if we're done adjusting
     if (option > ADJUST_SINGLE)
     {
@@ -299,9 +301,6 @@ bool LcdStateSettings::pageSleepmode()
         EepromSettings::save(settings);
         option = NOT_ADJUSTING;
     }
-
-    if (value == UNINITIALIZED)
-        value = settings.sleep_mode;
 
     // Draw screen, flashing value while adjusting
 
