@@ -25,7 +25,6 @@
 #include "serialapi.h"
 #include "serialprotocol.h"
 #include "events.h"
-#include "strings.h"
 
 using event::Event;
 using evse::ChargeMonitor;
@@ -94,6 +93,7 @@ namespace
 
         paramAdd(response, 'J', state.j1772);
         paramAdd(response, 'T', rtc.readTemp());
+        paramAdd(response, 'R', state.ready);
     }
 
     void cmdGetChargeStatus(char *response)
@@ -118,6 +118,19 @@ namespace
         saveMaxAmps(amps);
         event::Loop::post(Event(EVENT_MAX_AMPS_CHANGED, amps));
 
+        return OK;
+    }
+
+    uint8_t cmdSetReadyState(const char *buffer)
+    {
+        const uint8_t ready = paramU8(buffer, 'S');
+        State &state = State::get();
+
+        if (ready == State::KWH_LIMIT)
+            return INVALID_PARAMETER;
+
+        state.ready = ready == 0 ? State::READY : State::MANUAL_OVERRIDE;
+        event::Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
         return OK;
     }
 
@@ -240,6 +253,10 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t)
 
         case CMD_SET_SLEEP:
             event::Loop::post(Event(EVENT_REQUEST_SLEEP, paramU8(buffer, 'S')));
+            break;
+
+        case CMD_SET_READY_STATE:
+            err = cmdSetReadyState(buffer);
             break;
 
         case CMD_GET_SAPI_VERSION:

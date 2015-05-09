@@ -281,6 +281,10 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     uart.write('A' - 1 + state.j1772);
     uart.write(CR);
 
+    uart.write_P(STR_STATUS_READY);
+    uart.write('0' + state.ready);
+    uart.write(CR);
+
     uart.write_P(STR_STATUS_MAX_CURRENT);
     write_decimal(uart, state.max_amps_limit);
     uart.write('A');

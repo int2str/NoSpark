@@ -35,11 +35,12 @@ public:
       , FAULT
     };
 
-    enum ChargeState
+    enum ReadyState
     {
         READY
       , SCHEDULED
       , KWH_LIMIT
+      , MANUAL_OVERRIDE
     };
 
     enum ControllerFault
@@ -55,7 +56,7 @@ public:
 
     ControllerState controller;
     ControllerFault fault;
-    ChargeState charge;
+    ReadyState ready;
     board::J1772Pilot::State j1772;
 
     // Desired maximum charge current

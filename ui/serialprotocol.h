@@ -38,6 +38,7 @@
 #define CMD_SET_DATE            15
 
 #define CMD_SET_SLEEP           20
+#define CMD_SET_READY_STATE     21
 
 #define CMD_ENABLE_EVENTS       30
 

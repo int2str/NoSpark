@@ -110,7 +110,7 @@ void Controller::updateRunning(bool force_update)
 
         case J1772Pilot::STATE_B: // <-- EV Connected
         case J1772Pilot::DIODE_CHECK_FAILED:
-            if (state.charge == State::READY)
+            if (state.ready == State::READY)
             {
                 enableCharge(false);
                 updateChargeCurrent(true);
@@ -121,7 +121,7 @@ void Controller::updateRunning(bool force_update)
             break;
 
         case J1772Pilot::STATE_C: // <-- Charging
-            if (state.charge == State::READY)
+            if (state.ready == State::READY)
             {
                 event::Loop::remove(Event(EVENT_SET_RELAY));
                 updateChargeCurrent(true);
@@ -181,7 +181,7 @@ void Controller::onEvent(const event::Event &event)
             updateChargeCurrent();
             break;
 
-        case EVENT_READY_STATE_CHANGE:
+        case EVENT_READY_STATE_CHANGED:
             if (State::get().controller == State::RUNNING)
                 updateRunning(true);
             break;
