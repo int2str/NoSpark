@@ -32,16 +32,16 @@ class Loop
 
 public:
     // Posts to all registered handlers on the next call to |dispatch|
-    static void post(const Event &e);
+    static void post(const Event &event);
 
     // Posts to all registered handlers when |dispatch| is called after
     // |ms| have elapsed
-    static void postDelayed(Event &e, const uint32_t ms);
+    static void postDelayed(const Event &event, const uint32_t ms);
 
     // Remove an |event| from the event loop
     // Should be most helpful to remove delayed event before they are
     // fired.
-    void remove(const Event &event);
+    static void remove(const Event &event);
 
     // Must be called regularly to dispatch events
     static void dispatch();

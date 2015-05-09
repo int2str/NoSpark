@@ -25,14 +25,19 @@ void Loop::post(const Event &event)
     events.push(event);
 }
 
-void Loop::postDelayed(Event &e, const uint32_t ms)
+void Loop::postDelayed(const Event &event, const uint32_t ms)
 {
+    Event e = event;
     e.delay = ms;
     e.posted = system::Timer::millis();
+
+    auto& events = get().events;
+    events.push(e);
 }
 
 void Loop::remove(const Event &event)
 {
+    auto& events = get().events;
     for (auto it = events.begin(); it != events.end();)
     {
         if (event == *it)
