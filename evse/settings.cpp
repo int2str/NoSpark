@@ -81,7 +81,7 @@ void Settings::postLoad()
         kwh_year = 0;
     if (rtc.month != ((kwh_index >> 8) & 0xF))
         kwh_month = 0;
-    if (rtc.weekday == 0 && rtc.weekday != ((kwh_index >> 12) & 0xF))
+    if (rtc.weekday < ((kwh_index >> 12) & 0xF))
         kwh_week = 0;
 }
 
