@@ -242,6 +242,10 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t)
             event::Loop::post(Event(EVENT_REQUEST_SLEEP, paramU8(buffer, 'S')));
             break;
 
+        case CMD_GET_SAPI_VERSION:
+            paramAdd(response, 'V', SAPI_VERSION);
+            break;
+
         default:
             err = UNKNOWN_COMMAND;
             break;

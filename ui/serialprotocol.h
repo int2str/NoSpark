@@ -15,6 +15,9 @@
 
 #pragma once
 
+#define SAPI_VERSION            1
+
+
 // Status/error codes
 
 #define OK                      0
@@ -37,3 +40,5 @@
 #define CMD_SET_SLEEP           20
 
 #define CMD_ENABLE_EVENTS       30
+
+#define CMD_GET_SAPI_VERSION    254
