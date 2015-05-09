@@ -107,6 +107,16 @@ void LcdConsole::onEvent(const event::Event &event)
             }
             break;
 
+        case EVENT_REQUEST_SLEEP:
+            sleeping = event.param;
+            in_settings = false;
+            last_event = Timer::millis();
+            if (sleeping)
+                setState(new LcdStateSleeping(lcd));
+            else
+                setState(new LcdStateRunning(lcd));
+            break;
+
         case EVENT_KEYUP:
             if (!sleeping)
                 lcdState->select();
@@ -133,7 +143,7 @@ void LcdConsole::updateSleepState(const event::Event &event)
             }
         }
 
-    } else if (event.id != EVENT_KEYDOWN) {
+    } else if (event.id != EVENT_KEYDOWN && event.id != EVENT_REQUEST_SLEEP) {
         last_event = Timer::millis();
         if (sleeping)
         {

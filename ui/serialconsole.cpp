@@ -178,7 +178,10 @@ bool SerialConsole::handleCommand(const char *buffer, const uint8_t len)
         }
     }
 
-    uart.writeln_P(STR_HELP_UNKNOWN);
+    uart.write_P(STR_HELP_UNKNOWN);
+    uart.write(" (");
+    uart.write(buffer);
+    uart.writeln(")");
 
     return false;
 }

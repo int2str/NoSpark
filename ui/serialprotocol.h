@@ -11,33 +11,29 @@
 // GNU General Public License for more details.
 //
 // See LICENSE for a copy of the GNU General Public License or see
-// it online at <http://www.gnu.org/licenses/>.
+// it online at <http://www.gnu.org/licenses/>
 
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
+// Status/error codes
 
-#include "utils/cpp.h"
-#include "serial/usart.h"
-#include "ui/serialapi.h"
+#define OK                      0
+#define UNKNOWN_COMMAND         1
+#define INVALID_PARAMETER       2
 
-namespace ui
-{
 
-// Simple command line interface for control and monitoring.
-class SerialApi
-{
-public:
-    SerialApi(serial::Usart &uart);
+// 'E' commands
 
-    void onEvent(const event::Event &event);
-    bool handleCommand(const char *buffer, const uint8_t len);
+#define CMD_GET_STATE           1
+#define CMD_GET_CHARGE_STATE    2
 
-private:
-    serial::Usart &uart;
+#define CMD_GET_MAX_CURRENT     10
+#define CMD_SET_MAX_CURRENT     11
+#define CMD_GET_TIME            12
+#define CMD_SET_TIME            13
+#define CMD_GET_DATE            14
+#define CMD_SET_DATE            15
 
-    DISALLOW_COPY_AND_ASSIGN(SerialApi);
-};
+#define CMD_SET_SLEEP           20
 
-}
+#define CMD_ENABLE_EVENTS       30
