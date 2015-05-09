@@ -104,7 +104,7 @@ namespace
         paramAdd(response, 'C', charging);
         if (charging)
             paramAdd(response, 'A', cm.chargeCurrent());
-        paramAdd(response, 'D', cm.chargeDuration());
+        paramAdd(response, 'D', cm.chargeDuration() / 1000);
         paramAdd(response, 'W', cm.wattHours());
     }
 
