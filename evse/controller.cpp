@@ -91,12 +91,12 @@ void Controller::update()
     }
 }
 
-void Controller::updateRunning()
+void Controller::updateRunning(bool force_update)
 {
     State& state = State::get();
 
     const auto j1772_state = j1772.getState();
-    if (state.j1772 == j1772_state)
+    if (state.j1772 == j1772_state && !force_update)
         return; // State hasn't changed...
 
     switch (j1772_state)
@@ -110,14 +110,25 @@ void Controller::updateRunning()
 
         case J1772Pilot::STATE_B: // <-- EV Connected
         case J1772Pilot::DIODE_CHECK_FAILED:
-            // For diode failure, keep PWM up so we can re-check
-            enableCharge(false);
-            updateChargeCurrent(true);
+            if (state.charge == State::READY)
+            {
+                enableCharge(false);
+                updateChargeCurrent(true);
+            } else {
+                j1772.setMode(J1772Pilot::HIGH);
+                event::Loop::postDelayed(Event(EVENT_SET_RELAY, 0), 3000l);
+            }
             break;
 
         case J1772Pilot::STATE_C: // <-- Charging
-            updateChargeCurrent(true);
-            enableCharge(true);
+            if (state.charge == State::READY)
+            {
+                event::Loop::remove(Event(EVENT_SET_RELAY));
+                updateChargeCurrent(true);
+                enableCharge(true);
+            } else {
+                j1772.setMode(J1772Pilot::HIGH);
+            }
             break;
 
         case J1772Pilot::STATE_D: // <-- Vent required :(
@@ -148,6 +159,10 @@ void Controller::onEvent(const event::Event &event)
             acRelay.selfTest(checkEVPresent());
             break;
 
+        case EVENT_SET_RELAY:
+            enableCharge(event.param);
+            break;
+
         case EVENT_POST_COMPLETED:
             if (event.param == 0)
             {
@@ -164,6 +179,11 @@ void Controller::onEvent(const event::Event &event)
 
         case EVENT_MAX_AMPS_CHANGED:
             updateChargeCurrent();
+            break;
+
+        case EVENT_READY_STATE_CHANGE:
+            if (State::get().controller == State::RUNNING)
+                updateRunning(true);
             break;
 
         case EVENT_TEMPERATURE_ALERT:

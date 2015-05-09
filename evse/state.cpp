@@ -29,6 +29,7 @@ State& State::get()
 State::State()
     : controller(BOOTUP)
     , fault(NOTHING_WRONG)
+    , charge(READY)
     , j1772(board::J1772Pilot::UNKNOWN)
 {
     Settings settings;

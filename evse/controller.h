@@ -40,7 +40,11 @@ private:
     void onEvent(const event::Event &event) override;
 
     void update();
-    void updateRunning();
+
+    // The state is only updated when the J1772 state
+    // changes. |force_update| can be used to force
+    // a state updated regardless of the J1772 state.
+    void updateRunning(bool force_update = false);
 
     void enableCharge(const bool enable);
     void updateChargeCurrent(const bool enablePwm = false);
