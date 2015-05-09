@@ -36,6 +36,7 @@ programmer. The programmer and upload protocol can be set in the top level
 Makefile.inc.
 
 ## Revision history
+* v0.08 - Serial API implementation
 * v0.07 - Time & date settings UI; large time display; settable sleep mode; German UI
 * v0.06 - Changed statistics roll-over; compile size improvements
 * v0.05 - Added kWh statistics
