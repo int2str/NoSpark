@@ -27,7 +27,7 @@ class LcdStateBootup : public LcdState
 {
 public:
     LcdStateBootup(devices::LCD16x2 &lcd);
-    bool draw();
+    bool draw() override;
 
 private:
     bool intro_shown;

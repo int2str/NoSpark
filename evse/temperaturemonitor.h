@@ -44,7 +44,7 @@ public:
     static TemperatureState getState();
 
 private:
-    void onEvent(const event::Event &event);
+    void onEvent(const event::Event &event) override;
     void update(bool force_update = false);
 
     uint8_t last_temp;

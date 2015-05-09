@@ -29,7 +29,7 @@ class LcdStateRunning : public LcdState
 {
 public:
     LcdStateRunning(devices::LCD16x2 &lcd);
-    bool draw();
+    bool draw() override;
 
 private:
     enum RunningPages
@@ -44,7 +44,7 @@ private:
 
     void drawDefault();
     void drawKwhStats();
-    void select();
+    void select() override;
 
     uint8_t page;
     TimedFlipFlop display_state;

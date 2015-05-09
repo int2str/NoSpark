@@ -35,7 +35,7 @@ class LcdStateSettings : public LcdState
 public:
     LcdStateSettings(devices::LCD16x2 &lcd);
 
-    bool draw();
+    bool draw() override;
 
     bool pageSetTime();
     bool pageSetDate();
@@ -46,8 +46,8 @@ public:
     bool pageExit();
 
     // Forwarded keyboard events
-    virtual void select();
-    virtual void advance();
+    virtual void select() override;
+    virtual void advance() override;
 
 private:
     bool timedOut();

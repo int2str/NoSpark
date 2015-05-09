@@ -44,7 +44,7 @@ private:
         CONSOLE_COMMAND
     };
 
-    void onEvent(const event::Event &event);
+    void onEvent(const event::Event &event) override;
 
     void update();
     void handleCommand();

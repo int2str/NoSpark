@@ -37,7 +37,7 @@ public:
     static Controller& init();
 
 private:
-    void onEvent(const event::Event &event);
+    void onEvent(const event::Event &event) override;
 
     void update();
     void updateRunning();

@@ -36,7 +36,7 @@ public:
     static LcdConsole& init();
 
 protected:
-    void onEvent(const event::Event &event);
+    void onEvent(const event::Event &event) override;
 
 private:
     void update();

@@ -29,7 +29,7 @@ class LcdStateSleeping : public LcdState
 {
 public:
     LcdStateSleeping(devices::LCD16x2 &lcd);
-    bool draw();
+    bool draw() override;
 
 private:
     TimedFlipFlop blink_state;

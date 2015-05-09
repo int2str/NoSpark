@@ -35,7 +35,7 @@ public:
 
 private:
     static POST& get();
-    void onEvent(const event::Event &event);
+    void onEvent(const event::Event &event) override;
 
     uint8_t current;
 

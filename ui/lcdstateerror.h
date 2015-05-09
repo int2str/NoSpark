@@ -27,7 +27,7 @@ class LcdStateError : public LcdState
 {
 public:
     LcdStateError(devices::LCD16x2 &lcd);
-    bool draw();
+    bool draw() override;
 };
 
 }

@@ -43,7 +43,7 @@ private:
     void update();
     void chargeStateChanged(const bool charging);
 
-    void onEvent(const event::Event &event);
+    void onEvent(const event::Event &event) override;
 
     board::Ammeter ammeter;
     uint32_t time_start_ms;

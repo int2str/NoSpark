@@ -34,7 +34,7 @@ public:
 
 private:
     void update();
-    void onEvent(const event::Event &event);
+    void onEvent(const event::Event &event) override;
 
     // This is effectively re-defining the same IO expander twice.
     // However, this leads to better abstraction since we don't have
