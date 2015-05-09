@@ -19,6 +19,8 @@
 #include "events.h"
 #include "post.h"
 
+#define SUSPEND_RELAY_DELAY 3000
+
 using board::ACRelay;
 using board::GFCI;
 using board::J1772Pilot;
@@ -116,7 +118,7 @@ void Controller::updateRunning(bool force_update)
                 updateChargeCurrent(true);
             } else {
                 j1772.setMode(J1772Pilot::HIGH);
-                event::Loop::postDelayed(Event(EVENT_SET_RELAY, 0), 3000l);
+                event::Loop::postDelayed(Event(EVENT_SET_RELAY, 0), SUSPEND_RELAY_DELAY);
             }
             break;
 
