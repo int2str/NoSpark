@@ -282,7 +282,8 @@ bool LcdStateSettings::pageSetCurrent()
 
 bool LcdStateSettings::pageChargeTimer()
 {
-    if (option > ADJUST_T2_MM)
+    if ((option > ADJUST_T2_MM)
+     || (option > ADJUST_TIMER_ONOFF && temp_buffer[0] == 0))
     {
         settings.charge_timer_enabled = temp_buffer[0];
         settings.charge_timer_t1 = (temp_buffer[1] << 8) | temp_buffer[2];
