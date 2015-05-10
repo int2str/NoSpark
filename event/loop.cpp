@@ -70,18 +70,12 @@ Loop::Loop()
 
 void Loop::dispatch_impl()
 {
-    uint32_t now = 0;
     for (auto it = events.begin(); it != events.end();)
     {
         const auto event = *it;
 
-        // Only read the current time if a delayed event
-        // was found in the queue.
-        if (now == 0 && event.delay != 0)
-            now = system::Timer::millis();
-
         // Process and erase events
-        if (event.delay == 0 || ((now - event.posted) >= event.delay))
+        if (event.delay == 0 || ((system::Timer::millis() - event.posted) >= event.delay))
         {
             for (auto handler : handlers)
                 handler->onEvent(event);
