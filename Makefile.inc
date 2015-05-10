@@ -21,20 +21,11 @@
 #
 ###############################################################################
 
-# --- ATMega2560
+# --- Atmega328p
 
-#PORT = -P /dev/ttyUSB*
-#UPLOAD_PROTOCOL = stk500v2
-#BUILD_MCU = atmega2560
-#BUILD_VARIANT = mega
-#UPLOAD_SPEED = 115200
-#BUILD_F_CPU = 16000000L
-
-# --- Arduino UNO
-
-#PORT = -P COM11
+# PORT = -P COM11
 # PORT = -P /dev/ttyACM*
-#UPLOAD_PROTOCOL = arduino
+# UPLOAD_PROTOCOL = arduino
 UPLOAD_PROTOCOL = usbtiny
 BUILD_MCU = atmega328p
 BUILD_VARIANT = standard
