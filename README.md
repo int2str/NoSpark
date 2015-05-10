@@ -4,8 +4,8 @@
 **THIS FIRMWARE WILL SET YOUR HOUSE ON FIRE, ANNIHILATE YOUR ELECTRIC VEHICLE
 AND ELECTRECUTE YOUR CAT. IN OTHER WORDS: DO NOT USE THIS FIRMWARE** (yet)
 
-This is *NOT FUNCTIONAL* at this point and intended for development purposes
-only.
+If you *DO* use this firmware, the NoSpark authors accept no responsiblity for any
+damages done or caused by this firmware. **USE AT YOUR OWN RISK**.
 
 ## About
 NoSpark is a completely new firmware written for the OpenEVSE v3. It has been
@@ -14,9 +14,11 @@ replacement for the OpenEVSE firmware.
 
 ## Features
 * Event driven charge controller
-* Serial port console
-* RGB LCD driver
-* RTC driver
+* Serial port console and API (simultaneuously)
+* Charge scheduling
+* Per-charge kWh limit
+* Large font LCD clock display
+* Custom RGB LCD, real-time clock and I2C drivers
 
 ## Design goals
 * Modern C++
