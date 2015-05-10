@@ -13,17 +13,20 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "board/pin.h"
+#include "board/pins.h"
 #include "event/loop.h"
+#include "evse/controller.h"
+#include "evse/post.h"
 #include "utils/math.h"
-#include "controller.h"
 #include "events.h"
-#include "post.h"
 
 #define SUSPEND_RELAY_DELAY 3000
 
 using board::ACRelay;
 using board::GFCI;
 using board::J1772Pilot;
+using board::Pin;
 using event::Event;
 using event::Loop;
 
@@ -66,7 +69,11 @@ Controller& Controller::init()
 }
 
 Controller::Controller()
+    : sleep_status(PIN_MISO)
 {
+    sleep_status.io(Pin::OUT);
+    sleep_status = 0;
+
     enableCharge(false);
 }
 
@@ -185,7 +192,10 @@ void Controller::onEvent(const event::Event &event)
 
         case EVENT_READY_STATE_CHANGED:
             if (State::get().controller == State::RUNNING)
+            {
+                sleep_status = State::get().ready != State::READY;
                 updateRunning(true);
+            }
             break;
 
         case EVENT_TEMPERATURE_ALERT:

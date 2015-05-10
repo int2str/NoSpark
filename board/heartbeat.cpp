@@ -28,7 +28,7 @@ void Heartbeat::toggle()
 }
 
 Heartbeat::Heartbeat()
-    : pin(PIN_MISO)
+    : pin(PIN_SCK)
 {
     pin.io(Pin::OUT);
 }

@@ -21,6 +21,7 @@
 #include "board/acrelay.h"
 #include "board/gfci.h"
 #include "board/j1772pilot.h"
+#include "board/pin.h"
 #include "evse/state.h"
 #include "event/handler.h"
 #include "utils/cpp.h"
@@ -58,6 +59,7 @@ private:
     board::ACRelay acRelay;
     board::GFCI gfci;
     board::J1772Pilot j1772;
+    board::Pin sleep_status;
 
     DISALLOW_COPY_AND_ASSIGN(Controller);
 };

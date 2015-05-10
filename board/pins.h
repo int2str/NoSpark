@@ -40,5 +40,6 @@
 #define PIN_GFCI_TEST       MAKEPIN(D,6)
 
 // Debug/testing pins
-#define PIN_MISO            MAKEPIN(B,4)
-#define PIN_MOSI            MAKEPIN(B,3)
+#define PIN_SCK             MAKEPIN(B,5) // Heartbeat
+#define PIN_MISO            MAKEPIN(B,4) // Sleep
+#define PIN_MOSI            MAKEPIN(B,3) // Available (PWM)
