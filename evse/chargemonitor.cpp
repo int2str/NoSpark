@@ -43,11 +43,11 @@ namespace
         EepromSettings::save(settings);
     }
 
-    uint8_t getChargeLimit()
+    uint32_t getChargeLimit()
     {
         Settings settings;
         EepromSettings::load(settings);
-        return settings.kwh_limit;
+        return settings.kwh_limit * 1000l;
     }
 
     void setKwhLimited(const bool limited)
@@ -114,13 +114,16 @@ void ChargeMonitor::update()
         const uint32_t now = system::Timer::millis();
         if ((now - last_sample) > 1000)
         {
+            // Update charge energy
             watt_seconds += current_samples.get() * VOLTAGE / 1000;
             last_sample = now;
+
+            // Check charge limit
+            State &state = State::get();
+            if (state.ready == State::READY && wattHours() > getChargeLimit())
+                setKwhLimited(true);
         }
 
-        State &state = State::get();
-        if (state.ready == State::READY && (wattHours() / 1000) > getChargeLimit())
-            setKwhLimited(true);
     }
 }
 
@@ -133,7 +136,6 @@ void ChargeMonitor::chargeStateChanged(const bool charging)
         time_stop_ms = 0;
         watt_seconds = 0;
     } else {
-        setKwhLimited(false);
         // Record end time
         if (time_start_ms != 0 && time_stop_ms == 0)
         {

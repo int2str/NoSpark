@@ -106,6 +106,8 @@ void Controller::updateRunning(bool force_update)
         case J1772Pilot::STATE_A: // <-- EV not connected
         case J1772Pilot::STATE_E: // <-- Error
         case J1772Pilot::NOT_READY:
+            if (state.ready == State::KWH_LIMIT)
+                state.ready = State::READY;
             enableCharge(false);
             j1772.setMode(J1772Pilot::HIGH);
             break;
