@@ -16,25 +16,52 @@
 #include "board/ammeter.h"
 #include "event/loop.h"
 #include "evse/settings.h"
+#include "evse/state.h"
 #include "system/timer.h"
 #include "chargemonitor.h"
 #include "events.h"
 
 #define VOLTAGE 240
 
+using event::Event;
+using evse::Settings;
+using evse::EepromSettings;
+using evse::State;
+
 namespace
 {
     void saveChargeStats(const uint32_t kwh)
     {
-        evse::Settings settings;
-        evse::EepromSettings::load(settings);
+        Settings settings;
+        EepromSettings::load(settings);
 
         settings.kwh_total += kwh;
         settings.kwh_year += kwh;
         settings.kwh_month += kwh;
         settings.kwh_week += kwh;
 
-        evse::EepromSettings::save(settings);
+        EepromSettings::save(settings);
+    }
+
+    uint8_t getChargeLimit()
+    {
+        Settings settings;
+        EepromSettings::load(settings);
+        return settings.kwh_limit;
+    }
+
+    void setKwhLimited(const bool limited)
+    {
+        State &state = State::get();
+        if (!limited && state.ready == State::KWH_LIMIT)
+        {
+            state.ready = State::READY;
+            event::Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
+
+        } else if (limited && state.ready == State::READY) {
+            state.ready = State::KWH_LIMIT;
+            event::Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
+        }
     }
 }
 
@@ -90,6 +117,10 @@ void ChargeMonitor::update()
             watt_seconds += current_samples.get() * VOLTAGE / 1000;
             last_sample = now;
         }
+
+        State &state = State::get();
+        if (state.ready == State::READY && (wattHours() / 1000) > getChargeLimit())
+            setKwhLimited(true);
     }
 }
 
@@ -102,6 +133,7 @@ void ChargeMonitor::chargeStateChanged(const bool charging)
         time_stop_ms = 0;
         watt_seconds = 0;
     } else {
+        setKwhLimited(false);
         // Record end time
         if (time_start_ms != 0 && time_stop_ms == 0)
         {
