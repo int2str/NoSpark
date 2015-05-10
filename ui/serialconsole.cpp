@@ -18,6 +18,7 @@
 
 #include "devices/ds3231.h"
 #include "event/loop.h"
+#include "evse/chargemonitor.h"
 #include "evse/settings.h"
 #include "evse/state.h"
 #include "system/watchdog.h"
@@ -25,6 +26,7 @@
 #include "events.h"
 #include "strings.h"
 
+using evse::ChargeMonitor;
 using evse::EepromSettings;
 using evse::Settings;
 using evse::State;
@@ -44,11 +46,11 @@ namespace
         uart.write('0' + (d & 0x0F));
     }
 
-    void write_decimal(Usart& uart, const uint8_t dec)
+    void write_decimal(Usart& uart, const uint32_t dec)
     {
-        if (dec > 10)
-            uart.write('0' + (dec / 10));
-        uart.write('0' + (dec % 10));
+        char buffer[6] = {0};
+        ltoa(dec, buffer, 10);
+        uart.write(buffer);
     }
 
     void write_temp(Usart& uart, const uint8_t temp)
@@ -268,6 +270,7 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
 {
     DS3231 &rtc = DS3231::get();
     State &state = State::get();
+    ChargeMonitor &cm = ChargeMonitor::get();
 
     uart.write_P(STR_STATUS_TIME);
     write_time(uart, rtc);
@@ -280,6 +283,20 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     uart.write_P(STR_STATUS_J1772);
     uart.write('A' - 1 + state.j1772);
     uart.write(CR);
+
+    uart.write_P(STR_STATUS_CHARGING);
+    if (!cm.isCharging())
+    {
+        uart.write_P(STR_OFF);
+    } else {
+        write_decimal(uart, cm.chargeCurrent());
+        uart.write("mA");
+    }
+    uart.write(' ');
+    write_decimal(uart, cm.chargeDuration() / 1000 / 60);
+    uart.write("min ");
+    write_decimal(uart, cm.wattHours());
+    uart.writeln("Wh");
 
     uart.write_P(STR_STATUS_READY);
     uart.write('0' + state.ready);
