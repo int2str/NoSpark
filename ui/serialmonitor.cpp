@@ -13,9 +13,10 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "ui/serialmonitor.h"
+#include "ui/strings.h"
+#include "ui/strings_console.h"
 #include "events.h"
-#include "serialmonitor.h"
-#include "strings.h"
 
 using serial::Usart;
 

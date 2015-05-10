@@ -22,9 +22,10 @@
 #include "evse/settings.h"
 #include "evse/state.h"
 #include "system/watchdog.h"
-#include "serialconsole.h"
+#include "ui/serialconsole.h"
+#include "ui/strings.h"
+#include "ui/strings_console.h"
 #include "events.h"
-#include "strings.h"
 
 using evse::ChargeMonitor;
 using evse::EepromSettings;
