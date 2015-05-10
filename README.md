@@ -36,6 +36,7 @@ programmer. The programmer and upload protocol can be set in the top level
 Makefile.inc.
 
 ## Revision history
+* v0.10 - Charge timer added
 * v0.09 - Important GFI fixes; ability to limit per-charge energy/suspend charge
 * v0.08 - Serial API implementation
 * v0.07 - Time & date settings UI; large time display; settable sleep mode; German UI
