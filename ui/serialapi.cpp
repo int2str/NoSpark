@@ -178,7 +178,7 @@ namespace
             rtc.minute = p;
 
         p = paramU8(buffer, 'Y');
-        if (p < 199)
+        if (p < 100)
             rtc.year = p;
 
         p = paramU8(buffer, 'W');
