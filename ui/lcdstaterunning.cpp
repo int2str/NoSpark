@@ -154,6 +154,8 @@ void LcdStateRunning::drawDefault()
 
     if (state.ready == State::SCHEDULED)
         lcd.write(CustomCharacters::HOURGLASS);
+    else if (state.ready == State::KWH_LIMIT)
+        lcd.write(CustomCharacters::BATTERY1);
     else
         lcd.write(' ');
 
