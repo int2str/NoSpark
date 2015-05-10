@@ -119,11 +119,14 @@ void ChargeMonitor::update()
             last_sample = now;
 
             // Check charge limit
-            State &state = State::get();
-            if (state.ready == State::READY && wattHours() > getChargeLimit())
-                setKwhLimited(true);
+            const uint32_t charge_limit = getChargeLimit();
+            if (charge_limit)
+            {
+                State &state = State::get();
+                if (state.ready == State::READY && wattHours() > charge_limit)
+                    setKwhLimited(true);
+            }
         }
-
     }
 }
 
