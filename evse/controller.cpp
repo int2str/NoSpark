@@ -154,7 +154,7 @@ void Controller::onEvent(const event::Event &event)
             break;
 
         case EVENT_POST_GFCI:
-            gfci.selfTest();
+            gfci.selfTest(true);
             break;
 
         case EVENT_POST_ACRELAY:
@@ -210,8 +210,14 @@ void Controller::enableCharge(const bool enable)
 {
     if (enable)
     {
-        Loop::post(Event(EVENT_CHARGE_STATE, 1));
-        acRelay.enable();
+        if (gfci.selfTest())
+        {
+            Loop::post(Event(EVENT_CHARGE_STATE, 1));
+            acRelay.enable();
+        } else {
+            acRelay.disable();
+            setFault(State::FAULT_GFCI_TRIPPED);
+        }
     } else {
         acRelay.disable();
         Loop::post(Event(EVENT_CHARGE_STATE, 0));

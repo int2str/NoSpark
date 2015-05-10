@@ -28,8 +28,7 @@ class GFCI
 public:
     GFCI();
 
-    void selfTest();
-    void reset();
+    bool selfTest(const bool sendPostEvent = false);
 
     bool isTripped() const;
 

@@ -24,6 +24,7 @@
 
 #define GFCI_TEST_PULSES      50
 #define GFCI_TEST_DELAY_US  8333 // ~60Hz
+#define GFCI_RESET_DELAY_MS  300
 
 using event::Event;
 using event::Loop;
@@ -70,13 +71,35 @@ GFCI::GFCI()
     EIMSK = (1 << INT0);
 }
 
-void GFCI::selfTest()
+bool GFCI::selfTest(const bool sendPostEvent)
 {
-    tripped = false;
+    if (tripped)
+        return false;
+
+    bool result = false;
     self_test = true;
 
+    // Generate pulses to trip GFI
     sendPulses(*this, pinTest);
-    Loop::post(Event(tripped ? EVENT_POST_SUCCESS : EVENT_POST_FAILED));
+
+    // Wait for pin to go low again
+    uint8_t retries = 0;
+    while (++retries && !!pinSense)
+    {
+    }
+
+    _delay_ms(GFCI_RESET_DELAY_MS);
+
+    // Check if we're back low...
+    result = tripped && !pinSense;
+
+    if (sendPostEvent)
+        Loop::post(Event(result ? EVENT_POST_SUCCESS : EVENT_POST_FAILED));
+
+    self_test = false;
+    tripped = false;
+
+    return result;
 }
 
 bool GFCI::isTripped() const
@@ -89,8 +112,10 @@ void GFCI::trip()
     if (tripped)
         return;
 
-    tripped = true;
-    if (!self_test)
+    if (!!pinSense)
+        tripped = true;
+
+    if (tripped && !self_test)
         Loop::post(Event(EVENT_GFCI_TRIPPED));
 }
 
