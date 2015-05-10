@@ -40,6 +40,11 @@ public:
     uint8_t kwh_limit;
     uint8_t sleep_mode;
 
+    // Rev 4
+    bool charge_timer_enabled;
+    uint16_t charge_timer_t1;
+    uint16_t charge_timer_t2;
+
     Settings();
 
     void defaults();

@@ -45,6 +45,12 @@
 #define ADJUST_MM           0x02
 #define ADJUST_YY           0x03
 
+#define ADJUST_TIMER_ONOFF  0x01
+#define ADJUST_T1_HH        0x02
+#define ADJUST_T1_MM        0x03
+#define ADJUST_T2_HH        0x04
+#define ADJUST_T2_MM        0x05
+
 using devices::DS3231;
 using devices::LCD16x2;
 using evse::EepromSettings;
@@ -54,10 +60,34 @@ using system::Watchdog;
 
 namespace
 {
+    static uint8_t temp_buffer[8] = {0};
+
+    void spaces(devices::LCD16x2 &lcd, uint8_t num)
+    {
+        while (num--)
+            lcd.write(' ');
+    }
+
     void write_digits(devices::LCD16x2 &lcd, const uint8_t bcd)
     {
         lcd.write('0' + (bcd >> 4));
         lcd.write('0' + (bcd & 0x0F));
+    }
+
+    void write_num(devices::LCD16x2 &lcd, const uint8_t num, const char pad=' ')
+    {
+        if (num < 10)
+            lcd.write(pad);
+        else
+            lcd.write('0' + num / 10);
+        lcd.write('0' + num % 10);
+    }
+
+    void write_time(devices::LCD16x2 &lcd, uint8_t hh, uint8_t mm)
+    {
+        write_num(lcd, hh, '0');
+        lcd.write(':');
+        write_num(lcd, mm, '0');
     }
 }
 
@@ -72,10 +102,11 @@ LcdStateSettings::LcdStateSettings(devices::LCD16x2 &lcd)
     , last_action(0)
     , blink_state(BLINK_TIMEOUT)
     , pageHandlers {
-        &LcdStateSettings::pageSetTime
-      , &LcdStateSettings::pageSetDate
-      , &LcdStateSettings::pageSetCurrent
+        &LcdStateSettings::pageSetCurrent
+      , &LcdStateSettings::pageChargeTimer
       , &LcdStateSettings::pageKwhLimit
+      , &LcdStateSettings::pageSetTime
+      , &LcdStateSettings::pageSetDate
       , &LcdStateSettings::pageSleepmode
       , &LcdStateSettings::pageReset
       , &LcdStateSettings::pageExit
@@ -105,30 +136,32 @@ bool LcdStateSettings::pageSetTime()
     lcd.write_P(STR_SET_CLOCK);
     lcd.move(2, 1);
 
-    static uint8_t time_buffer[8] = {0};
     if (option > ADJUST_MM)
     {
-        DS3231::get().writeRaw(time_buffer, 8);
+        DS3231::get().writeRaw(temp_buffer, 8);
         option = NOT_ADJUSTING;
     }
 
     if (option == NOT_ADJUSTING)
-        DS3231::get().readRaw(time_buffer, 8);
+    {
+        temp_buffer[0] = 0;
+        DS3231::get().readRaw(temp_buffer, 8);
+    }
 
     if (value == UNINITIALIZED)
         value = 0;
 
-    const uint8_t hh = utils::bcd2dec(time_buffer[3]);
+    const uint8_t hh = utils::bcd2dec(temp_buffer[3]);
     if (option == ADJUST_HH)
-        time_buffer[3] = utils::dec2bcd((hh + value) % 24);
+        temp_buffer[3] = utils::dec2bcd((hh + value) % 24);
 
-    const uint8_t mm = utils::bcd2dec(time_buffer[2]);
+    const uint8_t mm = utils::bcd2dec(temp_buffer[2]);
     if (option == ADJUST_MM)
-        time_buffer[2] = utils::dec2bcd((mm + value) % 60);
+        temp_buffer[2] = utils::dec2bcd((mm + value) % 60);
 
-    write_digits(lcd, time_buffer[3]);
+    write_digits(lcd, temp_buffer[3]);
     lcd.write(':');
-    write_digits(lcd, time_buffer[2]);
+    write_digits(lcd, temp_buffer[2]);
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
@@ -148,42 +181,44 @@ bool LcdStateSettings::pageSetDate()
     lcd.write_P(STR_SET_DATE);
     lcd.move(2, 1);
 
-    static uint8_t time_buffer[8] = {0};
     if (option > ADJUST_YY)
     {
-        DS3231::get().writeRaw(time_buffer, 8);
+        DS3231::get().writeRaw(temp_buffer, 8);
         option = NOT_ADJUSTING;
     }
 
     if (option == NOT_ADJUSTING)
-        DS3231::get().readRaw(time_buffer, 8);
+    {
+        temp_buffer[0] = 0;
+        DS3231::get().readRaw(temp_buffer, 8);
+    }
 
     if (value == UNINITIALIZED)
         value = 0;
 
-    const uint8_t dd = utils::bcd2dec(time_buffer[5]);
+    const uint8_t dd = utils::bcd2dec(temp_buffer[5]);
     if (option == ADJUST_DD)
-        time_buffer[5] = utils::dec2bcd(utils::max((dd + value) % 32, 1));
+        temp_buffer[5] = utils::dec2bcd(utils::max((dd + value) % 32, 1));
 
-    const uint8_t mm = utils::bcd2dec(time_buffer[6]);
+    const uint8_t mm = utils::bcd2dec(temp_buffer[6]);
     if (option == ADJUST_MM)
-        time_buffer[6] = utils::dec2bcd(utils::max((mm + value) % 13, 1));
+        temp_buffer[6] = utils::dec2bcd(utils::max((mm + value) % 13, 1));
 
-    const uint8_t yy = utils::bcd2dec(time_buffer[7]);
+    const uint8_t yy = utils::bcd2dec(temp_buffer[7]);
     if (option == ADJUST_YY)
-        time_buffer[7] = utils::dec2bcd((yy + value) % 30); // <-- Year 2030 issue :)
+        temp_buffer[7] = utils::dec2bcd((yy + value) % 30); // <-- Year 2030 issue :)
 
-    write_digits(lcd, time_buffer[5]);
+    write_digits(lcd, temp_buffer[5]);
     lcd.write('.');
-    write_digits(lcd, time_buffer[6]);
+    write_digits(lcd, temp_buffer[6]);
     lcd.write(".20");
-    write_digits(lcd, time_buffer[7]);
+    write_digits(lcd, temp_buffer[7]);
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
         const uint8_t offset[3] = {2, 5, 8};
         lcd.move(offset[option - 1], 1);
-        lcd.write(option == ADJUST_YY ? "    " : "  ");
+        spaces(lcd, option == ADJUST_YY ? 4 : 2);
     }
 
     value = 0;
@@ -239,7 +274,84 @@ bool LcdStateSettings::pageSetCurrent()
         lcd.write(buffer);
         lcd.write('A');
     } else {
-        lcd.write("             ");
+        spaces(lcd, 5);
+    }
+
+    return true;
+}
+
+bool LcdStateSettings::pageChargeTimer()
+{
+    if (option > ADJUST_T2_MM)
+    {
+        settings.charge_timer_enabled = temp_buffer[0];
+        settings.charge_timer_t1 = (temp_buffer[1] << 8) | temp_buffer[2];
+        settings.charge_timer_t2 = (temp_buffer[3] << 8) | temp_buffer[4];;
+        EepromSettings::save(settings);
+
+        option = NOT_ADJUSTING;
+    }
+
+    if (option == NOT_ADJUSTING)
+    {
+        // TODO: Unpack from EEPROM
+        temp_buffer[0] = settings.charge_timer_enabled;
+        temp_buffer[1] = settings.charge_timer_t1 >> 8;
+        temp_buffer[2] = settings.charge_timer_t1 & 0xFF;
+        temp_buffer[3] = settings.charge_timer_t2 >> 8;
+        temp_buffer[4] = settings.charge_timer_t2 & 0xFF;
+    }
+
+    if (value == UNINITIALIZED)
+        value = 0;
+
+    lcd.move(0,0);
+    lcd.write(CustomCharacters::HOURGLASS);
+    lcd.write_P(STR_SET_CHARGETIMER);
+
+    lcd.move(2, 1);
+
+    if (option == ADJUST_TIMER_ONOFF)
+        temp_buffer[0] = (temp_buffer[0] + value) % 2;
+
+    if (option == ADJUST_T1_HH)
+        temp_buffer[1] = (temp_buffer[1] + value) % 24;
+
+    if (option == ADJUST_T1_MM)
+        temp_buffer[2] = (temp_buffer[2] + value * 15) % 60;
+
+    if (option == ADJUST_T2_HH)
+        temp_buffer[3] = (temp_buffer[3] + value) % 24;
+
+    if (option == ADJUST_T2_MM)
+        temp_buffer[4] = (temp_buffer[4] + value * 15) % 60;
+
+    value = 0;
+
+    if (temp_buffer[0] == 0)
+    {
+        if (option == NOT_ADJUSTING || blink_state.get())
+        {
+            lcd.write_P(STR_OFF);
+            spaces(lcd, 12);
+        } else {
+            spaces(lcd, 14);
+        }
+
+    } else {
+        lcd.write_P(STR_ON);
+        lcd.write(' ');
+
+        write_time(lcd, temp_buffer[1], temp_buffer[2]);
+        lcd.write(126);
+        write_time(lcd, temp_buffer[3], temp_buffer[4]);
+
+        if (blink_state.get())
+        {
+            const uint8_t offset[5] = {2, 5, 8, 11, 14};
+            lcd.move(offset[option - 1], 1);
+            lcd.write("  ");
+        }
     }
 
     return true;
@@ -283,7 +395,7 @@ bool LcdStateSettings::pageKwhLimit()
             lcd.write(" kWh  ");
         }
     } else {
-        lcd.write("             ");
+        spaces(lcd, 13);
     }
 
     return true;
@@ -327,7 +439,7 @@ bool LcdStateSettings::pageSleepmode()
                 break;
         }
     } else {
-        lcd.write("             ");
+        spaces(lcd, 13);
     }
 
     return true;

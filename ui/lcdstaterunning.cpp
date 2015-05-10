@@ -40,9 +40,9 @@ using evse::State;
 
 namespace
 {
-    void spaces(LCD16x2 &lcd, const uint8_t num)
+    void spaces(LCD16x2 &lcd, uint8_t num)
     {
-        for(uint8_t i = 0; i != num; ++i)
+        while (num--)
             lcd.write(' ');
     }
 

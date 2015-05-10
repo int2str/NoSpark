@@ -25,6 +25,7 @@
 #define STR_VENT_REQUIRED           PSTR("Abzug notwendig")
 #define STR_ERROR_STATE             PSTR("FEHLER")
 #define STR_DIODE_CHECK_FAILED      PSTR("DIODEN FEHLER")
+#define STR_ON                      PSTR("an")
 #define STR_OFF                     PSTR("aus")
 
 // Settings                              |1234567890123456|
