@@ -240,6 +240,28 @@ namespace
         EepromSettings::save(settings);
         return OK;
     }
+
+    void cmdGetChargeLimit(char *response)
+    {
+        Settings settings;
+        EepromSettings::load(settings);
+
+        paramAdd(response, 'K', settings.kwh_limit);
+    }
+
+    uint8_t cmdSetChargeLimit(const char *buffer)
+    {
+        Settings settings;
+        EepromSettings::load(settings);
+
+        uint16_t p = paramGet(buffer, 'K');
+        if (p != PARAM_NOT_FOUND)
+        {
+            settings.kwh_limit = p;
+            EepromSettings::save(settings);
+        }
+        return OK;
+    }
 }
 
 namespace ui
@@ -301,6 +323,14 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t)
 
         case CMD_SET_TIMER:
             err = cmdSetTimer(buffer);
+            break;
+
+        case CMD_GET_CHARGE_LIMIT:
+            cmdGetChargeLimit(response);
+            break;
+
+        case CMD_SET_CHARGE_LIMIT:
+            err = cmdSetChargeLimit(buffer);
             break;
 
         case CMD_SET_SLEEP:

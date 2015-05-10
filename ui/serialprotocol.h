@@ -191,6 +191,40 @@
 //    = Enabled, 22:00 -> 7:30
 #define CMD_SET_TIMER           17
 
+// Get the current kWh limit
+//
+// Parameters:
+//   none
+//
+// Returns:
+//   K - Limit in kWh
+//
+// Example:
+//   -> $E18
+//   <- $OK K10
+#define CMD_GET_CHARGE_LIMIT    18
+
+// Sets the charge limit
+//
+// Parameters:
+//   K - Limit in kWh
+//
+// Returns:
+//   none
+//
+// Example:
+//   -> $E19 K10
+//   <- $OK
+#define CMD_SET_CHARGE_LIMIT    19
+
+// Set the LCD sleep state
+//
+// Parameters:
+//   S - LCD sleep enable (1) or wakeup (0)
+//
+// Returns:
+//   none
+//
 // Set the LCD sleep state
 //
 // Parameters:
