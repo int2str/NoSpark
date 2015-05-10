@@ -77,7 +77,7 @@
 //
 // Returns:
 //   A - Maximum supported charge current in A
-//   L - Current maximum charge limit in A (ex. temperature limited) 
+//   L - Current maximum charge limit in A (ex. temperature limited)
 //
 // Example:
 //   -> $E10
@@ -158,6 +158,38 @@
 //   -> $E15 D24 M12 Y15 W7
 //   <- $OK
 #define CMD_SET_DATE            15
+
+// Gets the current charge timer setting
+//
+// Parameters:
+//   none
+//
+// Returns:
+//   A - Feature enabled (0/1)
+//   S - Start hour + minute (0xHHMM)
+//   F - Finish hour + minute (0xHHMM)
+//
+// Example:
+//   -> $E16
+//   <- $OK A1 S5632 F1822
+//    = Enabled, 22:00 -> 7:30
+#define CMD_GET_TIMER           16
+
+// Sets the charge timer
+//
+// Parameters:
+//   A - Feature enabled (0/1; optional)
+//   S - Start hour + minute (0xHHMM; optional)
+//   F - Finish hour + minute (0xHHMM; optional)
+//
+// Returns:
+//   none
+//
+// Example:
+//   -> $E17 A1 S5632 F1822
+//   <- $OK
+//    = Enabled, 22:00 -> 7:30
+#define CMD_SET_TIMER           17
 
 // Set the LCD sleep state
 //

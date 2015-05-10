@@ -152,6 +152,11 @@ void LcdStateRunning::drawDefault()
         lcd.write("--");
     lcd.write('A');
 
+    if (state.ready == State::SCHEDULED)
+        lcd.write(CustomCharacters::HOURGLASS);
+    else
+        lcd.write(' ');
+
     lcd.move(0,1);
 
     switch (state.j1772)

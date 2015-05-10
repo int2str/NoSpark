@@ -27,6 +27,8 @@
 #include "ui/strings.h"
 #include "events.h"
 
+#define PARAM_NOT_FOUND 0xFFFF
+
 using event::Event;
 using evse::ChargeMonitor;
 using evse::EepromSettings;
@@ -47,10 +49,10 @@ namespace
         EepromSettings::save(settings);
     }
 
-    uint8_t paramU8(const char *buffer, const char param)
+    uint16_t paramGet(const char *buffer, const char param)
     {
         bool found = false;
-        uint8_t val = 0xFF;
+        uint16_t val = PARAM_NOT_FOUND;
 
         while (*buffer != 0)
         {
@@ -113,7 +115,7 @@ namespace
 
     uint8_t cmdSetCurrent(const char *buffer)
     {
-        const uint8_t amps = paramU8(buffer, 'A');
+        const uint8_t amps = paramGet(buffer, 'A');
         if (amps == 0 || amps == 0xFF)
             return INVALID_PARAMETER;
 
@@ -126,7 +128,7 @@ namespace
 
     uint8_t cmdSetReadyState(const char *buffer)
     {
-        const uint8_t ready = paramU8(buffer, 'S');
+        const uint8_t ready = paramGet(buffer, 'S');
         State &state = State::get();
 
         if (ready == State::KWH_LIMIT)
@@ -152,41 +154,19 @@ namespace
         DS3231 &rtc = DS3231::get();
         rtc.read();
 
-        uint8_t p = paramU8(buffer, 'H');
+        uint8_t p = paramGet(buffer, 'H');
         if (p < 24)
             rtc.hour = p;
 
-        p = paramU8(buffer, 'M');
+        p = paramGet(buffer, 'M');
         if (p < 60)
             rtc.minute = p;
 
-        p = paramU8(buffer, 'S');
+        p = paramGet(buffer, 'S');
         if (p < 60)
             rtc.second = p;
 
         rtc.write();
-    }
-
-    void cmdSetDate(const char *buffer)
-    {
-        DS3231 &rtc = DS3231::get();
-        rtc.read();
-
-        uint8_t p = paramU8(buffer, 'D');
-        if (p > 0 && p < 32)
-            rtc.day = p;
-
-        p = paramU8(buffer, 'M');
-        if (p > 0 && p < 13)
-            rtc.minute = p;
-
-        p = paramU8(buffer, 'Y');
-        if (p < 100)
-            rtc.year = p;
-
-        p = paramU8(buffer, 'W');
-        if (p > 0 && p < 8)
-            rtc.weekday = p;
     }
 
     void cmdGetDate(char *response)
@@ -198,6 +178,67 @@ namespace
         paramAdd(response, 'M', rtc.month);
         paramAdd(response, 'Y', rtc.year);
         paramAdd(response, 'W', rtc.weekday);
+    }
+
+    void cmdSetDate(const char *buffer)
+    {
+        DS3231 &rtc = DS3231::get();
+        rtc.read();
+
+        uint8_t p = paramGet(buffer, 'D');
+        if (p > 0 && p < 32)
+            rtc.day = p;
+
+        p = paramGet(buffer, 'M');
+        if (p > 0 && p < 13)
+            rtc.minute = p;
+
+        p = paramGet(buffer, 'Y');
+        if (p < 100)
+            rtc.year = p;
+
+        p = paramGet(buffer, 'W');
+        if (p > 0 && p < 8)
+            rtc.weekday = p;
+    }
+
+    void cmdGetTimer(char *response)
+    {
+        Settings settings;
+        EepromSettings::load(settings);
+
+        paramAdd(response, 'A', settings.charge_timer_enabled);
+        paramAdd(response, 'S', settings.charge_timer_t1);
+        paramAdd(response, 'F', settings.charge_timer_t2);
+    }
+
+    uint8_t cmdSetTimer(const char *buffer)
+    {
+        Settings settings;
+        EepromSettings::load(settings);
+
+        uint16_t p = paramGet(buffer, 'A');
+        if (p != PARAM_NOT_FOUND)
+            settings.charge_timer_enabled = p;
+
+        p = paramGet(buffer, 'S');
+        if (p != PARAM_NOT_FOUND)
+        {
+            if ((p >> 8) > 23 || (p & 0xFF) > 59)
+                return INVALID_PARAMETER;
+            settings.charge_timer_t1 = p;
+        }
+
+        p = paramGet(buffer, 'F');
+        if (p != PARAM_NOT_FOUND)
+        {
+            if ((p >> 8) > 23 || (p & 0xFF) > 59)
+                return INVALID_PARAMETER;
+            settings.charge_timer_t2 = p;
+        }
+
+        EepromSettings::save(settings);
+        return OK;
     }
 }
 
@@ -215,7 +256,7 @@ void SerialApi::onEvent(const event::Event&)
 
 bool SerialApi::handleCommand(const char *buffer, const uint8_t)
 {
-    const uint8_t e = paramU8(buffer, 'E');
+    const uint8_t e = paramGet(buffer, 'E');
     char response[64] = {0};
     uint8_t err = OK;
 
@@ -254,8 +295,16 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t)
             cmdSetDate(buffer);
             break;
 
+        case CMD_GET_TIMER:
+            cmdGetTimer(response);
+            break;
+
+        case CMD_SET_TIMER:
+            err = cmdSetTimer(buffer);
+            break;
+
         case CMD_SET_SLEEP:
-            event::Loop::post(Event(EVENT_REQUEST_SLEEP, paramU8(buffer, 'S')));
+            event::Loop::post(Event(EVENT_REQUEST_SLEEP, paramGet(buffer, 'S')));
             break;
 
         case CMD_SET_READY_STATE:

@@ -19,6 +19,7 @@
 #include "event/loop.h"
 #include "evse/controller.h"
 #include "evse/chargemonitor.h"
+#include "evse/chargetimer.h"
 #include "evse/temperaturemonitor.h"
 #include "system/watchdog.h"
 #include "ui/keyboard.h"
@@ -38,6 +39,7 @@ int main()
     ui::SerialMonitor::init();
     evse::Controller::init();
     evse::ChargeMonitor::get();
+    evse::ChargeTimer::get();
     evse::TemperatureMonitor::init();
 
     while (1)

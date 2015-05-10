@@ -38,6 +38,8 @@
 
 #define EVENT_REQUEST_SLEEP        60
 
+#define EVENT_UPDATE_CHARGE_TIMER  70
+
 #define EVENT_POST_BEGIN          100
 #define EVENT_POST_SUCCESS        101
 #define EVENT_POST_FAILED         102
