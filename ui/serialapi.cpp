@@ -22,8 +22,9 @@
 #include "evse/settings.h"
 #include "evse/state.h"
 #include "system/watchdog.h"
-#include "serialapi.h"
-#include "serialprotocol.h"
+#include "ui/serialapi.h"
+#include "ui/serialprotocol.h"
+#include "ui/strings.h"
 #include "events.h"
 
 using event::Event;
@@ -99,6 +100,7 @@ namespace
     void cmdGetChargeStatus(char *response)
     {
         ChargeMonitor &cm = ChargeMonitor::get();
+        DS3231 &rtc = DS3231::get();
 
         const uint8_t charging = !!cm.isCharging();
         paramAdd(response, 'C', charging);
@@ -106,6 +108,7 @@ namespace
             paramAdd(response, 'A', cm.chargeCurrent());
         paramAdd(response, 'D', cm.chargeDuration() / 1000);
         paramAdd(response, 'W', cm.wattHours());
+        paramAdd(response, 'T', rtc.readTemp());
     }
 
     uint8_t cmdSetCurrent(const char *buffer)
@@ -262,6 +265,11 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t)
         case CMD_GET_SAPI_VERSION:
             paramAdd(response, 'V', SAPI_VERSION);
             break;
+
+        case CMD_GET_NOSPARK_VERSION:
+            uart.write("$OK ");
+            uart.writeln_P(STR_NOSPARK);
+            return true;
 
         default:
             err = UNKNOWN_COMMAND;

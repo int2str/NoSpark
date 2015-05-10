@@ -52,7 +52,7 @@
 //     = J1772 state C, temperature 30C, ready state "READY"
 #define CMD_GET_STATE           1
 
-// Return the current chare status
+// Return the current charge status
 //
 // Parameters:
 //   none
@@ -62,6 +62,7 @@
 //   A - Current charge current (optional; only when C1) in mA
 //   D - Ongoing or last charge duration in seconds
 //   W - Watthours for ongoing or last charge
+//   T - Temperature in C
 //
 // Example:
 //   -> $E2
@@ -198,6 +199,19 @@
 //   -> $E30 S1
 //   <- $OK
 #define CMD_ENABLE_EVENTS       30
+
+// Returns the NoSpark version string
+//
+// Parameters:
+//   none
+//
+// Returns:
+//   Version string (see below)
+//
+// Example:
+//   -> $E253
+//   <- $OK NoSpark v1.00
+#define CMD_GET_NOSPARK_VERSION 253
 
 // Returns serial API version number
 //

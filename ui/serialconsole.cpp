@@ -99,6 +99,7 @@ SerialConsole::SerialConsole(serial::Usart &uart)
     , commands({
         { STR_CMD_HELP,      false, &SerialConsole::commandHelp }
       , { STR_CMD_STATUS,    false, &SerialConsole::commandStatus }
+      , { STR_CMD_VERSION,   false, &SerialConsole::commandVersion }
       , { STR_CMD_RESET,     false, &SerialConsole::commandReset }
       , { STR_CMD_SETCURRENT, true, &SerialConsole::commandSetCurrent }
       , { STR_CMD_SETTIME,    true, &SerialConsole::commandSetTime }
@@ -197,6 +198,7 @@ void SerialConsole::commandHelp(const char *, const uint8_t)
     uart.writeln_P(STR_HELP_SETCURRENT);
     uart.writeln_P(STR_HELP_SETTIME);
     uart.writeln_P(STR_HELP_STATUS);
+    uart.writeln_P(STR_HELP_VERSION);
     uart.writeln_P(STR_HELP_DEBUG);
     uart.write(CR);
 }
@@ -311,6 +313,13 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     uart.write('A');
     uart.write(CR);
 
+    uart.write(CR);
+}
+
+void SerialConsole::commandVersion(const char *, const uint8_t)
+{
+    uart.writeln_P(STR_NOSPARK);
+    uart.writeln_P(STR_NOSPARK_BY);
     uart.write(CR);
 }
 

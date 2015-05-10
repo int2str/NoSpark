@@ -21,7 +21,7 @@
 #include "utils/cpp.h"
 #include "serial/usart.h"
 
-#define MAX_COMMANDS    6
+#define MAX_COMMANDS 7
 
 namespace ui
 {
@@ -52,6 +52,7 @@ private:
     void commandSetCurrent(const char *buffer, const uint8_t len);
     void commandSetTime(const char *buffer, const uint8_t len);
     void commandStatus(const char *buffer, const uint8_t len);
+    void commandVersion(const char *buffer, const uint8_t len);
     void commandDebug(const char *buffer, const uint8_t len);
 
     serial::Usart &uart;
