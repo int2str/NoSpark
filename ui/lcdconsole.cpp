@@ -38,6 +38,16 @@ using evse::Settings;
 using evse::State;
 using system::Timer;
 
+namespace
+{
+    bool isWakeEvent(const uint16_t event_id)
+    {
+        return event_id != EVENT_UPDATE_CHARGE_TIMER
+            && event_id != EVENT_KEYDOWN
+            && event_id != EVENT_REQUEST_SLEEP;
+    }
+}
+
 namespace ui
 {
 
@@ -143,7 +153,7 @@ void LcdConsole::updateSleepState(const event::Event &event)
             }
         }
 
-    } else if (event.id != EVENT_KEYDOWN && event.id != EVENT_REQUEST_SLEEP) {
+    } else if (isWakeEvent(event.id)) {
         last_event = Timer::millis();
         if (sleeping)
         {
