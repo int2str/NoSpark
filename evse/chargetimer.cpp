@@ -50,7 +50,7 @@ namespace
 namespace evse
 {
 
-ChargeTimer& ChargeTimer::get()
+ChargeTimer& ChargeTimer::init()
 {
     static ChargeTimer timer;
     return timer;
@@ -61,9 +61,8 @@ ChargeTimer::ChargeTimer()
 {
 }
 
-bool ChargeTimer::canCharge() const
+ChargeTimer::~ChargeTimer()
 {
-    return can_charge;
 }
 
 void ChargeTimer::checkTime()

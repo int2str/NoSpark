@@ -26,11 +26,10 @@ namespace evse
 class ChargeTimer : public event::Handler
 {
     ChargeTimer();
+    ~ChargeTimer();
 
 public:
-    static ChargeTimer& get();
-
-    bool canCharge() const;
+    static ChargeTimer& init();
 
 private:
     void onEvent(const event::Event &event) override;
