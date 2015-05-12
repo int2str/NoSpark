@@ -38,6 +38,7 @@ programmer. The programmer and upload protocol can be set in the top level
 Makefile.inc.
 
 ## Revision history
+* v0.11 - Added suspend state pin; LCD sleep mode fixed
 * v0.10 - Charge timer added
 * v0.09 - Important GFI fixes; ability to limit per-charge energy/suspend charge
 * v0.08 - Serial API implementation
