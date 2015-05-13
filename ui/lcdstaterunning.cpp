@@ -72,7 +72,7 @@ namespace
     {
         const uint8_t len = strlen_P(str) + offset;
         const uint8_t padding = (LCD_COLUMNS - len) / 2;
-        lcd << stream::Spaces(padding) << stream::PGM << str; stream::Spaces(padding + 1);
+        lcd << stream::Spaces(padding) << stream::PGM << str << stream::Spaces(padding + 1);
         return padding;
     }
 }
