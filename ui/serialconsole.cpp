@@ -41,7 +41,7 @@ namespace
         return ((msb_ch - '0') << 4) | ((lsb_ch - '0') & 0x0F);
     }
 
-    void write_time(stream::UartStream& uart, DS3231 &rtc)
+    void write_time(stream::OutputStream &uart, DS3231 &rtc)
     {
         uint8_t buffer[8] = {0};
         rtc.readRaw(buffer, 8);

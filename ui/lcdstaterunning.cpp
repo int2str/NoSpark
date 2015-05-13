@@ -39,15 +39,16 @@ using evse::Settings;
 using evse::EepromSettings;
 using evse::State;
 using stream::LcdStream;
+using stream::OutputStream;
 
 namespace
 {
-    void write_time(LcdStream &lcd, uint8_t hh, uint8_t mm)
+    void write_time(OutputStream &lcd, uint8_t hh, uint8_t mm)
     {
         lcd << stream::PAD_ZERO << hh << ':' << stream::PAD_ZERO << mm;
     }
 
-    void write_duration(LcdStream &lcd, const uint32_t ms)
+    void write_duration(OutputStream &lcd, const uint32_t ms)
     {
         if (!ms)
         {
@@ -59,7 +60,7 @@ namespace
         write_time(lcd, mins / 60, mins % 60);
     }
 
-    void write_kwh(LcdStream &lcd, const uint32_t wh)
+    void write_kwh(OutputStream &lcd, const uint32_t wh)
     {
         char buffer[10] = {0};
         ltoa(wh / 1000, buffer, 10);
@@ -68,7 +69,7 @@ namespace
         lcd << buffer << '.' << static_cast<char>('0' + ((wh / 100) % 10)) << " kWh ";
     }
 
-    uint8_t center_P(LcdStream &lcd, const char *str, const uint8_t offset = 0)
+    uint8_t center_P(OutputStream &lcd, const char *str, const uint8_t offset = 0)
     {
         const uint8_t len = strlen_P(str) + offset;
         const uint8_t padding = (LCD_COLUMNS - len) / 2;
