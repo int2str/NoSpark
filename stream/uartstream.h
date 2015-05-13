@@ -15,29 +15,25 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "serial/usart.h"
+#include "stream/outputstream.h"
 
-#include "utils/cpp.h"
-#include "stream/uartstream.h"
-#include "ui/serialapi.h"
-
-namespace ui
+namespace stream
 {
 
-// Simple command line interface for control and monitoring.
-class SerialApi
+class UartStream : public OutputStream
 {
 public:
-    SerialApi(stream::UartStream &uart);
+    UartStream(serial::Usart &uart);
 
-    void onEvent(const event::Event &event);
-    bool handleCommand(const char *buffer, const uint8_t len);
+    bool avail();
+    UartStream& operator>> (char &ch);
 
 private:
-    stream::UartStream &uart;
+    void write(const char ch) override;
+    void write(const char *string) override;
 
-    DISALLOW_COPY_AND_ASSIGN(SerialApi);
+    serial::Usart &uart;
 };
 
 }

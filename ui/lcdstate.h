@@ -17,7 +17,7 @@
 
 #include <stdbool.h>
 
-#include "devices/lcd1602.h"
+#include "stream/lcdstream.h"
 
 namespace ui
 {
@@ -25,7 +25,7 @@ namespace ui
 class LcdState
 {
 public:
-    LcdState(devices::LCD16x2 &lcd)
+    LcdState(stream::LcdStream &lcd)
         : lcd(lcd) {};
 
     virtual bool draw() = 0;
@@ -35,7 +35,7 @@ public:
     virtual void advance() {}
 
 protected:
-    devices::LCD16x2 &lcd;
+    stream::LcdStream &lcd;
 };
 
 }

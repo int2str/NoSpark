@@ -24,7 +24,7 @@ using evse::State;
 namespace ui
 {
 
-LcdStateError::LcdStateError(devices::LCD16x2 &lcd)
+LcdStateError::LcdStateError(stream::LcdStream &lcd)
     : LcdState(lcd)
 {
 }
@@ -34,26 +34,26 @@ bool LcdStateError::draw()
     lcd.setBacklight(devices::LCD16x2::RED);
 
     lcd.move(0, 0);
-    lcd.write_P(STR_ERROR_STATE);
+    lcd << stream::PGM << STR_ERROR_STATE;
 
     lcd.move(0, 1);
 
     switch (State::get().fault)
     {
         case State::FAULT_POST_GFCI:
-            lcd.write_P(STR_FAULT_POST_GFCI);
+            lcd << stream::PGM << STR_FAULT_POST_GFCI;
             break;
 
         case State::FAULT_POST_RELAY:
-            lcd.write_P(STR_FAULT_POST_RELAY);
+            lcd << stream::PGM << STR_FAULT_POST_RELAY;
             break;
 
         case State::FAULT_GFCI_TRIPPED:
-            lcd.write_P(STR_FAULT_GFCI_TRIPPED);
+            lcd << stream::PGM << STR_FAULT_GFCI_TRIPPED;
             break;
 
         case State::FAULT_TEMPERATURE_CRITICAL:
-            lcd.write_P(STR_FAULT_TEMPERATURE);
+            lcd << stream::PGM << STR_FAULT_TEMPERATURE;
             break;
 
         case State::NOTHING_WRONG:

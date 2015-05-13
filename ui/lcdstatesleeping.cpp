@@ -24,14 +24,14 @@
 #define BLINK_TIMEOUT 800
 
 using devices::DS3231;
-using devices::LCD16x2;
 using evse::EepromSettings;
 using evse::Settings;
+using stream::LcdStream;
 
 namespace ui
 {
 
-LcdStateSleeping::LcdStateSleeping(LCD16x2 &lcd)
+LcdStateSleeping::LcdStateSleeping(LcdStream &lcd)
     : LcdState(lcd)
     , blink_state(BLINK_TIMEOUT)
 {
@@ -39,7 +39,7 @@ LcdStateSleeping::LcdStateSleeping(LCD16x2 &lcd)
     EepromSettings::load(settings);
     sleep_mode = settings.sleep_mode;
 
-    CustomCharacters::loadLargeDigits(lcd);
+    CustomCharacters::loadLargeDigits(lcd.getLCD());
 }
 
 bool LcdStateSleeping::draw()
@@ -47,13 +47,13 @@ bool LcdStateSleeping::draw()
     // Display off mode
     if (sleep_mode == 1)
     {
-        lcd.setBacklight(LCD16x2::OFF);
+        lcd.setBacklight(devices::LCD16x2::OFF);
         return true;
     }
 
     // Display time mode
 
-    lcd.setBacklight(LCD16x2::GREEN);
+    lcd.setBacklight(devices::LCD16x2::GREEN);
 
     uint8_t buffer[10] = {0};
     DS3231 &rtc = DS3231::get();
@@ -62,17 +62,17 @@ bool LcdStateSleeping::draw()
     const uint8_t hh = buffer[3];
     const uint8_t mm = buffer[2];
 
-    CustomCharacters::largeDigit(lcd, hh >>  4,  1);
-    CustomCharacters::largeDigit(lcd, hh & 0xF,  4);
-    CustomCharacters::largeDigit(lcd, mm >>  4,  8);
-    CustomCharacters::largeDigit(lcd, mm & 0xF, 11);
+    CustomCharacters::largeDigit(lcd.getLCD(), hh >>  4,  1);
+    CustomCharacters::largeDigit(lcd.getLCD(), hh & 0xF,  4);
+    CustomCharacters::largeDigit(lcd.getLCD(), mm >>  4,  8);
+    CustomCharacters::largeDigit(lcd.getLCD(), mm & 0xF, 11);
 
     const char o = blink_state.get() ? ' ' : 7;
 
     lcd.move(7, 1);
-    lcd.write(o);
+    lcd << static_cast<char>(o);
     lcd.move(7, 0);
-    lcd.write(o);
+    lcd << static_cast<char>(o);
 
     return true;
 }

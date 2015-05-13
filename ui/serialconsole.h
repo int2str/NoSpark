@@ -19,7 +19,7 @@
 #include <stdbool.h>
 
 #include "utils/cpp.h"
-#include "serial/usart.h"
+#include "stream/uartstream.h"
 
 #define MAX_COMMANDS 7
 
@@ -40,7 +40,7 @@ struct SerialCommand
 class SerialConsole
 {
 public:
-    SerialConsole(serial::Usart &uart);
+    SerialConsole(stream::UartStream &uart);
 
     void onEvent(const event::Event &event);
 
@@ -55,7 +55,7 @@ private:
     void commandVersion(const char *buffer, const uint8_t len);
     void commandDebug(const char *buffer, const uint8_t len);
 
-    serial::Usart &uart;
+    stream::UartStream &uart;
     bool event_debug;
     const SerialCommand commands[MAX_COMMANDS];
 

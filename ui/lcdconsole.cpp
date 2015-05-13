@@ -62,6 +62,7 @@ LcdConsole::LcdConsole()
     , sleeping(false)
     , last_event(Timer::millis())
     , lcdState(new LcdStateBootup(lcd))
+    , lcd(lcd_int)
 {
 }
 

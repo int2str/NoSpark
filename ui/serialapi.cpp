@@ -267,7 +267,7 @@ namespace
 namespace ui
 {
 
-SerialApi::SerialApi(serial::Usart &uart)
+SerialApi::SerialApi(stream::UartStream &uart)
     : uart(uart)
 {
 }
@@ -346,8 +346,7 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t)
             break;
 
         case CMD_GET_NOSPARK_VERSION:
-            uart.write("$OK ");
-            uart.writeln_P(STR_NOSPARK);
+            uart << "$OK " << stream::PGM << STR_NOSPARK << CR;
             return true;
 
         default:
@@ -357,12 +356,11 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t)
 
     if (err == OK)
     {
-        uart.write("$OK");
-        uart.writeln(response);
+        uart << "$OK" << response << CR;
     } else {
         char error[] = "$ERR 0";
         error[5] += err;
-        uart.writeln(error);
+        uart << error << CR;
     }
 
     return true;

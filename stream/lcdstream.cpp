@@ -13,31 +13,46 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#pragma once
+#include "stream/lcdstream.h"
 
-#include <stdint.h>
-#include <stdbool.h>
+using devices::LCD16x2;
 
-#include "utils/cpp.h"
-#include "stream/uartstream.h"
-#include "ui/serialapi.h"
-
-namespace ui
+namespace stream
 {
 
-// Simple command line interface for control and monitoring.
-class SerialApi
+LcdStream::LcdStream(LCD16x2 &lcd)
+  : lcd(lcd)
 {
-public:
-    SerialApi(stream::UartStream &uart);
+}
 
-    void onEvent(const event::Event &event);
-    bool handleCommand(const char *buffer, const uint8_t len);
+LCD16x2& LcdStream::getLCD() const
+{
+    return lcd;
+}
 
-private:
-    stream::UartStream &uart;
+void LcdStream::clear()
+{
+    lcd.clear();
+}
 
-    DISALLOW_COPY_AND_ASSIGN(SerialApi);
-};
+void LcdStream::move(const uint8_t x, const uint8_t y)
+{
+    lcd.move(x, y);
+}
+
+void LcdStream::setBacklight(const LCD16x2::Backlight color)
+{
+    lcd.setBacklight(color);
+}
+
+void LcdStream::write(const char *string)
+{
+    lcd.write(string);
+}
+
+void LcdStream::write(const char ch)
+{
+    lcd.write(ch);
+}
 
 }

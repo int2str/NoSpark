@@ -17,7 +17,7 @@
 
 #include <stdbool.h>
 
-#include "devices/lcd1602.h"
+#include "stream/lcdstream.h"
 #include "lcdstate.h"
 
 namespace ui
@@ -26,7 +26,7 @@ namespace ui
 class LcdStateError : public LcdState
 {
 public:
-    LcdStateError(devices::LCD16x2 &lcd);
+    LcdStateError(stream::LcdStream &lcd);
     bool draw() override;
 };
 

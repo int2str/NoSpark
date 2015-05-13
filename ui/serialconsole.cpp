@@ -32,7 +32,7 @@ using evse::EepromSettings;
 using evse::Settings;
 using evse::State;
 using devices::DS3231;
-using serial::Usart;
+using stream::PGM;
 
 namespace
 {
@@ -41,42 +41,18 @@ namespace
         return ((msb_ch - '0') << 4) | ((lsb_ch - '0') & 0x0F);
     }
 
-    void write_digits(Usart& uart, const uint8_t d)
-    {
-        uart.write('0' + (d >> 4));
-        uart.write('0' + (d & 0x0F));
-    }
-
-    void write_decimal(Usart& uart, const uint32_t dec)
-    {
-        char buffer[6] = {0};
-        ltoa(dec, buffer, 10);
-        uart.write(buffer);
-    }
-
-    void write_temp(Usart& uart, const uint8_t temp)
-    {
-        write_decimal(uart, temp);
-        uart.write('C');
-    }
-
-    void write_time(Usart& uart, DS3231 &rtc)
+    void write_time(stream::UartStream& uart, DS3231 &rtc)
     {
         uint8_t buffer[8] = {0};
         rtc.readRaw(buffer, 8);
 
-        write_digits(uart, buffer[3]);
-        uart.write(':');
-        write_digits(uart, buffer[2]);
-        uart.write(':');
-        write_digits(uart, buffer[1]);
-        uart.write(' ');
+        uart << stream::PAD_BCD << buffer[3] << ':';
+        uart << stream::PAD_BCD << buffer[2] << ':';
+        uart << stream::PAD_BCD << buffer[1] << ' ';
 
-        write_digits(uart, buffer[5]);
-        uart.write('.');
-        write_digits(uart, buffer[6]);
-        uart.write(".20");
-        write_digits(uart, buffer[7]);
+        uart << stream::PAD_BCD << buffer[5] << '.';
+        uart << stream::PAD_BCD << buffer[6] << '.';
+        uart << "20" << stream::PAD_BCD << buffer[7];
     }
 
     // TODO: Duplicate code is duplicate...
@@ -93,7 +69,7 @@ namespace
 namespace ui
 {
 
-SerialConsole::SerialConsole(serial::Usart &uart)
+SerialConsole::SerialConsole(stream::UartStream &uart)
     : uart(uart)
     , event_debug(false) // TODO: Read from EEPROM?
     , commands({
@@ -118,26 +94,24 @@ void SerialConsole::onEvent(const event::Event& event)
         case EVENT_J1772_STATE:
             if (event_debug)
             {
-                uart.write_P(STR_EVENT);
-                uart.write_P(STR_EVT_J1772_STATE);
-                uart.write('A' - 1 + event.param);
-                uart.write(CR);
+                uart << PGM << STR_EVENT;
+                uart << PGM << STR_EVT_J1772_STATE;
+                uart << static_cast<char>('A' - 1 + event.param) << CR;
             }
             break;
 
         case EVENT_CONTROLLER_STATE:
             if (event_debug)
             {
-                uart.write_P(STR_EVENT);
-                uart.write_P(STR_EVT_CONTROLLER_STATE);
-                uart.write('0' + State::get().controller);
-                uart.write(CR);
+                uart << PGM << STR_EVENT;
+                uart << PGM << STR_EVT_CONTROLLER_STATE;
+                uart << static_cast<char>('0' + State::get().controller) << CR;
             }
             break;
 
         case EVENT_GFCI_TRIPPED:
-            uart.write_P(STR_EVENT);
-            uart.writeln_P(STR_EVT_GFCI_TRIPPED);
+            uart << PGM << STR_EVENT;
+            uart << PGM << STR_EVT_GFCI_TRIPPED << CR;
             break;
 
         default:
@@ -147,13 +121,13 @@ void SerialConsole::onEvent(const event::Event& event)
                 char params[6] = {0};
 
                 utoa(event.id, params, 10);
-                uart.write_P(STR_EVENT);
-                uart.write_P(STR_EVT_DEFAULT1);
-                uart.write(params);
+                uart << PGM << STR_EVENT;
+                uart << PGM << STR_EVT_DEFAULT1;
+                uart << params;
 
                 utoa(event.param, params, 10);
-                uart.write_P(STR_EVT_DEFAULT2);
-                uart.writeln(params);
+                uart << PGM << STR_EVT_DEFAULT2;
+                uart << params << CR;
             }
             break;
         }
@@ -182,25 +156,23 @@ bool SerialConsole::handleCommand(const char *buffer, const uint8_t len)
         }
     }
 
-    uart.write_P(STR_HELP_UNKNOWN);
-    uart.write(" (");
-    uart.write(buffer);
-    uart.writeln(")");
+    uart << PGM << STR_HELP_UNKNOWN;
+    uart << " (" << buffer << ")" << CR;
 
     return false;
 }
 
 void SerialConsole::commandHelp(const char *, const uint8_t)
 {
-    uart.writeln_P(STR_HELP_COMMANDS);
-    uart.writeln_P(STR_HELP_HELP);
-    uart.writeln_P(STR_HELP_RESET);
-    uart.writeln_P(STR_HELP_SETCURRENT);
-    uart.writeln_P(STR_HELP_SETTIME);
-    uart.writeln_P(STR_HELP_STATUS);
-    uart.writeln_P(STR_HELP_VERSION);
-    uart.writeln_P(STR_HELP_DEBUG);
-    uart.write(CR);
+    uart << PGM << STR_HELP_COMMANDS << CR;
+    uart << PGM << STR_HELP_HELP << CR;
+    uart << PGM << STR_HELP_RESET << CR;
+    uart << PGM << STR_HELP_SETCURRENT << CR;
+    uart << PGM << STR_HELP_SETTIME << CR;
+    uart << PGM << STR_HELP_STATUS << CR;
+    uart << PGM << STR_HELP_VERSION << CR;
+    uart << PGM << STR_HELP_DEBUG << CR;
+    uart << CR;
 }
 
 void SerialConsole::commandReset(const char *, const uint8_t)
@@ -214,7 +186,7 @@ void SerialConsole::commandSetCurrent(const char *buffer, const uint8_t len)
 
     if (len < cmd_len + 2 || len > cmd_len + 3)
     {
-        uart.writeln_P(STR_ERR_PARAM);
+        uart << PGM << STR_ERR_PARAM << CR;
         return;
     }
 
@@ -226,7 +198,7 @@ void SerialConsole::commandSetCurrent(const char *buffer, const uint8_t len)
         event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, amps));
 
     } else {
-        uart.writeln_P(STR_ERR_PARAM);
+        uart << PGM << STR_ERR_PARAM << CR;
     }
 }
 
@@ -236,7 +208,7 @@ void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
 
     if (len != cmd_len + 14 || buffer[cmd_len + 6] != ' ')
     {
-        uart.writeln_P(STR_ERR_SETTIME_PARAM);
+        uart << PGM << STR_ERR_SETTIME_PARAM << CR;
         return;
     }
 
@@ -262,7 +234,7 @@ void SerialConsole::commandDebug(const char *buffer, const uint8_t len)
 
     if (len != cmd_len + 2)
     {
-        uart.writeln_P(STR_ERR_PARAM);
+        uart << PGM << STR_ERR_PARAM << CR;
         return;
     }
 
@@ -275,52 +247,39 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     State &state = State::get();
     ChargeMonitor &cm = ChargeMonitor::get();
 
-    uart.write_P(STR_STATUS_TIME);
+    uart << PGM << STR_STATUS_TIME;
     write_time(uart, rtc);
-    uart.write(CR);
+    uart << CR;
 
-    uart.write_P(STR_STATUS_TEMP);
-    write_temp(uart, rtc.readTemp());
-    uart.write(CR);
+    uart << PGM << STR_STATUS_TEMP;
+    uart << rtc.readTemp() << 'C' << CR;
 
-    uart.write_P(STR_STATUS_J1772);
-    uart.write('A' - 1 + state.j1772);
-    uart.write(CR);
+    uart << PGM << (STR_STATUS_J1772);
+    uart << static_cast<char>('A' - 1 + state.j1772) << CR;
 
-    uart.write_P(STR_STATUS_CHARGING);
+    uart << PGM << (STR_STATUS_CHARGING);
     if (!cm.isCharging())
-    {
-        uart.write_P(STR_OFF);
-    } else {
-        write_decimal(uart, cm.chargeCurrent());
-        uart.write("mA");
-    }
-    uart.write(' ');
-    write_decimal(uart, cm.chargeDuration() / 1000 / 60);
-    uart.write("min ");
-    write_decimal(uart, cm.wattHours());
-    uart.writeln("Wh");
+        uart << PGM << STR_OFF;
+    else
+        uart << cm.chargeCurrent() << "mA";
+    uart << ' ' << (cm.chargeDuration() / 1000 / 60) << "min ";
+    uart << cm.wattHours() << "Wh" << CR;
 
-    uart.write_P(STR_STATUS_READY);
-    uart.write('0' + state.ready);
-    uart.write(CR);
+    uart << PGM << (STR_STATUS_READY);
+    uart << static_cast<char>('0' + state.ready) << CR;
 
-    uart.write_P(STR_STATUS_MAX_CURRENT);
-    write_decimal(uart, state.max_amps_limit);
-    uart.write('A');
-    uart.write('/');
-    write_decimal(uart, state.max_amps_target);
-    uart.write('A');
-    uart.write(CR);
+    uart << PGM << (STR_STATUS_MAX_CURRENT);
+    uart << state.max_amps_limit << 'A' << '/';
+    uart << state.max_amps_target << 'A' << CR;
 
-    uart.write(CR);
+    uart << CR;
 }
 
 void SerialConsole::commandVersion(const char *, const uint8_t)
 {
-    uart.writeln_P(STR_NOSPARK);
-    uart.writeln_P(STR_NOSPARK_BY);
-    uart.write(CR);
+    uart << PGM << STR_NOSPARK << CR;
+    uart << PGM << STR_NOSPARK_BY << CR;
+    uart << CR;
 }
 
 }

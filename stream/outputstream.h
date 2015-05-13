@@ -15,44 +15,45 @@
 
 #pragma once
 
-#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
-#include "devices/lcd1602.h"
-#include "event/handler.h"
-#include "stream/lcdstream.h"
-#include "utils/cpp.h"
-#include "lcdstate.h"
-
-namespace ui
+namespace stream
 {
 
-// LCD UI.
-// This is a singleton; there shall be only one.
-class LcdConsole : public event::Handler
+enum Flags
 {
-    LcdConsole();
+    PGM
+  , PAD_BCD
+  , PAD_ZERO
+  , PAD_SPACE
+};
 
+struct Spaces
+{
+    Spaces(const size_t num) : num(num) {}
+    const size_t num;
+};
+
+class OutputStream
+{
 public:
-    static LcdConsole& init();
+    OutputStream();
+    virtual ~OutputStream();
+
+    OutputStream& operator<< (const Flags flags);
+    OutputStream& operator<< (const Spaces spaces);
+    OutputStream& operator<< (const char ch);
+    OutputStream& operator<< (const char *str);
+    OutputStream& operator<< (const uint8_t val);
+    OutputStream& operator<< (const uint32_t val);
 
 protected:
-    void onEvent(const event::Event &event) override;
+    virtual void write(const char *str) = 0;
+    virtual void write(const char ch) = 0;
 
 private:
-    void update();
-    void updateSleepState(const event::Event &event);
-    void setState(LcdState *newState);
-
-    bool in_settings;
-    bool sleeping;
-    uint32_t last_event;
-
-    LcdState *lcdState;
-    stream::LcdStream lcd;
-    devices::LCD16x2 lcd_int;
-
-    DISALLOW_COPY_AND_ASSIGN(LcdConsole);
+    uint8_t flags;
 };
 
 }

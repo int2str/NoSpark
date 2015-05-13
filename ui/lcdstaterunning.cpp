@@ -17,6 +17,7 @@
 #include <string.h>
 
 #include "board/j1772pilot.h"
+#include "devices/lcd1602.h"
 #include "devices/ds3231.h"
 #include "evse/chargemonitor.h"
 #include "evse/settings.h"
@@ -37,70 +38,41 @@ using evse::ChargeMonitor;
 using evse::Settings;
 using evse::EepromSettings;
 using evse::State;
+using stream::LcdStream;
 
 namespace
 {
-    void spaces(LCD16x2 &lcd, uint8_t num)
+    void write_time(LcdStream &lcd, uint8_t hh, uint8_t mm)
     {
-        while (num--)
-            lcd.write(' ');
+        lcd << stream::PAD_ZERO << hh << ':' << stream::PAD_ZERO << mm;
     }
 
-    void write_num(LCD16x2 &lcd, const uint8_t num, const char pad=' ')
-    {
-        if (num < 10)
-            lcd.write(pad);
-        else
-            lcd.write('0' + num / 10);
-        lcd.write('0' + num % 10);
-    }
-
-    void write_time(LCD16x2 &lcd, uint8_t hh, uint8_t mm)
-    {
-        write_num(lcd, hh, '0');
-        lcd.write(':');
-        write_num(lcd, mm, '0');
-    }
-
-    void write_time(LCD16x2 &lcd, DS3231 &rtc)
-    {
-        uint8_t buffer[8] = {0};
-        rtc.readRaw(buffer, 8);
-
-        write_time(lcd, utils::bcd2dec(buffer[3]), utils::bcd2dec(buffer[2]));
-    }
-
-    void write_duration(LCD16x2 &lcd, const uint32_t ms)
+    void write_duration(LcdStream &lcd, const uint32_t ms)
     {
         if (!ms)
         {
-            lcd.write("--:--");
+            lcd << "--:--";
             return;
         }
 
-        const uint32_t mins = ms / 60000;
+        const uint32_t mins = ms / 1000 / 60;
         write_time(lcd, mins / 60, mins % 60);
     }
 
-    void write_kwh(LCD16x2 &lcd, const uint32_t wh)
+    void write_kwh(LcdStream &lcd, const uint32_t wh)
     {
         char buffer[10] = {0};
         ltoa(wh / 1000, buffer, 10);
 
-        spaces(lcd, 3 - strlen(buffer));
-        lcd.write(buffer);
-        lcd.write('.');
-        lcd.write('0' + ((wh / 100) % 10));
-        lcd.write(" kWh ");
+        lcd << stream::Spaces(3 - strlen(buffer));
+        lcd << buffer << '.' << static_cast<char>('0' + ((wh / 100) % 10)) << " kWh ";
     }
 
-    uint8_t center_P(LCD16x2 &lcd, const char *str, const uint8_t offset = 0)
+    uint8_t center_P(LcdStream &lcd, const char *str, const uint8_t offset = 0)
     {
         const uint8_t len = strlen_P(str) + offset;
         const uint8_t padding = (LCD_COLUMNS - len) / 2;
-        spaces(lcd, padding);
-        lcd.write_P(str);
-        spaces(lcd, padding + 1);
+        lcd << stream::Spaces(padding) << stream::PGM << str; stream::Spaces(padding + 1);
         return padding;
     }
 }
@@ -108,12 +80,12 @@ namespace
 namespace ui
 {
 
-LcdStateRunning::LcdStateRunning(devices::LCD16x2 &lcd)
+LcdStateRunning::LcdStateRunning(stream::LcdStream &lcd)
     : LcdState(lcd)
     , page(PAGE_DEFAULT)
     , display_state(PAGE_TIMEOUT)
 {
-    CustomCharacters::loadCustomChars(lcd);
+    CustomCharacters::loadCustomChars(lcd.getLCD());
 }
 
 bool LcdStateRunning::draw()
@@ -131,33 +103,30 @@ void LcdStateRunning::drawDefault()
     const State &state = State::get();
     const ChargeMonitor &chargeMonitor = ChargeMonitor::get();
     DS3231 &rtc = DS3231::get();
+    rtc.read();
 
     uint8_t amps = state.max_amps_limit;
     if (ChargeMonitor::get().isCharging())
         amps = chargeMonitor.chargeCurrent() / 1000;
 
     lcd.move(0,0);
-    write_time(lcd, rtc);
-    lcd.write(' ');
-    write_num(lcd, rtc.readTemp());
-    lcd.write(0xDF);
+    write_time(lcd, rtc.hour, rtc.minute);
+    lcd << ' ' << stream::PAD_SPACE << rtc.readTemp() << static_cast<char>(0xDF);
 
-    lcd.write(' ');
-    lcd.write(CustomCharacters::SEPARATOR);
-    lcd.write(' ');
+    lcd << ' ' << static_cast<char>(CustomCharacters::SEPARATOR) << ' ';
 
     if (amps)
-        write_num(lcd, amps);
+        lcd << stream::PAD_SPACE << amps;
     else
-        lcd.write("--");
-    lcd.write('A');
+        lcd << "--";
+    lcd << 'A';
 
     if (state.ready == State::SCHEDULED)
-        lcd.write(CustomCharacters::HOURGLASS);
+        lcd << static_cast<char>(CustomCharacters::HOURGLASS);
     else if (state.ready == State::KWH_LIMIT)
-        lcd.write(CustomCharacters::BATTERY1);
+        lcd << static_cast<char>(CustomCharacters::BATTERY1);
     else
-        lcd.write(' ');
+        lcd << ' ';
 
     lcd.move(0,1);
 
@@ -175,12 +144,12 @@ void LcdStateRunning::drawDefault()
             {
                 center_P(lcd, STR_NOT_CONNECTED);
             } else {
-                lcd.write_P(STR_CHARGED);
+                lcd << stream::PGM << STR_CHARGED;
                 if (display_state.get())
                 {
-                    lcd.write(' ');
+                    lcd << ' ';
                     write_duration(lcd, chargeMonitor.chargeDuration());
-                    spaces(lcd, 3);
+                    lcd << stream::Spaces(3);
                 } else {
                     write_kwh(lcd, chargeMonitor.wattHours());
                 }
@@ -196,10 +165,10 @@ void LcdStateRunning::drawDefault()
         {
             lcd.setBacklight(LCD16x2::CYAN);
             if (display_state.get())
-                lcd.write_P(STR_CHARGING);
+                lcd << stream::PGM << STR_CHARGING;
             else
                 write_kwh(lcd, chargeMonitor.wattHours());
-            lcd.write(CustomCharacters::SEPARATOR);
+            lcd << static_cast<char>(CustomCharacters::SEPARATOR);
             write_duration(lcd, chargeMonitor.chargeDuration());
             break;
         }
@@ -228,29 +197,29 @@ void LcdStateRunning::drawKwhStats()
     lcd.setBacklight(LCD16x2::WHITE);
 
     lcd.move(0,0);
-    lcd.write_P(STR_STATS_KWH);
+    lcd << stream::PGM << (STR_STATS_KWH);
 
     lcd.move(0,1);
     uint16_t *p = 0;
     switch (page)
     {
         case PAGE_KWH_WEEK:
-            lcd.write_P(STR_STATS_WEEK);
+            lcd << stream::PGM << STR_STATS_WEEK;
             p = &settings.kwh_week;
             break;
 
         case PAGE_KWH_MONTH:
-            lcd.write_P(STR_STATS_MONTH);
+            lcd << stream::PGM << STR_STATS_MONTH;
             p = &settings.kwh_month;
             break;
 
         case PAGE_KWH_YEAR:
-            lcd.write_P(STR_STATS_YEAR);
+            lcd << stream::PGM << STR_STATS_YEAR;
             p = &settings.kwh_year;
             break;
 
         case PAGE_KWH_TOTAL:
-            lcd.write_P(STR_STATS_TOTAL);
+            lcd << stream::PGM << STR_STATS_TOTAL;
             p = &settings.kwh_total;
             break;
 
@@ -261,9 +230,7 @@ void LcdStateRunning::drawKwhStats()
     char buffer[10] = {0};
     ltoa(p ? *p : 0, buffer, 10);
 
-    lcd.write(": ");
-    lcd.write(buffer);
-    spaces(lcd, 5);
+    lcd << ": " << buffer << stream::Spaces(5);
 }
 
 void LcdStateRunning::select()

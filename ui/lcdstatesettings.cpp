@@ -55,6 +55,8 @@ using devices::DS3231;
 using devices::LCD16x2;
 using evse::EepromSettings;
 using evse::State;
+using stream::LcdStream;
+using stream::PGM;
 using system::Timer;
 using system::Watchdog;
 
@@ -62,39 +64,16 @@ namespace
 {
     static uint8_t temp_buffer[8] = {0};
 
-    void spaces(devices::LCD16x2 &lcd, uint8_t num)
+    void write_time(stream::LcdStream &lcd, uint8_t hh, uint8_t mm)
     {
-        while (num--)
-            lcd.write(' ');
-    }
-
-    void write_digits(devices::LCD16x2 &lcd, const uint8_t bcd)
-    {
-        lcd.write('0' + (bcd >> 4));
-        lcd.write('0' + (bcd & 0x0F));
-    }
-
-    void write_num(devices::LCD16x2 &lcd, const uint8_t num, const char pad=' ')
-    {
-        if (num < 10)
-            lcd.write(pad);
-        else
-            lcd.write('0' + num / 10);
-        lcd.write('0' + num % 10);
-    }
-
-    void write_time(devices::LCD16x2 &lcd, uint8_t hh, uint8_t mm)
-    {
-        write_num(lcd, hh, '0');
-        lcd.write(':');
-        write_num(lcd, mm, '0');
+        lcd << stream::PAD_ZERO <<  hh << ':' << stream::PAD_ZERO << mm;
     }
 }
 
 namespace ui
 {
 
-LcdStateSettings::LcdStateSettings(devices::LCD16x2 &lcd)
+LcdStateSettings::LcdStateSettings(stream::LcdStream &lcd)
     : LcdState(lcd)
     , page(0)
     , option(NOT_ADJUSTING)
@@ -112,7 +91,7 @@ LcdStateSettings::LcdStateSettings(devices::LCD16x2 &lcd)
       , &LcdStateSettings::pageExit
     }
 {
-    CustomCharacters::loadCustomChars(lcd);
+    CustomCharacters::loadCustomChars(lcd.getLCD());
     EepromSettings::load(settings);
 }
 
@@ -132,8 +111,8 @@ bool LcdStateSettings::draw()
 bool LcdStateSettings::pageSetTime()
 {
     lcd.move(0,0);
-    lcd.write(CustomCharacters::CLOCK);
-    lcd.write_P(STR_SET_CLOCK);
+    lcd << static_cast<char>(CustomCharacters::CLOCK);
+    lcd << PGM << STR_SET_CLOCK;
     lcd.move(2, 1);
 
     if (option > ADJUST_MM)
@@ -159,15 +138,14 @@ bool LcdStateSettings::pageSetTime()
     if (option == ADJUST_MM)
         temp_buffer[2] = utils::dec2bcd((mm + value) % 60);
 
-    write_digits(lcd, temp_buffer[3]);
-    lcd.write(':');
-    write_digits(lcd, temp_buffer[2]);
+    lcd << stream::PAD_BCD << temp_buffer[3] << ':';
+    lcd << stream::PAD_BCD << temp_buffer[2];
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
         const uint8_t offset[2] = {2, 5};
         lcd.move(offset[option - 1], 1);
-        lcd.write("  ");
+        lcd << "  ";
     }
 
     value = 0;
@@ -177,8 +155,8 @@ bool LcdStateSettings::pageSetTime()
 bool LcdStateSettings::pageSetDate()
 {
     lcd.move(0,0);
-    lcd.write(CustomCharacters::CALENDAR);
-    lcd.write_P(STR_SET_DATE);
+    lcd << static_cast<char>(CustomCharacters::CALENDAR);
+    lcd << PGM << STR_SET_DATE;
     lcd.move(2, 1);
 
     if (option > ADJUST_YY)
@@ -208,17 +186,15 @@ bool LcdStateSettings::pageSetDate()
     if (option == ADJUST_YY)
         temp_buffer[7] = utils::dec2bcd((yy + value) % 30); // <-- Year 2030 issue :)
 
-    write_digits(lcd, temp_buffer[5]);
-    lcd.write('.');
-    write_digits(lcd, temp_buffer[6]);
-    lcd.write(".20");
-    write_digits(lcd, temp_buffer[7]);
+    lcd << stream::PAD_BCD << temp_buffer[5] << '.';
+    lcd << stream::PAD_BCD << temp_buffer[6] << '.';
+    lcd << "20" << stream::PAD_BCD << temp_buffer[7];
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
         const uint8_t offset[3] = {2, 5, 8};
         lcd.move(offset[option - 1], 1);
-        spaces(lcd, option == ADJUST_YY ? 4 : 2);
+        lcd << stream::Spaces(option == ADJUST_YY ? 4 : 2);
     }
 
     value = 0;
@@ -263,19 +239,14 @@ bool LcdStateSettings::pageSetCurrent()
     // Draw screen, flashing value while adjusting
 
     lcd.move(0, 0);
-    lcd.write(CustomCharacters::BOLT);
-    lcd.write_P(STR_SET_CURRENT);
+    lcd << static_cast<char>(CustomCharacters::BOLT);
+    lcd << PGM << STR_SET_CURRENT;
 
     lcd.move(2, 1);
     if (option == NOT_ADJUSTING || blink_state.get())
-    {
-        char buffer[4] = {0};
-        utoa(value, buffer, 10);
-        lcd.write(buffer);
-        lcd.write('A');
-    } else {
-        spaces(lcd, 5);
-    }
+        lcd << value << "A ";
+    else
+        lcd << stream::Spaces(5);
 
     return true;
 }
@@ -307,8 +278,8 @@ bool LcdStateSettings::pageChargeTimer()
         value = 0;
 
     lcd.move(0,0);
-    lcd.write(CustomCharacters::HOURGLASS);
-    lcd.write_P(STR_SET_CHARGETIMER);
+    lcd << static_cast<char>(CustomCharacters::HOURGLASS);
+    lcd << PGM << STR_SET_CHARGETIMER;
 
     lcd.move(2, 1);
 
@@ -332,26 +303,22 @@ bool LcdStateSettings::pageChargeTimer()
     if (temp_buffer[0] == 0)
     {
         if (option == NOT_ADJUSTING || blink_state.get())
-        {
-            lcd.write_P(STR_OFF);
-            spaces(lcd, 12);
-        } else {
-            spaces(lcd, 14);
-        }
+            lcd << PGM << STR_OFF << stream::Spaces(12);
+        else
+            lcd << stream::Spaces(14);
 
     } else {
-        lcd.write_P(STR_ON);
-        lcd.write(' ');
+        lcd << PGM << STR_ON << ' ';
 
         write_time(lcd, temp_buffer[1], temp_buffer[2]);
-        lcd.write(126);
+        lcd << static_cast<char>(126);
         write_time(lcd, temp_buffer[3], temp_buffer[4]);
 
         if (blink_state.get())
         {
             const uint8_t offset[5] = {2, 5, 8, 11, 14};
             lcd.move(offset[option - 1], 1);
-            lcd.write("  ");
+            lcd << "  ";
         }
     }
 
@@ -380,23 +347,18 @@ bool LcdStateSettings::pageKwhLimit()
     // Draw screen, flashing value while adjusting
 
     lcd.move(0, 0);
-    lcd.write(CustomCharacters::BATTERY1);
-    lcd.write_P(STR_SET_KWH_LIMIT);
+    lcd << static_cast<char>(CustomCharacters::BATTERY1);
+    lcd << PGM << STR_SET_KWH_LIMIT;
 
     lcd.move(2, 1);
     if (option == NOT_ADJUSTING || blink_state.get())
     {
         if (value == 0)
-        {
-            lcd.write_P(STR_OFF);
-        } else {
-            char buffer[4] = {0};
-            utoa(value, buffer, 10);
-            lcd.write(buffer);
-            lcd.write(" kWh  ");
-        }
+            lcd << PGM << STR_OFF;
+        else
+            lcd << value << " kWh  ";
     } else {
-        spaces(lcd, 13);
+        lcd << stream::Spaces(13);
     }
 
     return true;
@@ -418,8 +380,8 @@ bool LcdStateSettings::pageSleepmode()
     // Draw screen, flashing value while adjusting
 
     lcd.move(0, 0);
-    lcd.write(CustomCharacters::ZZ);
-    lcd.write_P(STR_SET_SLEEPMODE);
+    lcd << static_cast<char>(CustomCharacters::ZZ);
+    lcd << PGM << STR_SET_SLEEPMODE;
 
     lcd.move(2, 1);
     if (option == NOT_ADJUSTING || blink_state.get())
@@ -430,17 +392,17 @@ bool LcdStateSettings::pageSleepmode()
                 value = 0;
                 // fall-through intended
             case 0:
-                lcd.write_P(STR_SET_SLEEPMODE_TIME);
+                lcd << PGM << STR_SET_SLEEPMODE_TIME;
                 break;
             case 1:
-                lcd.write_P(STR_SET_SLEEPMODE_OFF);
+                lcd << PGM << STR_SET_SLEEPMODE_OFF;
                 break;
             case 2:
-                lcd.write_P(STR_SET_SLEEPMODE_DISABLED);
+                lcd << PGM << STR_SET_SLEEPMODE_DISABLED;
                 break;
         }
     } else {
-        spaces(lcd, 13);
+        lcd << stream::Spaces(13);
     }
 
     return true;
@@ -449,8 +411,7 @@ bool LcdStateSettings::pageSleepmode()
 bool LcdStateSettings::pageReset()
 {
     lcd.move(0, 0);
-    lcd.write('!');
-    lcd.write_P(STR_SET_RESET);
+    lcd << '!' << PGM << STR_SET_RESET;
     if (option != NOT_ADJUSTING)
         Watchdog::forceRestart();
     return true;
@@ -459,8 +420,8 @@ bool LcdStateSettings::pageReset()
 bool LcdStateSettings::pageExit()
 {
     lcd.move(0, 0);
-    lcd.write(0x7F); // <- back arrow
-    lcd.write_P(STR_SET_EXIT);
+    lcd << static_cast<char>(0x7F); // <- back arrow
+    lcd << PGM << STR_SET_EXIT;
     return (option == NOT_ADJUSTING);
 }
 

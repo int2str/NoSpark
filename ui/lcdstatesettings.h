@@ -17,8 +17,8 @@
 
 #include <stdbool.h>
 
-#include "devices/lcd1602.h"
 #include "evse/settings.h"
+#include "stream/lcdstream.h"
 #include "ui/lcdstate.h"
 #include "ui/timedflipflop.h"
 
@@ -33,7 +33,7 @@ typedef bool (LcdStateSettings::*PageHandler) ();
 class LcdStateSettings : public LcdState
 {
 public:
-    LcdStateSettings(devices::LCD16x2 &lcd);
+    LcdStateSettings(stream::LcdStream &lcd);
 
     bool draw() override;
 

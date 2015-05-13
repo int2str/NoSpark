@@ -15,43 +15,36 @@
 # it online at <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-include Makefile.inc
+include ../Makefile.inc
 
-LIBS = evse ui event serial devices board system utils stream
-
-CXXFLAGS = $(PRJCXXFLAGS) -I.
+SHAREDINC = -I..
 
 SRCDIR = .
 DEPDIR = .dep
 OBJDIR = obj
+OUTDIR = ../obj
+
+CXXFLAGS = $(PRJCXXFLAGS) $(SHAREDINC)
 
 SOURCE = $(wildcard $(SRCDIR)/*.cpp)
 OBJS = $(patsubst $(SRCDIR)%, $(OBJDIR)%, $(SOURCE:.cpp=.o))
 DEPS = $(patsubst $(OBJDIR)%, $(DEPDIR)%, $(OBJS:.o=.d))
-LIBA = $(patsubst %, $(OBJDIR)/lib%.a, $(LIBS))
-LIBL = -L$(OBJDIR) $(patsubst %, -l%, $(LIBS))
 
-TARGET = $(notdir $(CURDIR)).hex
-ELF = $(notdir $(CURDIR)).elf
+TARGET = $(OUTDIR)/lib$(notdir $(CURDIR)).a
 
-all: $(TARGET)
-
-upload: $(TARGET)
-	@echo [UPL] $<
-	@$(AVRDUDE) $(DUDEFLAGS) -U flash:w:$<
-
-fuses:
-	@echo [FUS] Settings fuses: $(FUSES)
-	@$(AVRDUDE) $(DUDEFLAGS) $(FUSES)
+all: $(OUTDIR) $(TARGET)
 
 clean:
 	-@rm $(TARGET)
 	-@rm -rf .dep
 	-@rm -rf obj
-	-@for lib in $(LIBS); do (cd $$lib; $(MAKE) clean); done
 
-test: force_look
-	@cd test ; $(MAKE) ; ./test
+$(OUTDIR):
+	@mkdir $@
+
+$(TARGET): $(OBJS)
+	@echo [LIB] $(notdir $@)
+	@$(AR) rcs $@ $^
 
 $(DEPDIR)/%.d: %.cpp
 	@mkdir -p $(dir $@)
@@ -62,21 +55,5 @@ $(OBJDIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	@echo [C++] $(notdir $<)
 	@$(CXX) -c $(CXXFLAGS) $< -o $@
-
-$(OBJDIR)/%.a: force_look
-	@cd $(patsubst lib%, %, $(basename $(notdir $@)) ; $(MAKE) $(MFLAGS))
-
-$(OBJDIR)/$(ELF): $(LIBA) $(OBJS)
-	@echo [LNK] $(notdir $@)
-	@$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) $(LIBL) -o $@
-	@echo
-	@$(SIZE) $(SIZEFLAGS) $@
-
-%.hex: $(OBJDIR)/%.elf
-	@echo [HEX] $@
-	@$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
-
-force_look:
-	@true
 
 -include $(DEPS)

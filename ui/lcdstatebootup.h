@@ -17,7 +17,7 @@
 
 #include <stdbool.h>
 
-#include "devices/lcd1602.h"
+#include "stream/lcdstream.h"
 #include "lcdstate.h"
 
 namespace ui
@@ -26,7 +26,7 @@ namespace ui
 class LcdStateBootup : public LcdState
 {
 public:
-    LcdStateBootup(devices::LCD16x2 &lcd);
+    LcdStateBootup(stream::LcdStream &lcd);
     bool draw() override;
 
 private:

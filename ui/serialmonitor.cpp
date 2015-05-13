@@ -51,12 +51,13 @@ void SerialMonitor::update()
         case CONSOLE_ACCUMULATING:
             while (uart.avail())
             {
-                buffer[len++] = uart.read();
+                uart >> buffer[len++];
+
                 if (len == 1 && buffer[0] == '$')
                     echo = false;
 
                 if (echo)
-                    uart.write(buffer[len-1]); // <-- echo
+                    uart << static_cast<char>(buffer[len-1]); // <-- echo
 
                 if (len == CONSOLE_BUFFER-1 || buffer[len-1] == CR)
                 {
@@ -83,7 +84,7 @@ void SerialMonitor::handleCommand()
         api.handleCommand(buffer+1, len-1);
     } else {
         console.handleCommand(buffer, len);
-        uart.write_P(STR_PROMPT);
+        uart << stream::PGM << STR_PROMPT;
     }
 }
 

@@ -19,7 +19,7 @@
 #include <stdbool.h>
 
 #include "event/handler.h"
-#include "serial/usart.h"
+#include "stream/uartstream.h"
 #include "ui/serialapi.h"
 #include "ui/serialconsole.h"
 #include "utils/cpp.h"
@@ -49,7 +49,7 @@ private:
     void update();
     void handleCommand();
 
-    serial::Usart& uart;
+    stream::UartStream uart;
     ui::SerialApi api;
     ui::SerialConsole console;
     SerialState state;

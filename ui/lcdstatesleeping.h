@@ -18,7 +18,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "devices/lcd1602.h"
+#include "stream/lcdstream.h"
 #include "ui/lcdstate.h"
 #include "ui/timedflipflop.h"
 
@@ -28,7 +28,7 @@ namespace ui
 class LcdStateSleeping : public LcdState
 {
 public:
-    LcdStateSleeping(devices::LCD16x2 &lcd);
+    LcdStateSleeping(stream::LcdStream &lcd);
     bool draw() override;
 
 private:

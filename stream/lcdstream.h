@@ -15,44 +15,29 @@
 
 #pragma once
 
-#include <stdbool.h>
-#include <stdint.h>
-
 #include "devices/lcd1602.h"
-#include "event/handler.h"
-#include "stream/lcdstream.h"
-#include "utils/cpp.h"
-#include "lcdstate.h"
+#include "stream/outputstream.h"
 
-namespace ui
+namespace stream
 {
 
-// LCD UI.
-// This is a singleton; there shall be only one.
-class LcdConsole : public event::Handler
+class LcdStream : public OutputStream
 {
-    LcdConsole();
-
 public:
-    static LcdConsole& init();
+    LcdStream(devices::LCD16x2 &lcd);
 
-protected:
-    void onEvent(const event::Event &event) override;
+    void clear();
+    void move(const uint8_t x, const uint8_t y);
+
+    void setBacklight(const devices::LCD16x2::Backlight color);
+
+    devices::LCD16x2& getLCD() const;
 
 private:
-    void update();
-    void updateSleepState(const event::Event &event);
-    void setState(LcdState *newState);
+    void write(const char ch) override;
+    void write(const char *string) override;
 
-    bool in_settings;
-    bool sleeping;
-    uint32_t last_event;
-
-    LcdState *lcdState;
-    stream::LcdStream lcd;
-    devices::LCD16x2 lcd_int;
-
-    DISALLOW_COPY_AND_ASSIGN(LcdConsole);
+    devices::LCD16x2 &lcd;
 };
 
 }

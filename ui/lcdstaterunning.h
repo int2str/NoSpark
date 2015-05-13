@@ -17,7 +17,7 @@
 
 #include <stdint.h>
 
-#include "devices/lcd1602.h"
+#include "stream/lcdstream.h"
 #include "evse/state.h"
 #include "ui/lcdstate.h"
 #include "ui/timedflipflop.h"
@@ -28,7 +28,7 @@ namespace ui
 class LcdStateRunning : public LcdState
 {
 public:
-    LcdStateRunning(devices::LCD16x2 &lcd);
+    LcdStateRunning(stream::LcdStream &lcd);
     bool draw() override;
 
 private:

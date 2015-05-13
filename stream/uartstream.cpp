@@ -13,31 +13,35 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#pragma once
-
-#include <stdint.h>
-#include <stdbool.h>
-
-#include "utils/cpp.h"
 #include "stream/uartstream.h"
-#include "ui/serialapi.h"
 
-namespace ui
+namespace stream
 {
 
-// Simple command line interface for control and monitoring.
-class SerialApi
+UartStream::UartStream(serial::Usart &uart)
+  : uart(uart)
 {
-public:
-    SerialApi(stream::UartStream &uart);
+}
 
-    void onEvent(const event::Event &event);
-    bool handleCommand(const char *buffer, const uint8_t len);
+bool UartStream::avail()
+{
+    return uart.avail();
+}
 
-private:
-    stream::UartStream &uart;
+UartStream& UartStream::operator>> (char &ch)
+{
+    ch = uart.read();
+    return *this;
+}
 
-    DISALLOW_COPY_AND_ASSIGN(SerialApi);
-};
+void UartStream::write(const char *string)
+{
+    uart.write(string);
+}
+
+void UartStream::write(const char ch)
+{
+    uart.write(ch);
+}
 
 }
