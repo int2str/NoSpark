@@ -20,7 +20,7 @@
 // General UI                            |1234567890123456|
 #define STR_NOT_CONNECTED           PSTR("Nicht verbunden")
 #define STR_CONNECTED               PSTR("EV bereit")
-#define STR_CHARGING                PSTR("Laedt auf ")
+#define STR_CHARGING                PSTR("Aufladen")
 #define STR_CHARGED                 PSTR("Geladen")
 #define STR_VENT_REQUIRED           PSTR("Abzug notwendig")
 #define STR_ERROR_STATE             PSTR("FEHLER")

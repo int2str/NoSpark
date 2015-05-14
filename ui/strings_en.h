@@ -20,7 +20,7 @@
 // General UI                            |1234567890123456|
 #define STR_NOT_CONNECTED           PSTR("EV not connected")
 #define STR_CONNECTED               PSTR("EV ready")
-#define STR_CHARGING                PSTR("Charging  ")
+#define STR_CHARGING                PSTR("Charging")
 #define STR_CHARGED                 PSTR("Charged")
 #define STR_VENT_REQUIRED           PSTR("Vent required")
 #define STR_ERROR_STATE             PSTR("ERROR")

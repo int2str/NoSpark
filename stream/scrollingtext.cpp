@@ -50,7 +50,7 @@ void ScrollingText::setWidth(const uint8_t width)
 ScrollingText& ScrollingText::operator>> (OutputStream &os)
 {
     if (length > width)
-        *this << " - ";
+        *this << " ~ ";
 
     if (length <= width || offset >= length)
         offset = 0;

@@ -65,7 +65,6 @@ namespace
         char buffer[10] = {0};
         ltoa(wh / 1000, buffer, 10);
 
-        lcd << stream::Spaces(3 - strlen(buffer));
         lcd << buffer << '.' << static_cast<char>('0' + ((wh / 100) % 10)) << " kWh";
     }
 
@@ -102,7 +101,7 @@ LcdStateRunning::LcdStateRunning(stream::LcdStream &lcd)
     : LcdState(lcd)
     , page(PAGE_DEFAULT)
     , display_state(PAGE_TIMEOUT)
-    , scrolling_text(32, 11)
+    , scrolling_text(40, 11)
 {
     CustomCharacters::loadCustomChars(lcd.getLCD());
     EepromSettings::load(settings);
@@ -166,7 +165,7 @@ void LcdStateRunning::drawDefault()
                 center_P(lcd, STR_NOT_CONNECTED);
             } else {
                 scrolling_text.setWidth(LCD_COLUMNS);
-                scrolling_text << stream::PGM << STR_CHARGED << " ~ ";
+                scrolling_text << stream::PGM << STR_CHARGED << " ";
                 write_duration(scrolling_text, chargeMonitor.chargeDuration());
                 scrolling_text << " / ";
                 write_kwh(scrolling_text, chargeMonitor.wattHours());
@@ -185,7 +184,7 @@ void LcdStateRunning::drawDefault()
             lcd.setBacklight(LCD16x2::CYAN);
 
             scrolling_text.setWidth(10);
-            scrolling_text << stream::PGM << STR_CHARGING << " ~ ";
+            scrolling_text << stream::PGM << STR_CHARGING << " ";
             write_kwh(scrolling_text, chargeMonitor.wattHours());
             write_cost(scrolling_text, settings.kwh_currency, settings.kwh_cost, chargeMonitor.wattHours());
             scrolling_text >> lcd;
