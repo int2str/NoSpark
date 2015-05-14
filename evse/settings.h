@@ -45,6 +45,12 @@ public:
     uint16_t charge_timer_t1;
     uint16_t charge_timer_t2;
 
+    // Rev 5
+    uint8_t kwh_currency;
+    uint16_t kwh_cost;
+    uint16_t ammeter_factor;
+    uint16_t ammeter_offset;
+
     Settings();
 
     void defaults();

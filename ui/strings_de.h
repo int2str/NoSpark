@@ -34,6 +34,7 @@
 #define STR_SET_CURRENT             PSTR(" Max. Ampere")
 #define STR_SET_CHARGETIMER         PSTR(" Lade Zeiten")
 #define STR_SET_KWH_LIMIT           PSTR(" kWh Limit")
+#define STR_SET_KWH_COST            PSTR(" Preis pro kWh")
 #define STR_SET_SLEEPMODE           PSTR(" Schlaf modus")
 #define STR_SET_SLEEPMODE_TIME      PSTR("Zeit anzeigen")
 #define STR_SET_SLEEPMODE_OFF       PSTR("Display aus")

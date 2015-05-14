@@ -20,7 +20,7 @@
 
 #define SETTINGS_OFFSET     0x08
 #define SETTINGS_MARKER     0xAEAE
-#define SETTINGS_REVISION   0x04
+#define SETTINGS_REVISION   0x05
 
 namespace evse
 {
@@ -33,26 +33,13 @@ Settings::Settings()
 void Settings::defaults()
 {
     marker = SETTINGS_MARKER;
-    revision = SETTINGS_REVISION;
 
     // Rev 1
     max_current = 16;
 
-    // Rev 2
-    kwh_total = 0;
-    kwh_year = 0;
-    kwh_month = 0;
-    kwh_week = 0;
-    kwh_index = 0;
-
-    // Rev 3
-    kwh_limit = 0;
-    sleep_mode = 0;
-
-    // Rev 4
-    charge_timer_enabled = 0;
-    charge_timer_t1 = (23 << 8);
-    charge_timer_t2 = (7 << 8);
+    // Force upgrade
+    revision = 0;
+    upgrade();
 }
 
 void Settings::upgrade()
@@ -80,6 +67,15 @@ void Settings::upgrade()
         charge_timer_enabled = 0;
         charge_timer_t1 = (23 << 8);
         charge_timer_t2 = (7 << 8);
+    }
+
+    // Rev 5
+    if (revision < 5)
+    {
+        kwh_currency = 0;
+        kwh_cost = 0;
+        ammeter_factor = 220;
+        ammeter_offset = 0;
     }
 
     revision = SETTINGS_REVISION;

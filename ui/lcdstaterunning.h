@@ -19,6 +19,7 @@
 
 #include "stream/lcdstream.h"
 #include "stream/scrollingtext.h"
+#include "evse/settings.h"
 #include "evse/state.h"
 #include "ui/lcdstate.h"
 #include "ui/timedflipflop.h"
@@ -50,6 +51,7 @@ private:
     uint8_t page;
     TimedFlipFlop display_state;
     stream::ScrollingText scrolling_text;
+    evse::Settings settings;
 };
 
 }

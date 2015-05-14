@@ -51,6 +51,11 @@
 #define ADJUST_T2_HH        0x04
 #define ADJUST_T2_MM        0x05
 
+#define ADJUST_CURRENCY     0x01
+#define ADJUST_ONES         0x02
+#define ADJUST_TENTH        0x03
+#define ADJUST_HUNDREDTH    0x04
+
 using devices::DS3231;
 using devices::LCD16x2;
 using evse::EepromSettings;
@@ -86,6 +91,7 @@ LcdStateSettings::LcdStateSettings(stream::LcdStream &lcd)
       , &LcdStateSettings::pageKwhLimit
       , &LcdStateSettings::pageSetTime
       , &LcdStateSettings::pageSetDate
+      , &LcdStateSettings::pageKwhCost
       , &LcdStateSettings::pageSleepmode
       , &LcdStateSettings::pageReset
       , &LcdStateSettings::pageExit
@@ -361,6 +367,61 @@ bool LcdStateSettings::pageKwhLimit()
         lcd << stream::Spaces(13);
     }
 
+    return true;
+}
+
+bool LcdStateSettings::pageKwhCost()
+{
+    const char currencies[3] = {'$', CustomCharacters::EURO, '\\'}; // Backslash = Yen
+
+    if (value == UNINITIALIZED)
+        value = 0;
+
+    if (option > ADJUST_HUNDREDTH)
+    {
+        EepromSettings::save(settings);
+        option = NOT_ADJUSTING;
+    }
+
+    uint16_t hundredth = settings.kwh_cost;
+    uint16_t ones = hundredth / 100;
+    hundredth -= ones * 100;
+    uint16_t tenth = hundredth / 10;
+    hundredth -= tenth * 10;
+
+    if (option == ADJUST_CURRENCY)
+        settings.kwh_currency = (settings.kwh_currency + value) % 3;
+
+    if (option == ADJUST_ONES)
+        ones = (ones + value) % 10;
+
+    if (option == ADJUST_TENTH)
+        tenth = (tenth + value) % 10;
+
+    if (option == ADJUST_HUNDREDTH)
+        hundredth = (hundredth + value) % 10;
+
+    settings.kwh_cost = hundredth + (tenth * 10) + (ones * 100);
+
+    // Draw screen, flashing value while adjusting
+
+    lcd.move(0, 0);
+    lcd << '$' << PGM << STR_SET_KWH_COST;
+
+    lcd.move(2, 1);
+    lcd << static_cast<char>(currencies[settings.kwh_currency]) << ' ';
+    lcd << static_cast<char>('0' + ones) << '.';
+    lcd << static_cast<char>('0' + tenth);
+    lcd << static_cast<char>('0' + hundredth);
+
+    if (option != NOT_ADJUSTING && !blink_state.get())
+    {
+        const uint8_t offset[4] = {2, 4, 6, 7};
+        lcd.move(offset[option - 1], 1);
+        lcd << " ";
+    }
+
+    value = 0;
     return true;
 }
 
