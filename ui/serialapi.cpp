@@ -262,6 +262,37 @@ namespace
         }
         return OK;
     }
+
+    void cmdGetKwhCost(char *response)
+    {
+        Settings settings;
+        EepromSettings::load(settings);
+
+        paramAdd(response, 'C', settings.kwh_currency);
+        paramAdd(response, 'P', settings.kwh_cost);
+    }
+
+    uint8_t cmdSetKwhCost(const char *buffer)
+    {
+        Settings settings;
+        EepromSettings::load(settings);
+
+        uint16_t c = paramGet(buffer, 'C');
+        if (c < 3)
+            settings.kwh_currency = c;
+
+        uint16_t p = paramGet(buffer, 'P');
+        if (p != PARAM_NOT_FOUND)
+            settings.kwh_cost = p;
+
+        if (c < 3 || p != PARAM_NOT_FOUND)
+        {
+            EepromSettings::save(settings);
+            event::Loop::post(Event(EVENT_SETTINGS_CHANGED));
+        }
+
+        return OK;
+    }
 }
 
 namespace ui
@@ -339,6 +370,14 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t)
 
         case CMD_SET_READY_STATE:
             err = cmdSetReadyState(buffer);
+            break;
+
+        case CMD_GET_KWH_COST:
+            cmdGetKwhCost(response);
+            break;
+
+        case CMD_SET_KWH_COST:
+            err = cmdSetKwhCost(buffer);
             break;
 
         case CMD_GET_SAPI_VERSION:

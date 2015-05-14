@@ -253,6 +253,34 @@
 //    = Sets EVSE into MANUAL ready state (interrupts charging)
 #define CMD_SET_READY_STATE     21
 
+// Get the average price per kWh
+//
+// Parameters:
+//   none
+//
+// Returns:
+//   C - Currency (0=dollar, 1=Euro, 2=Yen)
+//   P - Price in cents
+//
+// Example:
+//   -> $E22
+//   <- $OK C0 P20
+#define CMD_GET_KWH_COST        22
+
+// Sets the average price per kWh
+//
+// Parameters:
+//   C - Currency (0=dollar, 1=Euro, 2=Yen; optional)
+//   P - Price in cents (optional)
+//
+// Returns:
+//   none
+//
+// Example:
+//   -> $E23 C0 P20
+//   <- $OK
+#define CMD_SET_KWH_COST        23
+
 // Enable or disable debug events
 //
 // Parameters:
