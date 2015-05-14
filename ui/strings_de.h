@@ -48,9 +48,9 @@
 #define STR_FAULT_TEMPERATURE       PSTR("Temperatur Alarm")
 
 // Stats                                 |1234567890123456|
-#define STR_STATS_KWH               PSTR("kWh aufgeladen")
-#define STR_STATS_WEEK              PSTR("Woche")
-#define STR_STATS_MONTH             PSTR("Monat")
-#define STR_STATS_YEAR              PSTR("Jahr")
+#define STR_STATS_KWH               PSTR("Lade Statistik:")
+#define STR_STATS_WEEK              PSTR("Diese Woche")
+#define STR_STATS_MONTH             PSTR("Dieser Monat")
+#define STR_STATS_YEAR              PSTR("Dieses Jahr")
 #define STR_STATS_TOTAL             PSTR("Gesamt")
 

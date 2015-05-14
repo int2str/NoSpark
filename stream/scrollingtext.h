@@ -15,41 +15,35 @@
 
 #pragma once
 
-#include <stdint.h>
+#include "stream/outputstream.h"
 
-#include "stream/lcdstream.h"
-#include "stream/scrollingtext.h"
-#include "evse/state.h"
-#include "ui/lcdstate.h"
-#include "ui/timedflipflop.h"
-
-namespace ui
+namespace stream
 {
 
-class LcdStateRunning : public LcdState
+class ScrollingText : public OutputStream
 {
 public:
-    LcdStateRunning(stream::LcdStream &lcd);
-    bool draw() override;
+    ScrollingText(const uint8_t size, const uint8_t width);
+    ~ScrollingText();
+
+    void setWidth(const uint8_t width);
+    void clear();
+
+    ScrollingText &operator>> (OutputStream &os);
 
 private:
-    enum RunningPages
-    {
-        PAGE_DEFAULT,
-        PAGE_KWH_WEEK,
-        PAGE_KWH_MONTH,
-        PAGE_KWH_YEAR,
-        PAGE_KWH_TOTAL,
-        PAGE_MAX
-    };
+    void update();
 
-    void drawDefault();
-    void drawKwhStats();
-    void select() override;
+    void write(const char ch) override;
+    void write(const char *str) override;
 
-    uint8_t page;
-    TimedFlipFlop display_state;
-    stream::ScrollingText scrolling_text;
+    uint32_t last_update;
+
+    const uint8_t size;
+    uint8_t width;
+    uint8_t length;
+    uint8_t offset;
+    char *buffer;
 };
 
 }

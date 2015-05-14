@@ -48,7 +48,7 @@
 #define STR_FAULT_TEMPERATURE       PSTR("High temperature")
 
 // Stats                                 |1234567890123456|
-#define STR_STATS_KWH               PSTR("Total kW-hours")
+#define STR_STATS_KWH               PSTR("Charge totals:")
 #define STR_STATS_WEEK              PSTR("This week")
 #define STR_STATS_MONTH             PSTR("This month")
 #define STR_STATS_YEAR              PSTR("This year")

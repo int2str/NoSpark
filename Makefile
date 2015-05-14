@@ -17,7 +17,7 @@
 
 include Makefile.inc
 
-LIBS = evse ui event serial devices board system utils stream
+LIBS = evse ui stream event serial devices board system utils
 
 CXXFLAGS = $(PRJCXXFLAGS) -I.
 
