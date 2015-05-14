@@ -33,7 +33,7 @@ public:
       , HOURGLASS
       , ZZ
       , BATTERY1
-      , BATTERY2
+      , EURO
     };
 
     static void loadCustomChars(devices::LCD16x2 &lcd);
