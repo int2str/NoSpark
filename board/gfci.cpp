@@ -22,9 +22,9 @@
 #include "gfci.h"
 #include "pins.h"
 
-#define GFCI_TEST_PULSES      50
+#define GFCI_TEST_PULSES     100
 #define GFCI_TEST_DELAY_US  8333 // ~60Hz
-#define GFCI_RESET_DELAY_MS  500
+#define GFCI_RESET_DELAY_MS  750
 
 using event::Event;
 using event::Loop;
@@ -65,9 +65,9 @@ GFCI::GFCI()
     // Pointer for ISR
     gfci = this;
 
-    // Enable pin change interrupt
+    // Enable pin change interrupt (rising edge)
     utils::Atomic _atomic;
-    EICRA = (1 << ISC00);
+    EICRA = (1 << ISC01) || (1 << ISC00);
     EIMSK = (1 << INT0);
 }
 
@@ -85,7 +85,7 @@ bool GFCI::selfTest(const bool sendPostEvent)
     // Wait for pin to go low again
     uint8_t retries = 0;
     while (++retries && !!pinSense)
-        _delay_ms(2);
+        _delay_ms(10);
 
     _delay_ms(GFCI_RESET_DELAY_MS);
 
