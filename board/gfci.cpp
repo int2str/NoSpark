@@ -24,7 +24,7 @@
 
 #define GFCI_TEST_PULSES      50
 #define GFCI_TEST_DELAY_US  8333 // ~60Hz
-#define GFCI_RESET_DELAY_MS  300
+#define GFCI_RESET_DELAY_MS  500
 
 using event::Event;
 using event::Loop;
@@ -85,8 +85,7 @@ bool GFCI::selfTest(const bool sendPostEvent)
     // Wait for pin to go low again
     uint8_t retries = 0;
     while (++retries && !!pinSense)
-    {
-    }
+        _delay_ms(2);
 
     _delay_ms(GFCI_RESET_DELAY_MS);
 
