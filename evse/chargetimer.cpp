@@ -100,6 +100,7 @@ void ChargeTimer::checkTime()
 void ChargeTimer::onEvent(const event::Event& event)
 {
     if ((event.id == EVENT_UPDATE_CHARGE_TIMER)
+     || (event.id == EVENT_SETTINGS_CHANGED)
      || (event.id == EVENT_CONTROLLER_STATE && event.param == State::RUNNING))
         checkTime();
 }

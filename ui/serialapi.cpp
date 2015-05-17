@@ -286,10 +286,7 @@ namespace
             settings.kwh_cost = p;
 
         if (c < 3 || p != PARAM_NOT_FOUND)
-        {
             EepromSettings::save(settings);
-            event::Loop::post(Event(EVENT_SETTINGS_CHANGED));
-        }
 
         return OK;
     }

@@ -16,7 +16,9 @@
 #include <avr/eeprom.h>
 
 #include "devices/ds3231.h"
-#include "settings.h"
+#include "event/loop.h"
+#include "evse/settings.h"
+#include "events.h"
 
 #define SETTINGS_OFFSET     0x08
 #define SETTINGS_MARKER     0xAEAE
@@ -120,6 +122,7 @@ void EepromSettings::save(Settings &settings)
     void* addr = reinterpret_cast<void*>(SETTINGS_OFFSET);
     settings.preSave();
     eeprom_write_block(&settings, addr, sizeof(Settings));
+    event::Loop::post(event::Event(EVENT_SETTINGS_CHANGED));
 }
 
 }

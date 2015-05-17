@@ -24,7 +24,7 @@
 
 #define GFCI_TEST_PULSES     100
 #define GFCI_TEST_DELAY_US  8333 // ~60Hz
-#define GFCI_RESET_DELAY_MS  750
+#define GFCI_RESET_DELAY_MS  500
 
 using event::Event;
 using event::Loop;
