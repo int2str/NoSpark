@@ -46,9 +46,13 @@ public:
     // Must be called regularly to dispatch events
     static void dispatch();
 
+    // "Handler" sub-classes do this automatically...
+    static void addHandler(Handler *ph);
+
+    static void removeHandler(Handler *ph);
+
 protected:
     friend class Handler;
-    static void addHandler(Handler *ph);
 
 private:
     static Loop &get();

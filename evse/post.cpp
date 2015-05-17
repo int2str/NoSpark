@@ -61,6 +61,7 @@ void POST::onEvent(const event::Event& event)
                 Loop::post(Event(postEvents[current]));
             } else {
                 Loop::post(Event(EVENT_POST_COMPLETED, 0));
+                Loop::removeHandler(this);
             }
             break;
 

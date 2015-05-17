@@ -53,6 +53,19 @@ void Loop::addHandler(Handler *ph)
     handlers.push(ph);
 }
 
+void Loop::removeHandler(Handler *ph)
+{
+    auto& handlers = get().handlers;
+    for (auto it = handlers.begin(); it != handlers.end(); ++it)
+    {
+        if (*it == ph)
+        {
+            handlers.erase(it);
+            break;
+        }
+    }
+}
+
 void Loop::dispatch()
 {
     get().dispatch_impl();
