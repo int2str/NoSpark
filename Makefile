@@ -45,10 +45,10 @@ fuses:
 	@$(AVRDUDE) $(DUDEFLAGS) $(FUSES)
 
 clean:
-	-@rm $(TARGET)
-	-@rm -rf .dep
-	-@rm -rf obj
 	-@for lib in $(LIBS); do (cd $$lib; $(MAKE) clean); done
+	-@rm -rf obj
+	-@rm -rf .dep
+	-@rm $(TARGET)
 
 test: force_look
 	@cd test ; $(MAKE) ; ./test
