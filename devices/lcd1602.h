@@ -19,6 +19,7 @@
 #include <stdint.h>
 
 #include "devices/mcp23017.h"
+#include "utils/pair.h"
 
 namespace devices
 {
@@ -55,10 +56,9 @@ public:
 
 private:
     devices::MCP23017 io;
-    Backlight backlight;
+    utils::Pair<uint8_t,uint8_t> backlight_bits;
 
     void writeCommand(const uint8_t b);
-    void writeData(const uint8_t b);
     void pulse(const uint8_t b);
 };
 

@@ -22,6 +22,8 @@
 
 #define LCD_I2C_ADDR            0x20
 
+#define LCD_COMMAND_DELAY_US      40
+
 #define LCD_RS              (1 << 7)
 #define LCD_RW              (1 << 6)
 #define LCD_EN              (1 << 5)
@@ -64,20 +66,13 @@ namespace
 {
     using devices::LCD16x2;
 
-    uint8_t reverse_tuple(const uint8_t b)
-    {
-        static const uint8_t b_map[] =
-        {
-            0x0, 0x8, 0x4, 0xC, 0x2, 0xA, 0x6, 0xE,
-            0x1, 0x9, 0x5, 0xD, 0x3, 0xB, 0x7, 0xF
-        };
-        return b_map[b & 0xF];
-    }
-
-    uint8_t data4bit(const uint8_t b)
-    {
-        return reverse_tuple(b) << LCD_D4_OFFSET;
-    }
+    // This is a map of tuples, bit reversed and left shifted over
+    // by one to map the D4-D7 bits onto the I/O expanders "B"
+    // register.
+    const uint8_t TUPLE_MAP[] = {
+        0x00, 0x10, 0x08, 0x18, 0x04, 0x14, 0x0c, 0x1c,
+        0x02, 0x12, 0x0a, 0x1a, 0x06, 0x16, 0x0e, 0x1e
+    };
 
     Pair<uint8_t,uint8_t> bits4color(const LCD16x2::Backlight color)
     {
@@ -114,8 +109,10 @@ namespace devices
 
 LCD16x2::LCD16x2()
     : io(LCD_I2C_ADDR)
-    , backlight(OFF)
+    , backlight_bits(0, 0)
 {
+    backlight_bits = bits4color(OFF);
+
     // Initialize GPIO expander
     io.ioDir(0x1F, 0x00);
     io.pullUp(0x1F, 0x00);
@@ -130,17 +127,17 @@ LCD16x2::LCD16x2()
     {
         if (i == 3)
             fn &= ~LCD_FN_4BIT;
-        pulse(data4bit(fn >> 4));
-        _delay_us(50);
+        pulse(TUPLE_MAP[fn >> 4]);
+        _delay_us(LCD_COMMAND_DELAY_US);
     }
 
     writeCommand(LCD_CTRL | LCD_CTRL_DISPLAY);
-    _delay_us(50);
+    _delay_us(LCD_COMMAND_DELAY_US);
 
     clear();
 
     writeCommand(LCD_ENTRY | LCD_ENTRY_INC);
-    _delay_us(50);
+    _delay_us(LCD_COMMAND_DELAY_US);
 
     setBacklight(GREEN);
 }
@@ -161,21 +158,20 @@ void LCD16x2::move(const uint8_t x, const uint8_t y)
 {
     const uint8_t row_offset[] = {0x00, 0x40, 0x14, 0x54};
     writeCommand(LCD_SET_DD_ADDR | (x + row_offset[y]));
-    _delay_us(50);
+    _delay_us(LCD_COMMAND_DELAY_US);
 }
 
 void LCD16x2::setBacklight(const Backlight color)
 {
-    backlight = color;
-    const Pair<uint8_t,uint8_t> bits = bits4color(color);
-    io.write(bits.first, bits.second);
+    backlight_bits = bits4color(color);
+    io.write(backlight_bits.first, backlight_bits.second);
 }
 
 void LCD16x2::createChar(const uint8_t idx, const uint8_t* data, const uint8_t len)
 {
     writeCommand(LCD_SET_CG_ADDR | (idx << 3));
     for (uint8_t i = 0; i != len; ++i)
-        writeData(*data++);
+        write(*data++);
     move(0, 0); // To reset address pointer
 }
 
@@ -183,7 +179,7 @@ void LCD16x2::createChar_P(const uint8_t idx, const uint8_t* data, const uint8_t
 {
     writeCommand(LCD_SET_CG_ADDR | (idx << 3));
     for (uint8_t i = 0; i != len; ++i)
-        writeData(pgm_read_byte(data++));
+        write(pgm_read_byte(data++));
     move(0, 0); // To reset address pointer
 }
 
@@ -201,26 +197,20 @@ void LCD16x2::write_P(const char* str)
 
 void LCD16x2::write(const uint8_t ch)
 {
-    writeData(ch);
+    pulse(TUPLE_MAP[ch >> 4] | LCD_RS);
+    pulse(TUPLE_MAP[ch & 0xF] | LCD_RS);
 }
 
 void LCD16x2::writeCommand(const uint8_t b)
 {
-    pulse(data4bit(b >> 4));
-    pulse(data4bit(b));
-}
-
-void LCD16x2::writeData(const uint8_t b)
-{
-    pulse(data4bit(b >> 4) | LCD_RS);
-    pulse(data4bit(b) | LCD_RS);
+    pulse(TUPLE_MAP[b >> 4]);
+    pulse(TUPLE_MAP[b & 0xF]);
 }
 
 void LCD16x2::pulse(const uint8_t b)
 {
-    const Pair<uint8_t,uint8_t> bits = bits4color(backlight);
-    io.writeB(b | bits.second | LCD_EN);
-    io.writeB(b | bits.second);
+    io.writeB(b | backlight_bits.second | LCD_EN);
+    io.writeB(b | backlight_bits.second);
 }
 
 }
