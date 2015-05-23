@@ -55,11 +55,11 @@ public:
     Mode getMode() const;
     void pwmAmps(const uint8_t amps);
 
-    State getState() const;
+    State getState();
 
 private:
+    State last_state;
     Mode mode;
-    board::Pin pinSense;
 
     DISALLOW_COPY_AND_ASSIGN(J1772Pilot);
 };

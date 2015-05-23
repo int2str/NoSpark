@@ -15,6 +15,7 @@
 
 #include <avr/io.h>
 
+#include "board/adc.h"
 #include "board/j1772pilot.h"
 #include "board/pins.h"
 #include "utils/atomic.h"
@@ -85,30 +86,15 @@ namespace
 
         return states[(sample - J1772_THRESHOLD_OFFSET) / J1772_THRESHOLD_STEP];
     }
-
-    utils::Pair<uint16_t, uint16_t> samplePin(const board::Pin& pin)
-    {
-        utils::Pair<uint16_t,uint16_t> reading = {1023, 0};
-
-        for (uint8_t i = 0; i != J1772_SAMPLES; ++i)
-        {
-            const uint16_t value = pin.analogRead();
-            reading.first = utils::min(reading.first, value);
-            reading.second = utils::max(reading.second, value);
-        }
-
-        return reading;
-    }
 }
 
 namespace board
 {
 
 J1772Pilot::J1772Pilot()
-    : mode(LOW)
-    , pinSense(PIN_J1772_STATUS)
+    : last_state(NOT_READY)
+    , mode(LOW)
 {
-    pinSense.io(Pin::IN);
 }
 
 void J1772Pilot::setMode(const Mode mode)
@@ -131,16 +117,21 @@ void J1772Pilot::pwmAmps(const uint8_t amps)
     pwmEnable(amp2duty(amps));
 }
 
-J1772Pilot::State J1772Pilot::getState() const
+J1772Pilot::State J1772Pilot::getState()
 {
+    if (Adc::get().j1772Ready())
+    {
+        const auto sample = Adc::get().readJ1772();
+        if (J1772Pilot::getMode() == J1772Pilot::PWM && sample.first > J1772_DIODE_THRESHOLD)
+            last_state = DIODE_CHECK_FAILED;
+        else
+            last_state = stateFromSample(sample.second);
+    }
+
     if (J1772Pilot::getMode() == J1772Pilot::LOW)
         return NOT_READY;
 
-    const auto sample = samplePin(pinSense);
-    if (J1772Pilot::getMode() == J1772Pilot::PWM && sample.first > J1772_DIODE_THRESHOLD)
-        return DIODE_CHECK_FAILED;
-
-    return stateFromSample(sample.second);
+    return last_state;
 }
 
 }

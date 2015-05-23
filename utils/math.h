@@ -19,7 +19,7 @@ namespace utils
 {
 
 template <typename T>
-const T& min(const T& a, const T& b)
+T min(T a, T b)
 {
     if (b < a)
         return b;
@@ -27,7 +27,7 @@ const T& min(const T& a, const T& b)
 }
 
 template <typename T>
-const T& max(const T& a, const T& b)
+T max(T a, T b)
 {
     if (b > a)
         return b;
