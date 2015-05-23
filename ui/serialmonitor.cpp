@@ -18,6 +18,9 @@
 #include "ui/strings_console.h"
 #include "events.h"
 
+#define BS  0x08
+#define DEL 0x7F
+
 using serial::Usart;
 
 namespace ui
@@ -41,6 +44,8 @@ SerialMonitor::SerialMonitor()
 
 void SerialMonitor::update()
 {
+    char ch;
+
     switch (state)
     {
         case CONSOLE_STARTUP:
@@ -51,15 +56,23 @@ void SerialMonitor::update()
         case CONSOLE_ACCUMULATING:
             while (uart.avail())
             {
-                uart >> buffer[len++];
+                uart >> ch;
 
-                if (len == 1 && buffer[0] == '$')
+                if (len == 0 && ch == '$')
                     echo = false;
 
                 if (echo)
-                    uart << static_cast<char>(buffer[len-1]); // <-- echo
+                    uart << ch;
 
-                if (len == CONSOLE_BUFFER-1 || buffer[len-1] == CR)
+                if (ch == BS || ch == DEL)
+                {
+                    if (len)
+                        buffer[--len] = 0;
+                } else {
+                    buffer[len++] = ch;
+                }
+
+                if (len == CONSOLE_BUFFER || ch == CR)
                 {
                     buffer[len-1] = 0;
                     state = CONSOLE_COMMAND;
