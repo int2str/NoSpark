@@ -23,7 +23,7 @@
 //     22 Ohm / 4.882mV = 4.5056
 //     1 / 4.5056 * 1000 (to get to mA) = 222
 // Slightly tweaked for accuracy...
-#define CURRENT_SCALE_FACTOR 220l
+#define CURRENT_SCALE_FACTOR 200l
 
 namespace board
 {
