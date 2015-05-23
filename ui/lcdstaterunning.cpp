@@ -153,6 +153,8 @@ void LcdStateRunning::drawDefault()
     switch (state.j1772)
     {
         case J1772Pilot::UNKNOWN:
+            break;
+
         case J1772Pilot::STATE_E:
             lcd.setBacklight(LCD16x2::RED);
             center_P(lcd, STR_ERROR_STATE);
