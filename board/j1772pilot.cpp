@@ -117,19 +117,25 @@ void J1772Pilot::pwmAmps(const uint8_t amps)
     pwmEnable(amp2duty(amps));
 }
 
-J1772Pilot::State J1772Pilot::getState()
+J1772Pilot::State J1772Pilot::getState(const bool force_update)
 {
-    if (Adc::get().j1772Ready())
-    {
-        const auto sample = Adc::get().readJ1772();
-        if (J1772Pilot::getMode() == J1772Pilot::PWM && sample.first > J1772_DIODE_THRESHOLD)
-            last_state = DIODE_CHECK_FAILED;
-        else
-            last_state = stateFromSample(sample.second);
-    }
-
     if (J1772Pilot::getMode() == J1772Pilot::LOW)
-        return NOT_READY;
+    {
+        last_state = NOT_READY;
+
+    } else {
+        if (force_update || last_state == NOT_READY)
+            while(!Adc::get().j1772Ready()) {}
+
+        if (Adc::get().j1772Ready())
+        {
+            const auto sample = Adc::get().readJ1772();
+            if (J1772Pilot::getMode() == J1772Pilot::PWM && sample.first > J1772_DIODE_THRESHOLD)
+                last_state = DIODE_CHECK_FAILED;
+            else
+                last_state = stateFromSample(sample.second);
+        }
+    }
 
     return last_state;
 }

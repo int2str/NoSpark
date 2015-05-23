@@ -55,7 +55,7 @@ public:
     Mode getMode() const;
     void pwmAmps(const uint8_t amps);
 
-    State getState();
+    State getState(const bool force_update = false);
 
 private:
     State last_state;

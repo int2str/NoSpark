@@ -210,7 +210,7 @@ void Controller::onEvent(const event::Event &event)
 bool Controller::checkEVPresent()
 {
     j1772.setMode(J1772Pilot::HIGH);
-    const bool present = (j1772.getState() != J1772Pilot::STATE_A);
+    const bool present = (j1772.getState(true) != J1772Pilot::STATE_A);
     j1772.setMode(J1772Pilot::LOW);
 
     return present;
