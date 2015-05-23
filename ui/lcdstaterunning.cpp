@@ -125,7 +125,7 @@ void LcdStateRunning::drawDefault()
     rtc.read();
 
     uint8_t amps = state.max_amps_limit;
-    if (ChargeMonitor::get().isCharging())
+    if (chargeMonitor.isCharging())
         amps = chargeMonitor.chargeCurrent() / 1000;
 
     lcd.move(0,0);
