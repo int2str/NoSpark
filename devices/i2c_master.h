@@ -28,8 +28,8 @@ class I2CMaster
 public:
     static I2CMaster& get();
 
-    uint8_t write(const uint8_t addr, uint8_t* data, const uint8_t len);
-    uint8_t read(const uint8_t addr, uint8_t* data, const uint8_t len);
+    void write(const uint8_t addr, uint8_t* data, const uint8_t len);
+    void read(const uint8_t addr, uint8_t* data, const uint8_t len);
 
 private:
 

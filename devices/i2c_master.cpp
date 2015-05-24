@@ -97,22 +97,17 @@ namespace
         }
     }
 
-    void i2c_busy_wait()
+    void i2c_rw(const uint8_t addr, uint8_t* data, const uint8_t len)
     {
-        while (TWCR & (1 << TWIE)) {};
-    }
-
-    uint8_t i2c_rw(const uint8_t addr, uint8_t* data, const uint8_t len)
-    {
-        i2c_busy_wait();
         i2c_addr = addr;
         i2c_data = data;
         i2c_len  = len;
 
-        TWCR = I2C_START;
-        i2c_busy_wait();
+        // Busy wait
+        while (TWCR & (1 << TWIE)) {};
 
-        return (len - i2c_len);
+        // Start send/receive
+        TWCR = I2C_START;
     }
 }
 
@@ -137,14 +132,14 @@ I2CMaster::I2CMaster()
     TWBR = (F_CPU / I2C_FREQ - 16) / 2;
 }
 
-uint8_t I2CMaster::write(const uint8_t addr, uint8_t* data, const uint8_t len)
+void I2CMaster::write(const uint8_t addr, uint8_t* data, const uint8_t len)
 {
-    return i2c_rw(TW_WRITE | (addr << 1), data, len);
+    i2c_rw(TW_WRITE | (addr << 1), data, len);
 }
 
-uint8_t I2CMaster::read(const uint8_t addr, uint8_t* data, const uint8_t len)
+void I2CMaster::read(const uint8_t addr, uint8_t* data, const uint8_t len)
 {
-    return i2c_rw(TW_READ | (addr << 1), data, len);
+    i2c_rw(TW_READ | (addr << 1), data, len);
 }
 
 }
