@@ -32,6 +32,15 @@ namespace
 {
     using board::J1772Pilot;
 
+    const J1772Pilot::State ADC_TO_STATE_MAP[] = {
+        J1772Pilot::STATE_E,
+        J1772Pilot::STATE_D,
+        J1772Pilot::STATE_C,
+        J1772Pilot::STATE_B,
+        J1772Pilot::STATE_A,
+        J1772Pilot::STATE_A // Rounding up buffer
+    };
+
     uint8_t amp2duty(const uint8_t amp)
     {
         uint16_t d = amp;
@@ -75,16 +84,7 @@ namespace
         if (sample < J1772_THRESHOLD_OFFSET)
             return J1772Pilot::IMPLAUSIBLE;
 
-        const J1772Pilot::State states[] = {
-            J1772Pilot::STATE_E,
-            J1772Pilot::STATE_D,
-            J1772Pilot::STATE_C,
-            J1772Pilot::STATE_B,
-            J1772Pilot::STATE_A,
-            J1772Pilot::STATE_A // Rounding up buffer
-        };
-
-        return states[(sample - J1772_THRESHOLD_OFFSET) / J1772_THRESHOLD_STEP];
+        return ADC_TO_STATE_MAP[(sample - J1772_THRESHOLD_OFFSET) / J1772_THRESHOLD_STEP];
     }
 }
 
@@ -124,12 +124,15 @@ J1772Pilot::State J1772Pilot::getState(const bool force_update)
         last_state = NOT_READY;
 
     } else {
-        if (force_update || last_state == NOT_READY)
-            while(!Adc::get().j1772Ready()) {}
+        Adc &adc = Adc::get();
 
-        if (Adc::get().j1772Ready())
+        // Wait for fresh reading if necessary...
+        if (force_update || last_state == NOT_READY)
+            while(!adc.j1772Ready()) {}
+
+        if (adc.j1772Ready())
         {
-            const auto sample = Adc::get().readJ1772();
+            const auto sample = adc.readJ1772();
             if (J1772Pilot::getMode() == J1772Pilot::PWM && sample.first > J1772_DIODE_THRESHOLD)
                 last_state = DIODE_CHECK_FAILED;
             else
