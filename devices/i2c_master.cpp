@@ -103,11 +103,11 @@ namespace
         i2c_data = data;
         i2c_len  = len;
 
-        // Busy wait
-        while (TWCR & (1 << TWIE)) {};
-
         // Start send/receive
         TWCR = I2C_START;
+
+        // Busy wait
+        while (TWCR & (1 << TWIE)) {};
     }
 }
 

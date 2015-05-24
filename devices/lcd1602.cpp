@@ -158,7 +158,6 @@ void LCD16x2::move(const uint8_t x, const uint8_t y)
 {
     const uint8_t row_offset[] = {0x00, 0x40, 0x14, 0x54};
     writeCommand(LCD_SET_DD_ADDR | (x + row_offset[y]));
-    _delay_us(LCD_COMMAND_DELAY_US);
 }
 
 void LCD16x2::setBacklight(const Backlight color)
