@@ -38,6 +38,7 @@ programmer. The programmer and upload protocol can be set in the top level
 Makefile.inc.
 
 ## Revision history
+* v0.13 - Interrupt driven ADC sampling
 * v0.12 - Cost per kWh added
 * v0.11 - Added suspend state pin; LCD sleep mode fixed
 * v0.10 - Charge timer added

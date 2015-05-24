@@ -23,7 +23,7 @@
 #define STR_OPENEVSE        PSTR("OpenEVSE")
 #define STR_OPENEVSE_BY     PSTR("by Chris Howell")
 
-#define STR_NOSPARK         PSTR("NoSpark v0.12")
+#define STR_NOSPARK         PSTR("NoSpark v0.13")
 #define STR_NOSPARK_BY      PSTR("by A. Eisenbach")
 
 // Language specific
