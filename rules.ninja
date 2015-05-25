@@ -1,0 +1,53 @@
+###############################################################################
+# NoSpark - OpenEVSE charger firmware
+# Copyright (C) 2015 Andre Eisenbach
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# See LICENSE for a copy of the GNU General Public License or see
+# it online at <http://www.gnu.org/licenses/>.
+###############################################################################
+
+mcu = atmega328p
+freq = 16000000L
+
+cxx = avr-g++
+ar = avr-ar
+objcopy = avr-objcopy
+size = avr-size
+dude = avrdude
+
+cflags = -Os -g -mmcu=$mcu -DF_CPU=$freq -std=c++11 -W -Wall -pedantic $
+    -ffunction-sections -fdata-sections -fmerge-all-constants $
+    -fno-inline-small-functions -fshort-enums -fno-exceptions -I.
+ldflags = -Wl,--gc-sections -Wl,--relax
+
+dudeflags = -V -p $mcu -c usbtiny
+
+rule cxx
+    command = $cxx -MMD -MF $out.d $cflags -c $in -o $out
+    description = C++ $out
+    depfile = $out.d
+
+rule link
+    command = $cxx $cflags $ldflags -o $out $in $libs && $size $out
+    description = ELF $out
+
+rule ar
+    command = $ar rcs $out $in
+    description = LIB $out
+
+rule hex
+    command = $objcopy -O ihex -R .eeprom $in $out
+    description = HEX $out
+
+rule upload
+    command = $dude $dudeflags -U flash:w:$in
+    description = Uploading $in...
