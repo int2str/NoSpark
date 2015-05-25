@@ -44,8 +44,12 @@ bool LcdStateError::draw()
             lcd << stream::PGM << STR_FAULT_POST_GFCI;
             break;
 
-        case State::FAULT_POST_RELAY:
-            lcd << stream::PGM << STR_FAULT_POST_RELAY;
+        case State::FAULT_GROUND_FAULT:
+            lcd << stream::PGM << STR_FAULT_GROUND_FAULT;
+            break;
+
+        case State::FAULT_STUCK_RELAY:
+            lcd << stream::PGM << STR_FAULT_STUCK_RELAY;
             break;
 
         case State::FAULT_GFCI_TRIPPED:

@@ -47,7 +47,8 @@ public:
     {
         NOTHING_WRONG
       , FAULT_POST_GFCI
-      , FAULT_POST_RELAY
+      , FAULT_STUCK_RELAY
+      , FAULT_GROUND_FAULT
       , FAULT_GFCI_TRIPPED
       , FAULT_TEMPERATURE_CRITICAL
     };

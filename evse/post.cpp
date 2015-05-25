@@ -24,7 +24,6 @@ namespace
 {
     const uint8_t postEvents[] = {
         EVENT_POST_GFCI,
-        EVENT_POST_ACRELAY,
         0
     };
 }

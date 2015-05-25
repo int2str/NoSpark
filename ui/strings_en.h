@@ -44,7 +44,8 @@
 
 // Faults                                |1234567890123456|
 #define STR_FAULT_POST_GFCI         PSTR("GFI test failed")
-#define STR_FAULT_POST_RELAY        PSTR("Relay test fail")
+#define STR_FAULT_STUCK_RELAY       PSTR("Relay stuck")
+#define STR_FAULT_GROUND_FAULT      PSTR("Ground fault")
 #define STR_FAULT_GFCI_TRIPPED      PSTR("GFI tripped")
 #define STR_FAULT_TEMPERATURE       PSTR("High temperature")
 

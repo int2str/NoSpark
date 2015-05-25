@@ -52,8 +52,6 @@ namespace
         {
             case EVENT_POST_GFCI:
                 return State::FAULT_POST_GFCI;
-            case EVENT_POST_ACRELAY:
-                return State::FAULT_POST_RELAY;
         }
         return State::NOTHING_WRONG;
     }
@@ -104,14 +102,33 @@ void Controller::updateRunning(bool force_update)
 {
     State& state = State::get();
 
+    const ACRelay::RelayState relay_state = acRelay.checkStatus();
+    switch (relay_state)
+    {
+        case ACRelay::OK:
+        case ACRelay::UNKNOWN:
+            break;
+
+        case ACRelay::GROUND_FAULT:
+            setFault(State::FAULT_GROUND_FAULT);
+            break;
+
+        case ACRelay::STUCK_RELAY:
+            setFault(State::FAULT_STUCK_RELAY);
+            break;
+    }
+
     const auto j1772_state = j1772.getState();
     if (state.j1772 == j1772_state && !force_update)
         return; // State hasn't changed...
 
     switch (j1772_state)
     {
-        case J1772Pilot::STATE_A: // <-- EV not connected
         case J1772Pilot::STATE_E: // <-- Error
+            enableCharge(false);
+            break;
+
+        case J1772Pilot::STATE_A: // <-- EV not connected
         case J1772Pilot::NOT_READY:
             if (state.ready == State::KWH_LIMIT)
                 state.ready = State::READY;
@@ -162,10 +179,6 @@ void Controller::onEvent(const event::Event &event)
 
         case EVENT_POST_GFCI:
             gfci.selfTest(true);
-            break;
-
-        case EVENT_POST_ACRELAY:
-            acRelay.selfTest(checkEVPresent());
             break;
 
         case EVENT_SET_RELAY:
@@ -223,14 +236,13 @@ void Controller::enableCharge(const bool enable)
         if (gfci.selfTest())
         {
             Loop::post(Event(EVENT_CHARGE_STATE, 1));
-            acRelay.enable();
+            acRelay.setState(true);
         } else {
-            acRelay.disable();
+            acRelay.setState(false);
             setFault(State::FAULT_GFCI_TRIPPED);
         }
     } else {
-        acRelay.disable();
-        Loop::post(Event(EVENT_CHARGE_STATE, 0));
+        acRelay.setState(false);
     }
 }
 

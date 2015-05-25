@@ -31,20 +31,20 @@ public:
     enum RelayState
     {
         UNKNOWN
-      , ERROR
-      , L1_READY
-      , L2_READY
+      , OK
+      , STUCK_RELAY
+      , GROUND_FAULT
     };
 
     ACRelay();
 
-    void enable();
-    void disable();
-
-    void selfTest(const bool evPresent);
+    void setState(const bool enable);
+    RelayState checkStatus();
 
 private:
     RelayState state;
+    bool enabled;
+    uint32_t last_change;
 
     board::Pin pinACRelay;
     board::Pin pinDCRelay1;
@@ -56,7 +56,6 @@ private:
     board::Pin pinSense2;
 
     uint8_t getActive() const;
-    uint8_t testRelay(board::Pin &pin);
 
     DISALLOW_COPY_AND_ASSIGN(ACRelay);
 };

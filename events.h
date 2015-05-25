@@ -46,6 +46,5 @@
 #define EVENT_POST_FAILED         102
 #define EVENT_POST_COMPLETED      103
 #define EVENT_POST_GFCI           110
-#define EVENT_POST_ACRELAY        111
 
 #define EVENT_TEST                255

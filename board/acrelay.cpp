@@ -23,20 +23,18 @@
 #include "events.h"
 
 #define RELAY_TOGGLE_DELAY_MS   150
-#define RELAY_SAMPLE_MS         20 // Capture full AC sine wave
+#define RELAY_SAMPLE_MS         13 // Capture slightly more than half an AC sine wave
 
 #define SENSE_ACTIVE_1          0x01
 #define SENSE_ACTIVE_2          0x02
 #define SENSE_ACTIVE_BOTH       (SENSE_ACTIVE_1 | SENSE_ACTIVE_2)
-
-using event::Event;
-using event::Loop;
 
 namespace board
 {
 
 ACRelay::ACRelay()
     : state(UNKNOWN)
+    , enabled(false)
     , pinACRelay(PIN_AC_RELAY)
     , pinDCRelay1(PIN_DC_RELAY1)
     , pinDCRelay2(PIN_DC_RELAY2)
@@ -49,78 +47,53 @@ ACRelay::ACRelay()
     pinSense1.io(Pin::IN_PULLUP);
     pinSense2.io(Pin::IN_PULLUP);
 
-    disable();
+    setState(false);
 }
 
-void ACRelay::enable()
+void ACRelay::setState(const bool enable)
 {
-    pinACRelay = 1;
-    pinDCRelay1 = 1;
-    pinDCRelay2 = 1;
+    if (enabled == enable)
+        return;
+
+    pinACRelay = enable;
+    pinDCRelay1 = enable;
+    pinDCRelay2 = enable;
+
+    enabled = enable;
+    last_change = system::Timer::millis();
+
+    event::Loop::post(event::Event(EVENT_CHARGE_STATE, enable));
 }
 
-void ACRelay::disable()
+ACRelay::RelayState ACRelay::checkStatus()
 {
-    pinACRelay = 0;
-    pinDCRelay1 = 0;
-    pinDCRelay2 = 0;
-}
+    // Do NOT recover from an error
+    if (state != UNKNOWN && state != OK)
+        return state;
 
-void ACRelay::selfTest(const bool evPresent)
-{
-    disable();
-    _delay_ms(RELAY_TOGGLE_DELAY_MS);
-    uint8_t active_idle = getActive();
+    // Give relays time to settle
+    if ((system::Timer::millis() - last_change) < RELAY_TOGGLE_DELAY_MS)
+        return state;
 
-    // Make sure off means off...
-    if (active_idle)
+    // Not check appropriate state...
+    // NOTE: This does NOT support a SPST relay configuration
+    switch (getActive())
     {
-        state = ERROR;
-        Loop::post(Event(EVENT_POST_FAILED));
-        return;
+        case SENSE_ACTIVE_1:
+        case SENSE_ACTIVE_2:
+            state = STUCK_RELAY;
+            break;
+
+        case SENSE_ACTIVE_BOTH:
+            state = enabled ? OK : STUCK_RELAY;
+            break;
+
+        case 0:
+            state = enabled ? GROUND_FAULT : OK;
+            break;
     }
 
-    // If the car is connected, we can't play with the relays :(
-    if (evPresent)
-    {
-        state = UNKNOWN;
-        Loop::post(Event(EVENT_POST_SUCCESS));
-        return;
-    }
-
-    // Check AC relay first
-    const uint8_t active_ac = testRelay(pinACRelay);
-    active_idle = getActive();
-
-    // If the AC relay did something, our work here is done...
-    if (active_ac != 0)
-    {
-        state = active_ac == SENSE_ACTIVE_BOTH && active_idle == 0 ? L2_READY : ERROR;
-        Loop::post(Event(state != ERROR ? EVENT_POST_SUCCESS : EVENT_POST_FAILED));
-        return;
-    }
-
-    // Check DC relays one at a time
-    const uint8_t active_dc1 = testRelay(pinDCRelay1);
-    const uint8_t active_dc2 = testRelay(pinDCRelay2);
-    active_idle = getActive();
-
-    if (active_idle)
-    {
-        state = ERROR; // Relay should not be active after test
-    } else {
-        const RelayState STATE_MAP[4][4] = {
-          //     OFF   | ACTIVE_1 | ACTIVE_2 | ACTIVE_BOTH
-            { ERROR    , L1_READY , L1_READY , L2_READY    } // OFF
-          , { L1_READY , ERROR    , L2_READY , ERROR       } // ACTIVE_1
-          , { L1_READY , L2_READY , ERROR    , ERROR       } // ACTIVE_2
-          , { L2_READY , ERROR    , ERROR    , ERROR       } // ACTIVE_BOTH
-        };
-
-        state = STATE_MAP[active_dc1][active_dc2];
-    }
-
-    Loop::post(Event(state != ERROR ? EVENT_POST_SUCCESS : EVENT_POST_FAILED));
+    return state;
 }
 
 uint8_t ACRelay::getActive() const
@@ -135,19 +108,6 @@ uint8_t ACRelay::getActive() const
         if (!pinSense2) // <- input is puleld-up; active low
             active |= SENSE_ACTIVE_2;
     }
-
-    return active;
-}
-
-uint8_t ACRelay::testRelay(board::Pin &pin)
-{
-    pin = 1;
-    _delay_ms(RELAY_TOGGLE_DELAY_MS);
-
-    uint8_t active = getActive();
-
-    disable();
-    _delay_ms(RELAY_TOGGLE_DELAY_MS);
 
     return active;
 }
