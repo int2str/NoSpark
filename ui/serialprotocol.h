@@ -70,6 +70,22 @@
 //    = Active charge, 27.511A, ~60min, ~6kWh total
 #define CMD_GET_CHARGE_STATE    2
 
+// Returns the charge totals in kWh
+//
+// Paramters:
+//   none
+//
+// Returns:
+//   W - kWh this week
+//   M - kWh this month
+//   Y - kWh this year
+//   T - kWh total
+//
+// Example:
+//   -> $E3
+//   <- $OK W10 M20 Y30 T40
+#define CMD_GET_KWH_STATS       3
+
 // Returns the maximum current supported by the EVSE
 //
 // Parameters:

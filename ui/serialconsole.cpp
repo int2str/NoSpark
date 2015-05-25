@@ -41,18 +41,49 @@ namespace
         return ((msb_ch - '0') << 4) | ((lsb_ch - '0') & 0x0F);
     }
 
-    void write_time(stream::OutputStream &uart, DS3231 &rtc)
+    void write_time(stream::OutputStream &out, DS3231 &rtc)
     {
         uint8_t buffer[8] = {0};
         rtc.readRaw(buffer, 8);
 
-        uart << stream::PAD_BCD << buffer[3] << ':';
-        uart << stream::PAD_BCD << buffer[2] << ':';
-        uart << stream::PAD_BCD << buffer[1] << ' ';
+        out << stream::PAD_BCD << buffer[3] << ':';
+        out << stream::PAD_BCD << buffer[2] << ':';
+        out << stream::PAD_BCD << buffer[1] << ' ';
 
-        uart << stream::PAD_BCD << buffer[5] << '.';
-        uart << stream::PAD_BCD << buffer[6] << '.';
-        uart << "20" << stream::PAD_BCD << buffer[7];
+        out << stream::PAD_BCD << buffer[5] << '.';
+        out << stream::PAD_BCD << buffer[6] << '.';
+        out << "20" << stream::PAD_BCD << buffer[7];
+    }
+
+    void write_help(stream::OutputStream &out, const char *cmd, const char *help)
+    {
+        out << ' ' << PGM << cmd;
+        uint8_t len = strlen_P(cmd);
+        while (len++ < 12)
+            out << ' ';
+        out << PGM << help << CR;
+    }
+
+    void write_energy_stat(stream::OutputStream &out, const char *label, const uint8_t currency, const uint32_t cents, const uint32_t kwh)
+    {
+        char buffer[10] = {0};
+        ltoa(kwh, buffer, 10);
+        out << ' ' << PGM << label << ": " << buffer << " kWh";
+
+        if (cents != 0)
+        {
+            const char currencies[3] = {'$', 'E', 'Y'}; // Backslash = Yen
+            uint32_t cost = kwh * cents;
+
+            char buffer[10] = {0};
+            ltoa(cost / 100, buffer, 10);
+            out << " / " << static_cast<char>(currencies[currency]) << buffer << ".";
+
+            cost %= 100;
+            out << static_cast<char>('0' + cost / 10);
+            out << static_cast<char>('0' + cost % 10);
+        }
+        out << CR;
     }
 
     // TODO: Duplicate code is duplicate...
@@ -73,13 +104,14 @@ SerialConsole::SerialConsole(stream::UartStream &uart)
     : uart(uart)
     , event_debug(false) // TODO: Read from EEPROM?
     , commands({
-        { STR_CMD_HELP,      false, &SerialConsole::commandHelp }
-      , { STR_CMD_STATUS,    false, &SerialConsole::commandStatus }
-      , { STR_CMD_VERSION,   false, &SerialConsole::commandVersion }
-      , { STR_CMD_RESET,     false, &SerialConsole::commandReset }
-      , { STR_CMD_SETCURRENT, true, &SerialConsole::commandSetCurrent }
-      , { STR_CMD_SETTIME,    true, &SerialConsole::commandSetTime }
-      , { STR_CMD_DEBUG,      true, &SerialConsole::commandDebug }
+        { STR_CMD_HELP,       &SerialConsole::commandHelp }
+      , { STR_CMD_STATUS,     &SerialConsole::commandStatus }
+      , { STR_CMD_ENERGY,     &SerialConsole::commandEnergy }
+      , { STR_CMD_VERSION,    &SerialConsole::commandVersion }
+      , { STR_CMD_RESET,      &SerialConsole::commandReset }
+      , { STR_CMD_SETCURRENT, &SerialConsole::commandSetCurrent }
+      , { STR_CMD_SETTIME,    &SerialConsole::commandSetTime }
+      , { STR_CMD_DEBUG,      &SerialConsole::commandDebug }
     })
 {
 }
@@ -141,16 +173,12 @@ bool SerialConsole::handleCommand(const char *buffer, const uint8_t len)
 
     for (uint8_t i = 0; i != MAX_COMMANDS; ++i)
     {
-        if (commands[i].hasParam)
+        const uint8_t cmd_len = strlen_P(commands[i].command);
+        if (strncmp_P(buffer, commands[i].command, cmd_len) == 0)
         {
-            const uint8_t cmd_len = strlen_P(commands[i].command);
-            if (strncmp_P(buffer, commands[i].command, cmd_len) == 0)
-            {
-                (this->*commands[i].handler) (buffer, len);
-                return true;
-            }
+            if (len > cmd_len && buffer[cmd_len] != ' ')
+                continue;
 
-        } else if (strcmp_P(buffer, commands[i].command) == 0) {
             (this->*commands[i].handler) (buffer, len);
             return true;
         }
@@ -165,13 +193,14 @@ bool SerialConsole::handleCommand(const char *buffer, const uint8_t len)
 void SerialConsole::commandHelp(const char *, const uint8_t)
 {
     uart << PGM << STR_HELP_COMMANDS << CR;
-    uart << PGM << STR_HELP_HELP << CR;
-    uart << PGM << STR_HELP_RESET << CR;
-    uart << PGM << STR_HELP_SETCURRENT << CR;
-    uart << PGM << STR_HELP_SETTIME << CR;
-    uart << PGM << STR_HELP_STATUS << CR;
-    uart << PGM << STR_HELP_VERSION << CR;
-    uart << PGM << STR_HELP_DEBUG << CR;
+    write_help(uart, STR_CMD_HELP, STR_HELP_HELP);
+    write_help(uart, STR_CMD_ENERGY, STR_HELP_ENERGY);
+    write_help(uart, STR_CMD_RESET, STR_HELP_RESET);
+    write_help(uart, STR_CMD_SETCURRENT, STR_HELP_SETCURRENT);
+    write_help(uart, STR_CMD_SETTIME, STR_HELP_SETTIME);
+    write_help(uart, STR_CMD_STATUS, STR_HELP_STATUS);
+    write_help(uart, STR_CMD_VERSION, STR_HELP_VERSION);
+    write_help(uart, STR_CMD_DEBUG, STR_HELP_DEBUG);
     uart << CR;
 }
 
@@ -226,6 +255,19 @@ void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
 
     DS3231 &rtc = DS3231::get();
     rtc.writeRaw(time_buffer, 8);
+}
+
+void SerialConsole::commandEnergy(const char*, const uint8_t)
+{
+    Settings settings;
+    EepromSettings::load(settings);
+
+    uart << PGM << STR_STATS_KWH << CR;
+    write_energy_stat(uart, STR_STATS_WEEK, settings.kwh_currency, settings.kwh_cost, settings.kwh_week);
+    write_energy_stat(uart, STR_STATS_MONTH, settings.kwh_currency, settings.kwh_cost, settings.kwh_month);
+    write_energy_stat(uart, STR_STATS_YEAR, settings.kwh_currency, settings.kwh_cost, settings.kwh_year);
+    write_energy_stat(uart, STR_STATS_TOTAL, settings.kwh_currency, settings.kwh_cost, settings.kwh_total);
+    uart << CR;
 }
 
 void SerialConsole::commandDebug(const char *buffer, const uint8_t len)

@@ -74,7 +74,7 @@ void SerialMonitor::update()
 
                 if (len == CONSOLE_BUFFER || ch == CR)
                 {
-                    buffer[len-1] = 0;
+                    buffer[--len] = 0;
                     state = CONSOLE_COMMAND;
                     break;
                 }

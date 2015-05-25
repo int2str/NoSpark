@@ -113,6 +113,16 @@ namespace
         paramAdd(response, 'T', rtc.readTemp());
     }
 
+    void cmdGetKwhStats(char *response)
+    {
+        Settings settings;
+        EepromSettings::load(settings);
+        paramAdd(response, 'W', settings.kwh_week);
+        paramAdd(response, 'M', settings.kwh_month);
+        paramAdd(response, 'Y', settings.kwh_year);
+        paramAdd(response, 'T', settings.kwh_total);
+    }
+
     uint8_t cmdSetCurrent(const char *buffer)
     {
         const uint8_t amps = paramGet(buffer, 'A');
@@ -318,6 +328,10 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t)
 
         case CMD_GET_CHARGE_STATE:
             cmdGetChargeStatus(response);
+            break;
+
+        case CMD_GET_KWH_STATS:
+            cmdGetKwhStats(response);
             break;
 
         case CMD_GET_MAX_CURRENT:

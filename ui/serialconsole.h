@@ -21,7 +21,7 @@
 #include "utils/cpp.h"
 #include "stream/uartstream.h"
 
-#define MAX_COMMANDS 7
+#define MAX_COMMANDS 8
 
 namespace ui
 {
@@ -32,7 +32,6 @@ typedef void (SerialConsole::*SerialCommandHandler) (const char *buffer, const u
 struct SerialCommand
 {
     const char* command;
-    const bool hasParam;
     SerialCommandHandler handler;
 };
 
@@ -54,6 +53,7 @@ private:
     void commandStatus(const char *buffer, const uint8_t len);
     void commandVersion(const char *buffer, const uint8_t len);
     void commandDebug(const char *buffer, const uint8_t len);
+    void commandEnergy(const char *buffer, const uint8_t len);
 
     stream::UartStream &uart;
     bool event_debug;
