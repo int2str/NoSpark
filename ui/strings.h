@@ -17,7 +17,9 @@
 
 #include "avr/pgmspace.h"
 
+#define EOL                 "\r\n"
 #define CR                  '\r'
+#define LF                  '\n'
 
 // Credit where credit is due...
 #define STR_OPENEVSE        PSTR("OpenEVSE")

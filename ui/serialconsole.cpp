@@ -61,7 +61,7 @@ namespace
         uint8_t len = strlen_P(cmd);
         while (len++ < 12)
             out << ' ';
-        out << PGM << help << CR;
+        out << PGM << help << EOL;
     }
 
     void write_energy_stat(stream::OutputStream &out, const char *label, const uint8_t currency, const uint32_t cents, const uint32_t kwh)
@@ -83,7 +83,7 @@ namespace
             out << static_cast<char>('0' + cost / 10);
             out << static_cast<char>('0' + cost % 10);
         }
-        out << CR;
+        out << EOL;
     }
 
     // TODO: Duplicate code is duplicate...
@@ -128,7 +128,7 @@ void SerialConsole::onEvent(const event::Event& event)
             {
                 uart << PGM << STR_EVENT;
                 uart << PGM << STR_EVT_J1772_STATE;
-                uart << static_cast<char>('A' - 1 + event.param) << CR;
+                uart << static_cast<char>('A' - 1 + event.param) << EOL;
             }
             break;
 
@@ -137,13 +137,13 @@ void SerialConsole::onEvent(const event::Event& event)
             {
                 uart << PGM << STR_EVENT;
                 uart << PGM << STR_EVT_CONTROLLER_STATE;
-                uart << static_cast<char>('0' + State::get().controller) << CR;
+                uart << static_cast<char>('0' + State::get().controller) << EOL;
             }
             break;
 
         case EVENT_GFCI_TRIPPED:
             uart << PGM << STR_EVENT;
-            uart << PGM << STR_EVT_GFCI_TRIPPED << CR;
+            uart << PGM << STR_EVT_GFCI_TRIPPED << EOL;
             break;
 
         default:
@@ -159,7 +159,7 @@ void SerialConsole::onEvent(const event::Event& event)
 
                 utoa(event.param, params, 10);
                 uart << PGM << STR_EVT_DEFAULT2;
-                uart << params << CR;
+                uart << params << EOL;
             }
             break;
         }
@@ -185,14 +185,14 @@ bool SerialConsole::handleCommand(const char *buffer, const uint8_t len)
     }
 
     uart << PGM << STR_HELP_UNKNOWN;
-    uart << " (" << buffer << ")" << CR;
+    uart << " (" << buffer << ")" << EOL;
 
     return false;
 }
 
 void SerialConsole::commandHelp(const char *, const uint8_t)
 {
-    uart << PGM << STR_HELP_COMMANDS << CR;
+    uart << PGM << STR_HELP_COMMANDS << EOL;
     write_help(uart, STR_CMD_HELP, STR_HELP_HELP);
     write_help(uart, STR_CMD_ENERGY, STR_HELP_ENERGY);
     write_help(uart, STR_CMD_RESET, STR_HELP_RESET);
@@ -201,7 +201,7 @@ void SerialConsole::commandHelp(const char *, const uint8_t)
     write_help(uart, STR_CMD_STATUS, STR_HELP_STATUS);
     write_help(uart, STR_CMD_VERSION, STR_HELP_VERSION);
     write_help(uart, STR_CMD_DEBUG, STR_HELP_DEBUG);
-    uart << CR;
+    uart << EOL;
 }
 
 void SerialConsole::commandReset(const char *, const uint8_t)
@@ -215,7 +215,7 @@ void SerialConsole::commandSetCurrent(const char *buffer, const uint8_t len)
 
     if (len < cmd_len + 2 || len > cmd_len + 3)
     {
-        uart << PGM << STR_ERR_PARAM << CR;
+        uart << PGM << STR_ERR_PARAM << EOL;
         return;
     }
 
@@ -227,7 +227,7 @@ void SerialConsole::commandSetCurrent(const char *buffer, const uint8_t len)
         event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, amps));
 
     } else {
-        uart << PGM << STR_ERR_PARAM << CR;
+        uart << PGM << STR_ERR_PARAM << EOL;
     }
 }
 
@@ -237,7 +237,7 @@ void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
 
     if (len != cmd_len + 14 || buffer[cmd_len + 6] != ' ')
     {
-        uart << PGM << STR_ERR_SETTIME_PARAM << CR;
+        uart << PGM << STR_ERR_SETTIME_PARAM << EOL;
         return;
     }
 
@@ -262,12 +262,12 @@ void SerialConsole::commandEnergy(const char*, const uint8_t)
     Settings settings;
     EepromSettings::load(settings);
 
-    uart << PGM << STR_STATS_KWH << CR;
+    uart << PGM << STR_STATS_KWH << EOL;
     write_energy_stat(uart, STR_STATS_WEEK, settings.kwh_currency, settings.kwh_cost, settings.kwh_week);
     write_energy_stat(uart, STR_STATS_MONTH, settings.kwh_currency, settings.kwh_cost, settings.kwh_month);
     write_energy_stat(uart, STR_STATS_YEAR, settings.kwh_currency, settings.kwh_cost, settings.kwh_year);
     write_energy_stat(uart, STR_STATS_TOTAL, settings.kwh_currency, settings.kwh_cost, settings.kwh_total);
-    uart << CR;
+    uart << EOL;
 }
 
 void SerialConsole::commandDebug(const char *buffer, const uint8_t len)
@@ -276,7 +276,7 @@ void SerialConsole::commandDebug(const char *buffer, const uint8_t len)
 
     if (len != cmd_len + 2)
     {
-        uart << PGM << STR_ERR_PARAM << CR;
+        uart << PGM << STR_ERR_PARAM << EOL;
         return;
     }
 
@@ -291,13 +291,13 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
 
     uart << PGM << STR_STATUS_TIME;
     write_time(uart, rtc);
-    uart << CR;
+    uart << EOL;
 
     uart << PGM << STR_STATUS_TEMP;
-    uart << rtc.readTemp() << 'C' << CR;
+    uart << rtc.readTemp() << 'C' << EOL;
 
     uart << PGM << (STR_STATUS_J1772);
-    uart << static_cast<char>('A' - 1 + state.j1772) << CR;
+    uart << static_cast<char>('A' - 1 + state.j1772) << EOL;
 
     uart << PGM << (STR_STATUS_CHARGING);
     if (!cm.isCharging())
@@ -305,23 +305,23 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     else
         uart << cm.chargeCurrent() << "mA";
     uart << ' ' << (cm.chargeDuration() / 1000 / 60) << "min ";
-    uart << cm.wattHours() << "Wh" << CR;
+    uart << cm.wattHours() << "Wh" << EOL;
 
     uart << PGM << (STR_STATUS_READY);
-    uart << static_cast<char>('0' + state.ready) << CR;
+    uart << static_cast<char>('0' + state.ready) << EOL;
 
     uart << PGM << (STR_STATUS_MAX_CURRENT);
     uart << state.max_amps_limit << 'A' << '/';
-    uart << state.max_amps_target << 'A' << CR;
+    uart << state.max_amps_target << 'A' << EOL;
 
-    uart << CR;
+    uart << EOL;
 }
 
 void SerialConsole::commandVersion(const char *, const uint8_t)
 {
-    uart << PGM << STR_NOSPARK << CR;
-    uart << PGM << STR_NOSPARK_BY << CR;
-    uart << CR;
+    uart << PGM << STR_NOSPARK << EOL;
+    uart << PGM << STR_NOSPARK_BY << EOL;
+    uart << EOL;
 }
 
 }

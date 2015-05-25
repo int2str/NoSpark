@@ -62,14 +62,19 @@ void SerialMonitor::update()
                     echo = false;
 
                 if (echo)
+                {
                     uart << ch;
+                    if (ch == CR)
+                        uart << LF;
+                }
 
                 if (ch == BS || ch == DEL)
                 {
                     if (len)
                         buffer[--len] = 0;
                 } else {
-                    buffer[len++] = ch;
+                    if (ch != LF)
+                        buffer[len++] = ch;
                 }
 
                 if (len == CONSOLE_BUFFER || ch == CR)
