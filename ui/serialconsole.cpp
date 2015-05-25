@@ -27,6 +27,9 @@
 #include "ui/strings_console.h"
 #include "events.h"
 
+#define AMPS_MIN  6
+#define AMPS_MAX 80
+
 using evse::ChargeMonitor;
 using evse::EepromSettings;
 using evse::Settings;
@@ -220,7 +223,7 @@ void SerialConsole::commandSetCurrent(const char *buffer, const uint8_t len)
     }
 
     int amps = atoi(buffer + cmd_len);
-    if (amps > 0)
+    if (amps >= AMPS_MIN && amps <= AMPS_MAX)
     {
         State::get().max_amps_target = amps;
         saveMaxAmps(amps);
