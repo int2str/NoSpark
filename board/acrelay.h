@@ -16,6 +16,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "board/pin.h"
 #include "utils/cpp.h"
@@ -23,26 +24,39 @@
 namespace board
 {
 
-// AC relay control for OpenEVSE v3
+// AC relay control
 class ACRelay
 {
 public:
+    enum RelayState
+    {
+        UNKNOWN
+      , ERROR
+      , L1_READY
+      , L2_READY
+    };
+
     ACRelay();
 
     void enable();
     void disable();
-    bool isActive() const;
+
     void selfTest(const bool evPresent);
 
 private:
-    board::Pin pinRelay;
+    RelayState state;
+
+    board::Pin pinACRelay;
+    board::Pin pinDCRelay1;
+    board::Pin pinDCRelay2;
 
     // The two sense pins are hooked together, so they'll
-    // always read the same. Just in case, we'll enable
-    // the pullup on both though so that the 2nd pin doesn't
-    // actually pull down the first one.
-    board::Pin pinSense;
-    board::Pin pinSenseLegacy;
+    // always read the same on the v3 units.
+    board::Pin pinSense1;
+    board::Pin pinSense2;
+
+    uint8_t getActive() const;
+    uint8_t testRelay(board::Pin &pin);
 
     DISALLOW_COPY_AND_ASSIGN(ACRelay);
 };

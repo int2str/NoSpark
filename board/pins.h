@@ -26,6 +26,8 @@
 
 // AC Relay pins
 #define PIN_AC_RELAY        MAKEPIN(B,1)
+#define PIN_DC_RELAY1       MAKEPIN(B,0)
+#define PIN_DC_RELAY2       MAKEPIN(D,7)
 #define PIN_AC_TEST1        MAKEPIN(D,3)
 #define PIN_AC_TEST2        MAKEPIN(D,4)
 
