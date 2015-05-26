@@ -52,10 +52,6 @@ private:
 
     void setFault(const State::ControllerFault fault);
 
-    // This toggles the pilot pin, so this function
-    // should never be called during normal operation.
-    bool checkEVPresent();
-
     board::ACRelay acRelay;
     board::GFCI gfci;
     board::J1772Pilot j1772;

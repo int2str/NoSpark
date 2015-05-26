@@ -102,6 +102,7 @@ void Controller::updateRunning(bool force_update)
 {
     State& state = State::get();
 
+    // Check relay state for faults
     const ACRelay::RelayState relay_state = acRelay.checkStatus();
     switch (relay_state)
     {
@@ -118,10 +119,12 @@ void Controller::updateRunning(bool force_update)
             break;
     }
 
+    // Check J1772 state
     const auto j1772_state = j1772.getState();
     if (state.j1772 == j1772_state && !force_update)
         return; // State hasn't changed...
 
+    // J1772 state has changed...
     switch (j1772_state)
     {
         case J1772Pilot::STATE_E: // <-- Error
@@ -218,15 +221,6 @@ void Controller::onEvent(const event::Event &event)
                 updateChargeCurrent();
             break;
     }
-}
-
-bool Controller::checkEVPresent()
-{
-    j1772.setMode(J1772Pilot::HIGH);
-    const bool present = (j1772.getState(true) != J1772Pilot::STATE_A);
-    j1772.setMode(J1772Pilot::LOW);
-
-    return present;
 }
 
 void Controller::enableCharge(const bool enable)
