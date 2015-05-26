@@ -103,9 +103,9 @@ uint8_t ACRelay::getActive() const
 
     while (active != SENSE_ACTIVE_BOTH && (system::Timer::millis() - start_ms) < RELAY_SAMPLE_MS)
     {
-        if (!pinSense1) // <- input is puleld-up; active low
+        if (!pinSense1) // <- input is pulled-up; active low
             active |= SENSE_ACTIVE_1;
-        if (!pinSense2) // <- input is puleld-up; active low
+        if (!pinSense2) // <- input is pulled-up; active low
             active |= SENSE_ACTIVE_2;
     }
 

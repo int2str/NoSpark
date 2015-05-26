@@ -22,7 +22,9 @@
 //     5V / 1024 steps = 4.882mV/step
 //     22 Ohm / 4.882mV = 4.5056
 //     1 / 4.5056 * 1000 (to get to mA) = 222
-// Slightly tweaked for accuracy...
+//
+// Slightly tweaked for accuracy and more aggressive
+// ADC sampling....
 #define CURRENT_SCALE_FACTOR 200l
 
 namespace board

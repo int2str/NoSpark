@@ -24,6 +24,8 @@ class Ammeter
 {
 public:
     Ammeter();
+
+    // Returns mA
     uint32_t sample();
 
 private:

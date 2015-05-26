@@ -34,6 +34,7 @@ int main()
 
     system::Watchdog::enable();
 
+    // Initialize event handlers
     ui::LcdConsole::init();
     ui::Keyboard::init();
     ui::SerialMonitor::init();
@@ -42,6 +43,7 @@ int main()
     evse::ChargeTimer::init();
     evse::TemperatureMonitor::init();
 
+    // Start event dispatch loop
     while (1)
     {
         event::Loop::post(event::Event());

@@ -20,9 +20,13 @@
 #include "board/pin.h"
 #include "utils/cpp.h"
 
+extern "C" void INT0_vect(void) __attribute__((signal));
+
 namespace board
 {
 
+// Once instantiated will monitor GFCI pin an trigger
+// an event if tripped.
 class GFCI
 {
 public:
@@ -30,17 +34,16 @@ public:
 
     bool selfTest(const bool sendPostEvent = false);
 
-    bool isTripped() const;
-
-    // Should only be called from the ISR
-    void trip();
-
 private:
     board::Pin pinSense;
     board::Pin pinTest;
 
     bool self_test;
     bool tripped;
+
+    void sendPulses();
+    void trip();
+    friend void ::INT0_vect();
 
     DISALLOW_COPY_AND_ASSIGN(GFCI);
 };

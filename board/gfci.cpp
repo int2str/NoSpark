@@ -26,28 +26,12 @@
 #define GFCI_TEST_DELAY_US  8333 // ~60Hz
 #define GFCI_RESET_DELAY_MS  500
 
-using event::Event;
-using event::Loop;
+static board::GFCI *gfci = 0;
 
-namespace
+ISR(INT0_vect)
 {
-    static board::GFCI *gfci = 0;
-
-    ISR(INT0_vect)
-    {
-        if (gfci)
-            gfci->trip();
-    }
-
-    void sendPulses(const board::GFCI &gfci, board::Pin& pin)
-    {
-        for (uint8_t i = 0; i != GFCI_TEST_PULSES && !gfci.isTripped(); ++i)
-        {
-            pin = !pin;
-            _delay_us(GFCI_TEST_DELAY_US);
-        }
-        pin = 0;
-    }
+    if (gfci)
+        gfci->trip();
 }
 
 namespace board
@@ -71,6 +55,16 @@ GFCI::GFCI()
     EIMSK = (1 << INT0);
 }
 
+void GFCI::sendPulses()
+{
+    for (uint8_t i = 0; i != GFCI_TEST_PULSES && !tripped; ++i)
+    {
+        pinTest = !pinTest;
+        _delay_us(GFCI_TEST_DELAY_US);
+    }
+    pinTest = 0;
+}
+
 bool GFCI::selfTest(const bool sendPostEvent)
 {
     if (tripped)
@@ -80,30 +74,26 @@ bool GFCI::selfTest(const bool sendPostEvent)
     self_test = true;
 
     // Generate pulses to trip GFI
-    sendPulses(*this, pinTest);
+    sendPulses();
 
     // Wait for pin to go low again
     uint8_t retries = 0;
     while (++retries && !!pinSense)
         _delay_ms(10);
 
+    // Extra delay to let peak hold cap bleed off
     _delay_ms(GFCI_RESET_DELAY_MS);
 
     // Check if we're back low...
     result = tripped && !pinSense;
 
     if (sendPostEvent)
-        Loop::post(Event(result ? EVENT_POST_SUCCESS : EVENT_POST_FAILED));
+        event::Loop::post(event::Event(result ? EVENT_POST_SUCCESS : EVENT_POST_FAILED));
 
     self_test = false;
     tripped = false;
 
     return result;
-}
-
-bool GFCI::isTripped() const
-{
-    return tripped;
 }
 
 void GFCI::trip()
@@ -115,7 +105,7 @@ void GFCI::trip()
         tripped = true;
 
     if (tripped && !self_test)
-        Loop::post(Event(EVENT_GFCI_TRIPPED));
+        event::Loop::post(event::Event(EVENT_GFCI_TRIPPED));
 }
 
 }

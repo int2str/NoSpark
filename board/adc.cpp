@@ -20,11 +20,14 @@
 #include "utils/atomic.h"
 #include "utils/math.h"
 
+// ADC mode; what's currently being sampled
 #define ADC_AMMETER    0
 #define ADC_J1772      1
 
+// 60 samples at slow ADC speeds covers about 5-6 iterations of the 1kHz wave
 #define J1772_SAMPLES  60
 
+// ISR lives in global namespace to be "friend-able" by the Adc class...
 ISR(ADC_vect)
 {
     board::Adc::get().update(ADCW);
@@ -89,8 +92,13 @@ Adc::Adc()
     , ammeter_zero_crossings(0)
     , mode(0)
 {
+    // Set up ADC; slow speed (clk/128), interrupt enabled
     ADCSRA = (1 << ADEN) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
+
+    // Internal reference
     ADMUX = (1 << REFS0) | mode;
+
+    // Start first conversion; ISR will re-start conversion
     ADCSRA |= (1 << ADSC);
 }
 

@@ -21,6 +21,8 @@
 namespace board
 {
 
+// Simple pulse generator used for debugging/benchmarking.
+// Toggles SCK pin.
 class Heartbeat
 {
     Heartbeat();

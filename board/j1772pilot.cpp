@@ -70,7 +70,7 @@ namespace
         TCCR1B = (1 << WGM13)  | (1 << WGM12) | (1 << CS11) | (1 << CS10);
 
         OCR1A = 249;
-        OCR1B = (249 * duty_cycle / 100);
+        OCR1B = 249 * duty_cycle / 100;
     }
 
     void pwmDisable()

@@ -25,6 +25,14 @@ extern "C" void ADC_vect(void) __attribute__((signal));
 namespace board
 {
 
+// This class takes care of sampling the J1772 pilot status
+// as well as the ammeter in round-robin fashiong. This breaks
+// abstraction a bit, but doing the reading using interrupt
+// driven sampling frees up the main loop quite a bit to do
+// other work...
+// For both J1772 and ammeter, the sampling is done until
+// the necessary number of samples have been acquired. The
+// sampling than stops until the value is read.
 class Adc
 {
     Adc();
@@ -32,10 +40,21 @@ class Adc
 public:
     static Adc& get();
 
+    // Returns true if enough samples have been collected
     bool j1772Ready() const;
+
+    // Return utils::Pair of minimum and maximum values sampled
+    // Pair.first = minimum, Pair.second = maximum.
+    // Returns a stale value until |j1772Ready|.
     utils::Pair<uint16_t, uint16_t> readJ1772();
 
+    // Returns true if the ammeter was sampled for the minimum
+    // amount of sine wave zero crossings or until it's timed
+    // out.
     bool ammeterReady() const;
+
+    // Raw, un-adjusted/calibrated value.
+    // Returns a stale value until |ammeterReady|.
     uint32_t readAmmeter();
 
 private:

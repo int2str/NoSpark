@@ -24,7 +24,7 @@
 namespace board
 {
 
-// AC relay control
+// Relay monitoring and control
 class ACRelay
 {
 public:
@@ -39,6 +39,11 @@ public:
     ACRelay();
 
     void setState(const bool enable);
+
+    // This will sample the relay sense pins and
+    // return an appropriate status depending on
+    // whether the relays are currently enabled or
+    // not and whether power is present or not.
     RelayState checkStatus();
 
 private:
