@@ -18,7 +18,7 @@
 // !!! EVENT NUMBERS MUST BE UNIQUE !!!
 // !!! Must also fit inside uint8_t !!!
 
-#define EVENT_UPDATE                0
+#define EVENT_UPDATE                1
 
 #define EVENT_J1772_STATE          10
 #define EVENT_CONTROLLER_STATE     11

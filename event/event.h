@@ -24,13 +24,12 @@ namespace event
 class Event
 {
 public:
-    Event();
-    Event(const uint8_t id, const uint32_t param = 0);
+    explicit Event(const uint8_t id, const uint8_t param = 0);
 
     bool operator== (const Event &rhs) const;
 
     const uint8_t id;
-    const uint32_t param;
+    const uint8_t param;
     uint32_t delay;
     uint32_t posted;
 };

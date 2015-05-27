@@ -18,15 +18,7 @@
 namespace event
 {
 
-Event::Event()
-    : id(0)
-    , param(0)
-    , delay(0)
-    , posted(0)
-{
-}
-
-Event::Event(const uint8_t id, const uint32_t param)
+Event::Event(const uint8_t id, const uint8_t param)
     : id(id)
     , param(param)
     , delay(0)
@@ -38,6 +30,5 @@ bool Event::operator== (const Event &rhs) const
 {
     return this->id == rhs.id;
 }
-
 
 }

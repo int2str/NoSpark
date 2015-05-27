@@ -46,7 +46,7 @@ int main()
     // Start event dispatch loop
     while (1)
     {
-        event::Loop::post(event::Event());
+        event::Loop::post(event::Event(EVENT_UPDATE));
         event::Loop::dispatch();
 
         system::Watchdog::reset();
