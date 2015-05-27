@@ -41,10 +41,4 @@
 
 #define EVENT_UPDATE_CHARGE_TIMER  70
 
-#define EVENT_POST_BEGIN          100
-#define EVENT_POST_SUCCESS        101
-#define EVENT_POST_FAILED         102
-#define EVENT_POST_COMPLETED      103
-#define EVENT_POST_GFCI           110
-
 #define EVENT_TEST                255

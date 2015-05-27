@@ -53,12 +53,13 @@ namespace
     // Note that this function is actually SLOWER than
     // utils::square_root(), even the new, un-optimized
     // version of that function. However, this function
-    // complies to much less code. Largely because of the
+    // compiles to much less code. Largely because of the
     // lack of large unsigned multiplication.
     uint32_t square_root(uint32_t val)
     {
         uint32_t root = 0;
         uint32_t bit = (val >= 0x10000) ? (1l << 30) : (1l << 14);
+
         do
         {
             const uint32_t trial = root + bit;
@@ -70,6 +71,7 @@ namespace
             root >>= 1;
             bit >>= 2;
         } while (bit);
+
         return root;
     }
 }

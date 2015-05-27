@@ -54,7 +54,7 @@ namespace
         bool found = false;
         uint16_t val = PARAM_NOT_FOUND;
 
-        while (*buffer != 0)
+        while (*buffer)
         {
             const char ch = *buffer++;
             if (found)

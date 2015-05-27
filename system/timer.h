@@ -33,7 +33,7 @@ public:
     static uint32_t millis();
 
 private:
-    uint32_t millis_impl();
+    uint32_t millis_impl() const;
 };
 
 }

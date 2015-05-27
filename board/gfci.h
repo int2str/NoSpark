@@ -32,7 +32,7 @@ class GFCI
 public:
     GFCI();
 
-    bool selfTest(const bool sendPostEvent = false);
+    bool selfTest();
 
 private:
     board::Pin pinSense;

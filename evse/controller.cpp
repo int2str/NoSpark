@@ -17,7 +17,6 @@
 #include "board/pins.h"
 #include "event/loop.h"
 #include "evse/controller.h"
-#include "evse/post.h"
 #include "utils/math.h"
 #include "events.h"
 
@@ -45,16 +44,6 @@ namespace
         State::get().j1772 = j1772;
         Loop::post(Event(EVENT_J1772_STATE, j1772));
     }
-
-    State::ControllerFault postEventToFaultCode(const uint32_t postEvent)
-    {
-        switch (postEvent)
-        {
-            case EVENT_POST_GFCI:
-                return State::FAULT_POST_GFCI;
-        }
-        return State::NOTHING_WRONG;
-    }
 }
 
 namespace evse
@@ -69,9 +58,6 @@ Controller& Controller::init()
 Controller::Controller()
     : sleep_status(PIN_MISO)
 {
-    sleep_status.io(Pin::OUT);
-    sleep_status = 0;
-
     enableCharge(false);
 }
 
@@ -89,10 +75,17 @@ void Controller::update()
 
         case State::BOOTUP:
             setControllerState(State::POST);
-            POST::start();
             break;
 
         case State::POST:
+            if (!gfci.selfTest()) {
+                setFault(State::FAULT_POST_GFCI);
+            } else {
+                j1772.setMode(J1772Pilot::HIGH);
+                setControllerState(State::RUNNING);
+            }
+            break;
+
         case State::FAULT:
             break;
     }
@@ -180,22 +173,8 @@ void Controller::onEvent(const event::Event &event)
             update();
             break;
 
-        case EVENT_POST_GFCI:
-            gfci.selfTest(true);
-            break;
-
         case EVENT_SET_RELAY:
             enableCharge(event.param);
-            break;
-
-        case EVENT_POST_COMPLETED:
-            if (event.param == 0)
-            {
-                j1772.setMode(J1772Pilot::HIGH);
-                setControllerState(State::RUNNING);
-            } else {
-                setFault(postEventToFaultCode(event.param));
-            }
             break;
 
         case EVENT_GFCI_TRIPPED:
@@ -229,7 +208,6 @@ void Controller::enableCharge(const bool enable)
     {
         if (gfci.selfTest())
         {
-            Loop::post(Event(EVENT_CHARGE_STATE, 1));
             acRelay.setState(true);
         } else {
             acRelay.setState(false);

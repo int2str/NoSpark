@@ -22,6 +22,8 @@ namespace system
 
 class Watchdog
 {
+    Watchdog();
+
 public:
     static void enable();
     static void reset();

@@ -15,10 +15,10 @@
 
 #pragma once
 
+#include "event/event.h"
+#include "event/handler.h"
 #include "utils/cpp.h"
 #include "utils/queue.h"
-#include "event.h"
-#include "handler.h"
 
 namespace event
 {

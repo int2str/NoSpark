@@ -15,7 +15,7 @@
 
 #include <avr/wdt.h>
 
-#include "watchdog.h"
+#include "system/watchdog.h"
 
 namespace system
 {

@@ -41,13 +41,6 @@ ACRelay::ACRelay()
     , pinSense1(PIN_AC_TEST1)
     , pinSense2(PIN_AC_TEST2)
 {
-    pinACRelay.io(Pin::OUT);
-    pinDCRelay1.io(Pin::OUT);
-    pinDCRelay2.io(Pin::OUT);
-    pinSense1.io(Pin::IN_PULLUP);
-    pinSense2.io(Pin::IN_PULLUP);
-
-    setState(false);
 }
 
 void ACRelay::setState(const bool enable)
@@ -75,41 +68,26 @@ ACRelay::RelayState ACRelay::checkStatus()
     if ((system::Timer::millis() - last_change) < RELAY_TOGGLE_DELAY_MS)
         return state;
 
-    // Not check appropriate state...
-    // NOTE: This does NOT support a SPST relay configuration
-    switch (getActive())
-    {
-        case SENSE_ACTIVE_1:
-        case SENSE_ACTIVE_2:
-            state = STUCK_RELAY;
-            break;
-
-        case SENSE_ACTIVE_BOTH:
-            state = enabled ? OK : STUCK_RELAY;
-            break;
-
-        case 0:
-            state = enabled ? GROUND_FAULT : OK;
-            break;
-    }
+    // Now check appropriate state...
+    if (isActive())
+        state = enabled ? OK : STUCK_RELAY;
+    else
+        state = enabled ? GROUND_FAULT : OK;
 
     return state;
 }
 
-uint8_t ACRelay::getActive() const
+bool ACRelay::isActive() const
 {
     const uint32_t start_ms = system::Timer::millis();
-    uint8_t active = 0;
 
-    while (active != SENSE_ACTIVE_BOTH && (system::Timer::millis() - start_ms) < RELAY_SAMPLE_MS)
+    while ((system::Timer::millis() - start_ms) < RELAY_SAMPLE_MS)
     {
-        if (!pinSense1) // <- input is pulled-up; active low
-            active |= SENSE_ACTIVE_1;
-        if (!pinSense2) // <- input is pulled-up; active low
-            active |= SENSE_ACTIVE_2;
+        if (!pinSense1 || !pinSense2) // <- inputs are pulled-up; active low
+            return true;
     }
 
-    return active;
+    return false;
 }
 
 }

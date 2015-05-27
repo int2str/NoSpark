@@ -78,11 +78,12 @@ namespace
 
         char buffer[10] = {0};
         ltoa(cost / 100, buffer, 10);
-        lcd << " / " << static_cast<char>(currencies[currency]) << buffer << ".";
-
         cost %= 100;
-        lcd << static_cast<char>('0' + cost / 10);
-        lcd << static_cast<char>('0' + cost % 10);
+
+        lcd << " / "
+          << static_cast<char>(currencies[currency]) << buffer << "."
+          << static_cast<char>('0' + cost / 10)
+          << static_cast<char>('0' + cost % 10);
     }
 
     uint8_t center_P(OutputStream &lcd, const char *str, const uint8_t offset = 0)
@@ -130,9 +131,8 @@ void LcdStateRunning::drawDefault()
 
     lcd.move(0,0);
     write_time(lcd, rtc.hour, rtc.minute);
-    lcd << ' ' << stream::PAD_SPACE << rtc.readTemp() << static_cast<char>(0xDF);
-
-    lcd << ' ' << static_cast<char>(CustomCharacters::SEPARATOR) << ' ';
+    lcd << ' ' << stream::PAD_SPACE << rtc.readTemp() << static_cast<char>(0xDF)
+        << ' ' << static_cast<char>(CustomCharacters::SEPARATOR) << ' ';
 
     if (amps)
         lcd << stream::PAD_SPACE << amps;

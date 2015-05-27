@@ -60,7 +60,7 @@ private:
     board::Pin pinSense1;
     board::Pin pinSense2;
 
-    uint8_t getActive() const;
+    bool isActive() const;
 
     DISALLOW_COPY_AND_ASSIGN(ACRelay);
 };

@@ -15,8 +15,8 @@
 
 #include <avr/interrupt.h>
 
+#include "system/timer.h"
 #include "utils/atomic.h"
-#include "timer.h"
 
 namespace
 {
@@ -33,9 +33,8 @@ namespace
     #define FRACT_INC ((MICROSECONDS_PER_TIMER0_OVERFLOW % 1000) >> 3)
     #define FRACT_MAX (1000 >> 3)
 
-    volatile uint32_t timer0_overflow_count = 0;
     volatile uint32_t timer0_millis = 0;
-    static uint8_t timer0_fract = 0;
+    uint8_t timer0_fract = 0;
 
     ISR(TIMER0_OVF_vect)
     {
@@ -47,12 +46,11 @@ namespace
         if (f >= FRACT_MAX)
         {
             f -= FRACT_MAX;
-            m += 1;
+            ++m;
         }
 
         timer0_fract = f;
         timer0_millis = m;
-        ++timer0_overflow_count;
     }
 }
 
@@ -79,7 +77,7 @@ Timer::Timer()
     TIMSK0 |= _BV(TOIE0);
 }
 
-uint32_t Timer::millis_impl()
+uint32_t Timer::millis_impl() const
 {
     utils::Atomic _atomic;
     return timer0_millis;

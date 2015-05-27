@@ -40,7 +40,7 @@ using system::Timer;
 
 namespace
 {
-    bool isWakeEvent(const uint16_t event_id)
+    bool isWakeEvent(const uint8_t event_id)
     {
         return event_id != EVENT_UPDATE_CHARGE_TIMER
             && event_id != EVENT_KEYDOWN

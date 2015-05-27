@@ -129,24 +129,24 @@ void SerialConsole::onEvent(const event::Event& event)
         case EVENT_J1772_STATE:
             if (event_debug)
             {
-                uart << PGM << STR_EVENT;
-                uart << PGM << STR_EVT_J1772_STATE;
-                uart << static_cast<char>('A' - 1 + event.param) << EOL;
+                uart << PGM << STR_EVENT
+                  << PGM << STR_EVT_J1772_STATE
+                  << static_cast<char>('A' - 1 + event.param) << EOL;
             }
             break;
 
         case EVENT_CONTROLLER_STATE:
             if (event_debug)
             {
-                uart << PGM << STR_EVENT;
-                uart << PGM << STR_EVT_CONTROLLER_STATE;
-                uart << static_cast<char>('0' + State::get().controller) << EOL;
+                uart << PGM << STR_EVENT
+                  << PGM << STR_EVT_CONTROLLER_STATE
+                  << static_cast<char>('0' + State::get().controller) << EOL;
             }
             break;
 
         case EVENT_GFCI_TRIPPED:
-            uart << PGM << STR_EVENT;
-            uart << PGM << STR_EVT_GFCI_TRIPPED << EOL;
+            uart << PGM << STR_EVENT
+              << PGM << STR_EVT_GFCI_TRIPPED << EOL;
             break;
 
         default:
@@ -156,13 +156,13 @@ void SerialConsole::onEvent(const event::Event& event)
                 char params[6] = {0};
 
                 utoa(event.id, params, 10);
-                uart << PGM << STR_EVENT;
-                uart << PGM << STR_EVT_DEFAULT1;
-                uart << params;
+                uart << PGM << STR_EVENT
+                  << PGM << STR_EVT_DEFAULT1
+                  << params;
 
                 utoa(event.param, params, 10);
-                uart << PGM << STR_EVT_DEFAULT2;
-                uart << params << EOL;
+                uart << PGM << STR_EVT_DEFAULT2
+                  << params << EOL;
             }
             break;
         }
@@ -187,8 +187,7 @@ bool SerialConsole::handleCommand(const char *buffer, const uint8_t len)
         }
     }
 
-    uart << PGM << STR_HELP_UNKNOWN;
-    uart << " (" << buffer << ")" << EOL;
+    uart << PGM << STR_HELP_UNKNOWN << EOL;
 
     return false;
 }
@@ -296,35 +295,35 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     write_time(uart, rtc);
     uart << EOL;
 
-    uart << PGM << STR_STATUS_TEMP;
-    uart << rtc.readTemp() << 'C' << EOL;
+    uart << PGM << STR_STATUS_TEMP
+      << rtc.readTemp() << 'C' << EOL;
 
-    uart << PGM << (STR_STATUS_J1772);
-    uart << static_cast<char>('A' - 1 + state.j1772) << EOL;
+    uart << PGM << (STR_STATUS_J1772)
+      << static_cast<char>('A' - 1 + state.j1772) << EOL;
 
     uart << PGM << (STR_STATUS_CHARGING);
     if (!cm.isCharging())
         uart << PGM << STR_OFF;
     else
         uart << cm.chargeCurrent() << "mA";
-    uart << ' ' << (cm.chargeDuration() / 1000 / 60) << "min ";
-    uart << cm.wattHours() << "Wh" << EOL;
+    uart << ' ' << (cm.chargeDuration() / 1000 / 60) << "min "
+      << cm.wattHours() << "Wh" << EOL;
 
-    uart << PGM << (STR_STATUS_READY);
-    uart << static_cast<char>('0' + state.ready) << EOL;
+    uart << PGM << (STR_STATUS_READY)
+      << static_cast<char>('0' + state.ready) << EOL;
 
-    uart << PGM << (STR_STATUS_MAX_CURRENT);
-    uart << state.max_amps_limit << 'A' << '/';
-    uart << state.max_amps_target << 'A' << EOL;
+    uart << PGM << (STR_STATUS_MAX_CURRENT)
+      << state.max_amps_limit << 'A' << '/'
+      << state.max_amps_target << 'A' << EOL;
 
     uart << EOL;
 }
 
 void SerialConsole::commandVersion(const char *, const uint8_t)
 {
-    uart << PGM << STR_NOSPARK << EOL;
-    uart << PGM << STR_NOSPARK_BY << EOL;
-    uart << EOL;
+    uart << PGM << STR_NOSPARK << EOL
+      << PGM << STR_NOSPARK_BY << EOL
+      << EOL;
 }
 
 }

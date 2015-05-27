@@ -60,12 +60,11 @@ build $builddir/libevent.a: ar $builddir/event.o $builddir/handler.o $builddir/l
 build $builddir/chargemonitor.o: cxx evse/chargemonitor.cpp
 build $builddir/chargetimer.o: cxx evse/chargetimer.cpp
 build $builddir/controller.o: cxx evse/controller.cpp
-build $builddir/post.o: cxx evse/post.cpp
 build $builddir/settings.o: cxx evse/settings.cpp
 build $builddir/state.o: cxx evse/state.cpp
 build $builddir/temperaturemonitor.o: cxx evse/temperaturemonitor.cpp
 build $builddir/libevse.a: ar $builddir/chargemonitor.o $builddir/chargetimer.o $
-    $builddir/controller.o $builddir/post.o $builddir/settings.o $builddir/state.o $
+    $builddir/controller.o $builddir/settings.o $builddir/state.o $
     $builddir/temperaturemonitor.o
 
 build $builddir/usart.o: cxx serial/usart.cpp

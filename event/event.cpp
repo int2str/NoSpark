@@ -13,7 +13,7 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include "event.h"
+#include "event/event.h"
 
 namespace event
 {
@@ -26,7 +26,7 @@ Event::Event()
 {
 }
 
-Event::Event(const uint16_t id, const uint32_t param)
+Event::Event(const uint8_t id, const uint32_t param)
     : id(id)
     , param(param)
     , delay(0)

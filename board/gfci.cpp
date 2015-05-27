@@ -16,11 +16,11 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 
+#include "board/gfci.h"
+#include "board/pins.h"
 #include "event/loop.h"
 #include "utils/atomic.h"
 #include "events.h"
-#include "gfci.h"
-#include "pins.h"
 
 #define GFCI_TEST_PULSES     100
 #define GFCI_TEST_DELAY_US  8333 // ~60Hz
@@ -43,9 +43,6 @@ GFCI::GFCI()
     , self_test(false)
     , tripped(false)
 {
-    pinSense.io(Pin::IN);
-    pinTest.io(Pin::OUT);
-
     // Pointer for ISR
     gfci = this;
 
@@ -65,7 +62,7 @@ void GFCI::sendPulses()
     pinTest = 0;
 }
 
-bool GFCI::selfTest(const bool sendPostEvent)
+bool GFCI::selfTest()
 {
     if (tripped)
         return false;
@@ -87,9 +84,6 @@ bool GFCI::selfTest(const bool sendPostEvent)
     // Check if we're back low...
     result = tripped && !pinSense;
 
-    if (sendPostEvent)
-        event::Loop::post(event::Event(result ? EVENT_POST_SUCCESS : EVENT_POST_FAILED));
-
     self_test = false;
     tripped = false;
 
@@ -101,10 +95,9 @@ void GFCI::trip()
     if (tripped)
         return;
 
-    if (!!pinSense)
-        tripped = true;
+    tripped = true;
 
-    if (tripped && !self_test)
+    if (!self_test)
         event::Loop::post(event::Event(EVENT_GFCI_TRIPPED));
 }
 

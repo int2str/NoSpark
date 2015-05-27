@@ -13,8 +13,8 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include "handler.h"
-#include "loop.h"
+#include "event/handler.h"
+#include "event/loop.h"
 
 namespace event
 {

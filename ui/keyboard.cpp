@@ -15,8 +15,8 @@
 
 #include "event/loop.h"
 #include "system/timer.h"
+#include "ui/keyboard.h"
 #include "events.h"
-#include "keyboard.h"
 
 #define LCD_I2C_ADDR            0x20    // LCD backpack has buttons
 
@@ -84,12 +84,8 @@ void Keyboard::update()
 
 void Keyboard::onEvent(const event::Event &event)
 {
-    switch (event.id)
-    {
-        case EVENT_UPDATE:
-            update();
-            break;
-    }
+    if (event.id == EVENT_UPDATE)
+        update();
 }
 
 }

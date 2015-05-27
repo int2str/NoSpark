@@ -117,8 +117,8 @@ bool LcdStateSettings::draw()
 bool LcdStateSettings::pageSetTime()
 {
     lcd.move(0,0);
-    lcd << static_cast<char>(CustomCharacters::CLOCK);
-    lcd << PGM << STR_SET_CLOCK;
+    lcd << static_cast<char>(CustomCharacters::CLOCK)
+      << PGM << STR_SET_CLOCK;
     lcd.move(2, 1);
 
     if (option > ADJUST_MM)
@@ -144,8 +144,8 @@ bool LcdStateSettings::pageSetTime()
     if (option == ADJUST_MM)
         temp_buffer[2] = utils::dec2bcd((mm + value) % 60);
 
-    lcd << stream::PAD_BCD << temp_buffer[3] << ':';
-    lcd << stream::PAD_BCD << temp_buffer[2];
+    lcd << stream::PAD_BCD << temp_buffer[3] << ':'
+      << stream::PAD_BCD << temp_buffer[2];
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
@@ -161,8 +161,8 @@ bool LcdStateSettings::pageSetTime()
 bool LcdStateSettings::pageSetDate()
 {
     lcd.move(0,0);
-    lcd << static_cast<char>(CustomCharacters::CALENDAR);
-    lcd << PGM << STR_SET_DATE;
+    lcd << static_cast<char>(CustomCharacters::CALENDAR)
+      << PGM << STR_SET_DATE;
     lcd.move(2, 1);
 
     if (option > ADJUST_YY)
@@ -192,9 +192,9 @@ bool LcdStateSettings::pageSetDate()
     if (option == ADJUST_YY)
         temp_buffer[7] = utils::dec2bcd((yy + value) % 30); // <-- Year 2030 issue :)
 
-    lcd << stream::PAD_BCD << temp_buffer[5] << '.';
-    lcd << stream::PAD_BCD << temp_buffer[6] << '.';
-    lcd << "20" << stream::PAD_BCD << temp_buffer[7];
+    lcd << stream::PAD_BCD << temp_buffer[5] << '.'
+      << stream::PAD_BCD << temp_buffer[6] << '.'
+      << "20" << stream::PAD_BCD << temp_buffer[7];
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
@@ -245,8 +245,8 @@ bool LcdStateSettings::pageSetCurrent()
     // Draw screen, flashing value while adjusting
 
     lcd.move(0, 0);
-    lcd << static_cast<char>(CustomCharacters::BOLT);
-    lcd << PGM << STR_SET_CURRENT;
+    lcd << static_cast<char>(CustomCharacters::BOLT)
+      << PGM << STR_SET_CURRENT;
 
     lcd.move(2, 1);
     if (option == NOT_ADJUSTING || blink_state.get())
@@ -284,8 +284,8 @@ bool LcdStateSettings::pageChargeTimer()
         value = 0;
 
     lcd.move(0,0);
-    lcd << static_cast<char>(CustomCharacters::HOURGLASS);
-    lcd << PGM << STR_SET_CHARGETIMER;
+    lcd << static_cast<char>(CustomCharacters::HOURGLASS)
+      << PGM << STR_SET_CHARGETIMER;
 
     lcd.move(2, 1);
 
@@ -353,8 +353,8 @@ bool LcdStateSettings::pageKwhLimit()
     // Draw screen, flashing value while adjusting
 
     lcd.move(0, 0);
-    lcd << static_cast<char>(CustomCharacters::BATTERY1);
-    lcd << PGM << STR_SET_KWH_LIMIT;
+    lcd << static_cast<char>(CustomCharacters::BATTERY1)
+      << PGM << STR_SET_KWH_LIMIT;
 
     lcd.move(2, 1);
     if (option == NOT_ADJUSTING || blink_state.get())
@@ -409,10 +409,10 @@ bool LcdStateSettings::pageKwhCost()
     lcd << '$' << PGM << STR_SET_KWH_COST;
 
     lcd.move(2, 1);
-    lcd << static_cast<char>(currencies[settings.kwh_currency]) << ' ';
-    lcd << static_cast<char>('0' + ones) << '.';
-    lcd << static_cast<char>('0' + tenth);
-    lcd << static_cast<char>('0' + hundredth);
+    lcd << static_cast<char>(currencies[settings.kwh_currency]) << ' '
+      << static_cast<char>('0' + ones) << '.'
+      << static_cast<char>('0' + tenth)
+      << static_cast<char>('0' + hundredth);
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
@@ -441,8 +441,8 @@ bool LcdStateSettings::pageSleepmode()
     // Draw screen, flashing value while adjusting
 
     lcd.move(0, 0);
-    lcd << static_cast<char>(CustomCharacters::ZZ);
-    lcd << PGM << STR_SET_SLEEPMODE;
+    lcd << static_cast<char>(CustomCharacters::ZZ)
+      << PGM << STR_SET_SLEEPMODE;
 
     lcd.move(2, 1);
     if (option == NOT_ADJUSTING || blink_state.get())
@@ -481,8 +481,8 @@ bool LcdStateSettings::pageReset()
 bool LcdStateSettings::pageExit()
 {
     lcd.move(0, 0);
-    lcd << static_cast<char>(0x7F); // <- back arrow
-    lcd << PGM << STR_SET_EXIT;
+    lcd << static_cast<char>(0x7F) // <- back arrow
+      << PGM << STR_SET_EXIT;
     return (option == NOT_ADJUSTING);
 }
 

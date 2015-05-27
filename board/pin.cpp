@@ -39,29 +39,17 @@ namespace
 namespace board
 {
 
-Pin::Pin(volatile uint8_t* reg_pin, const uint8_t b)
+Pin::Pin(volatile uint8_t* reg_pin, const uint8_t b, const PinDirection d)
     : reg_pin(reg_pin)
     , b(b)
 {
-}
+    _DDR &= ~b;
 
-void Pin::io(const PinDirection d)
-{
-    switch (d)
-    {
-        case IN:
-            _DDR &= ~b;
-            break;
+    if (d == PIN_OUT)
+        _DDR |= b;
 
-        case IN_PULLUP:
-            _DDR &= ~b;
-            _PORT |= b;
-            break;
-
-        case OUT:
-            _DDR |= b;
-            break;
-    }
+    else if (d == PIN_IN_PULLUP)
+        _PORT |= b;
 }
 
 uint16_t Pin::analogRead() const

@@ -36,9 +36,6 @@ void Settings::defaults()
 {
     marker = SETTINGS_MARKER;
 
-    // Rev 1
-    max_current = 16;
-
     // Force upgrade
     revision = 0;
     upgrade();
@@ -46,6 +43,12 @@ void Settings::defaults()
 
 void Settings::upgrade()
 {
+    // Rev 1
+    if (revision < 1)
+    {
+        max_current = 16;
+    }
+
     // Rev 2
     if (revision < 2)
     {
@@ -76,7 +79,7 @@ void Settings::upgrade()
     {
         kwh_currency = 0;
         kwh_cost = 0;
-        ammeter_factor = 220;
+        ammeter_factor = 200;
         ammeter_offset = 0;
     }
 

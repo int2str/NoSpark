@@ -13,16 +13,15 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "event/loop.h"
 #include "system/timer.h"
-#include "loop.h"
 
 namespace event
 {
 
 void Loop::post(const Event &event)
 {
-    auto& events = get().events;
-    events.push(event);
+    get().events.push(event);
 }
 
 void Loop::postDelayed(const Event &event, const uint32_t ms)
@@ -31,8 +30,7 @@ void Loop::postDelayed(const Event &event, const uint32_t ms)
     e.delay = ms;
     e.posted = system::Timer::millis();
 
-    auto& events = get().events;
-    events.push(e);
+    get().events.push(e);
 }
 
 void Loop::remove(const Event &event)
@@ -49,8 +47,7 @@ void Loop::remove(const Event &event)
 
 void Loop::addHandler(Handler *ph)
 {
-    auto& handlers = get().handlers;
-    handlers.push(ph);
+    get().handlers.push(ph);
 }
 
 void Loop::removeHandler(Handler *ph)
@@ -85,7 +82,7 @@ void Loop::dispatch_impl()
 {
     for (auto it = events.begin(); it != events.end();)
     {
-        const auto event = *it;
+        const Event &event = *it;
 
         // Process and erase events
         if (event.delay == 0 || ((system::Timer::millis() - event.posted) >= event.delay))
