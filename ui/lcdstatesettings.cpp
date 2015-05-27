@@ -13,7 +13,6 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include <util/delay.h>
 #include <stdlib.h>
 
 #include "devices/ds3231.h"
@@ -99,6 +98,7 @@ LcdStateSettings::LcdStateSettings(stream::LcdStream &lcd)
 {
     CustomCharacters::loadCustomChars(lcd.getLCD());
     EepromSettings::load(settings);
+    resetTimeout();
 }
 
 bool LcdStateSettings::draw()
@@ -508,8 +508,6 @@ void LcdStateSettings::advance()
 
 bool LcdStateSettings::timedOut()
 {
-    if (last_action == 0)
-        resetTimeout();
     return (Timer::millis() - last_action) > SETTINGS_TIMEOUT;
 }
 

@@ -14,7 +14,6 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include <avr/io.h>
-#include <util/delay.h>
 
 #include "board/j1772pilot.h"
 #include "evse/settings.h"

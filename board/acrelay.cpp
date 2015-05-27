@@ -14,7 +14,6 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include <avr/interrupt.h>
-#include <util/delay.h>
 
 #include "event/loop.h"
 #include "board/acrelay.h"

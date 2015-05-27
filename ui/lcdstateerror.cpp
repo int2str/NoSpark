@@ -13,8 +13,6 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include <util/delay.h>
-
 #include "evse/state.h"
 #include "lcdstateerror.h"
 #include "strings.h"
