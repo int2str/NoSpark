@@ -21,7 +21,7 @@
 #include "utils/cpp.h"
 #include "i2c_master.h"
 
-#define I2C_FREQ 100000UL
+#define I2C_FREQ 400000UL
 
 //                        TWINT        TWEA        TWSTA        TWSTO        TWEN        TWIE
 #define I2C_START     (1<<TWINT) | (1<<TWEA) | (1<<TWSTA) |              (1<<TWEN) | (1<<TWIE)
