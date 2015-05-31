@@ -37,7 +37,7 @@ rule cxx
     depfile = $out.d
 
 rule link
-    command = $cxx $cflags $ldflags -o $out $in $libs && $size $out
+    command = $cxx $cflags $ldflags -o $out $in $libs
     description = ELF $out
 
 rule ar
