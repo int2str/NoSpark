@@ -13,10 +13,8 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include <avr/wdt.h>
-
-#include "heartbeat.h"
-#include "pins.h"
+#include "board/heartbeat.h"
+#include "board/pins.h"
 
 namespace board
 {

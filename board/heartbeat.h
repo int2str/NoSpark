@@ -31,9 +31,6 @@ public:
     static void toggle();
 
 private:
-    static Heartbeat& get();
-    void toggle_impl();
-
     Pin pin;
 };
 
