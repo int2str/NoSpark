@@ -25,7 +25,7 @@ namespace board
 {
 
 // Relay monitoring and control
-class ACRelay
+class Relays
 {
 public:
     enum RelayState
@@ -36,9 +36,9 @@ public:
       , GROUND_FAULT
     };
 
-    ACRelay();
+    Relays();
 
-    void setState(const bool enable);
+    void set(const bool enable);
 
     // This will sample the relay sense pins and
     // return an appropriate status depending on
@@ -62,7 +62,7 @@ private:
 
     bool isActive() const;
 
-    DISALLOW_COPY_AND_ASSIGN(ACRelay);
+    DISALLOW_COPY_AND_ASSIGN(Relays);
 };
 
 }

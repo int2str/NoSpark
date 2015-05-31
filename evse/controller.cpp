@@ -22,10 +22,10 @@
 
 #define SUSPEND_RELAY_DELAY 3000
 
-using board::ACRelay;
 using board::GFCI;
 using board::J1772Pilot;
 using board::Pin;
+using board::Relays;
 using event::Event;
 using event::Loop;
 
@@ -95,18 +95,18 @@ void Controller::updateRunning(bool force_update)
     State& state = State::get();
 
     // Check relay state for faults
-    const ACRelay::RelayState relay_state = acRelay.checkStatus();
+    const Relays::RelayState relay_state = relays.checkStatus();
     switch (relay_state)
     {
-        case ACRelay::OK:
-        case ACRelay::UNKNOWN:
+        case Relays::OK:
+        case Relays::UNKNOWN:
             break;
 
-        case ACRelay::GROUND_FAULT:
+        case Relays::GROUND_FAULT:
             setFault(State::FAULT_GROUND_FAULT);
             break;
 
-        case ACRelay::STUCK_RELAY:
+        case Relays::STUCK_RELAY:
             setFault(State::FAULT_STUCK_RELAY);
             break;
     }
@@ -207,13 +207,13 @@ void Controller::enableCharge(const bool enable)
     {
         if (gfci.selfTest())
         {
-            acRelay.setState(true);
+            relays.set(true);
         } else {
-            acRelay.setState(false);
+            relays.set(false);
             setFault(State::FAULT_GFCI_TRIPPED);
         }
     } else {
-        acRelay.setState(false);
+        relays.set(false);
     }
 }
 

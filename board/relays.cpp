@@ -16,8 +16,8 @@
 #include <avr/interrupt.h>
 
 #include "event/loop.h"
-#include "board/acrelay.h"
 #include "board/pins.h"
+#include "board/relays.h"
 #include "system/timer.h"
 #include "events.h"
 
@@ -31,7 +31,7 @@
 namespace board
 {
 
-ACRelay::ACRelay()
+Relays::Relays()
     : state(UNKNOWN)
     , enabled(false)
     , pinACRelay(PIN_AC_RELAY)
@@ -42,7 +42,7 @@ ACRelay::ACRelay()
 {
 }
 
-void ACRelay::setState(const bool enable)
+void Relays::set(const bool enable)
 {
     if (enabled == enable)
         return;
@@ -57,7 +57,7 @@ void ACRelay::setState(const bool enable)
     event::Loop::post(event::Event(EVENT_CHARGE_STATE, enable));
 }
 
-ACRelay::RelayState ACRelay::checkStatus()
+Relays::RelayState Relays::checkStatus()
 {
     // Do NOT recover from an error
     if (state != UNKNOWN && state != OK)
@@ -76,7 +76,7 @@ ACRelay::RelayState ACRelay::checkStatus()
     return state;
 }
 
-bool ACRelay::isActive() const
+bool Relays::isActive() const
 {
     const uint32_t start_ms = system::Timer::millis();
 

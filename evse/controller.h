@@ -18,10 +18,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "board/acrelay.h"
 #include "board/gfci.h"
 #include "board/j1772pilot.h"
 #include "board/pin.h"
+#include "board/relays.h"
 #include "board/sleepindicator.h"
 #include "evse/state.h"
 #include "event/handler.h"
@@ -53,7 +53,7 @@ private:
 
     void setFault(const State::ControllerFault fault);
 
-    board::ACRelay acRelay;
+    board::Relays relays;
     board::GFCI gfci;
     board::J1772Pilot j1772;
     board::SleepIndicator sleep_status;
