@@ -56,7 +56,6 @@ Controller& Controller::init()
 }
 
 Controller::Controller()
-    : sleep_status(PIN_MISO)
 {
     enableCharge(false);
 }
@@ -188,7 +187,7 @@ void Controller::onEvent(const event::Event &event)
         case EVENT_READY_STATE_CHANGED:
             if (State::get().controller == State::RUNNING)
             {
-                sleep_status = State::get().ready != State::READY;
+                sleep_status.set(State::get().ready != State::READY);
                 updateRunning(true);
             }
             break;

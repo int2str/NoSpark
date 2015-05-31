@@ -39,9 +39,10 @@ build $builddir/gfci.o: cxx board/gfci.cpp
 build $builddir/heartbeat.o: cxx board/heartbeat.cpp
 build $builddir/j1772pilot.o: cxx board/j1772pilot.cpp
 build $builddir/pin.o: cxx board/pin.cpp
+build $builddir/sleepindicator.o: cxx board/sleepindicator.cpp
 build $builddir/libboard.a: ar $builddir/acrelay.o $builddir/adc.o $
     $builddir/ammeter.o $builddir/gfci.o $builddir/heartbeat.o $
-    $builddir/j1772pilot.o $builddir/pin.o
+    $builddir/j1772pilot.o $builddir/pin.o $builddir/sleepindicator.o
 
 build $builddir/ds3231.o: cxx devices/ds3231.cpp
 build $builddir/i2c_master.o: cxx devices/i2c_master.cpp
