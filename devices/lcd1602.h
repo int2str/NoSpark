@@ -50,8 +50,6 @@ public:
 
     void setBacklight(const Backlight color);
 
-    void write(const char* str);
-    void write_P(const char* str);
     void write(const uint8_t ch);
 
 private:

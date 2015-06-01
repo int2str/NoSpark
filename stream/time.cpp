@@ -13,30 +13,20 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#pragma once
-
-#include "devices/lcd1602.h"
-#include "stream/outputstream.h"
+#include "stream/time.h"
 
 namespace stream
 {
 
-class LcdStream : public OutputStream
+Time::Time(const uint8_t hh, const uint8_t mm)
+    : hh(hh)
+    , mm(mm)
 {
-public:
-    LcdStream(devices::LCD16x2 &lcd);
+}
 
-    void clear();
-    void move(const uint8_t x, const uint8_t y);
-
-    void setBacklight(const devices::LCD16x2::Backlight color);
-
-    devices::LCD16x2& getLCD() const;
-
-private:
-    void write(const char ch) override;
-
-    devices::LCD16x2 &lcd;
-};
+OutputStream& operator<< (OutputStream& out, const Time &time)
+{
+    return out << stream::PAD_ZERO << time.hh << ':' << stream::PAD_ZERO << time.mm;
+}
 
 }

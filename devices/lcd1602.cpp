@@ -182,18 +182,6 @@ void LCD16x2::createChar_P(const uint8_t idx, const uint8_t* data, const uint8_t
     move(0, 0); // To reset address pointer
 }
 
-void LCD16x2::write(const char* str)
-{
-    while (*str)
-        write(*str++);
-}
-
-void LCD16x2::write_P(const char* str)
-{
-    while (pgm_read_byte(str))
-        write(pgm_read_byte(str++));
-}
-
 void LCD16x2::write(const uint8_t ch)
 {
     pulse(TUPLE_MAP[ch >> 4] | LCD_RS);

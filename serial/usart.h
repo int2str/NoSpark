@@ -30,15 +30,10 @@ class Usart
 public:
     static Usart& get();
 
+    uint8_t read();
     void write(const uint8_t b);
-    void write(const char *str);
-    void writeln(const char *str);
-
-    void write_P(const char *str);
-    void writeln_P(const char *str);
 
     bool avail() const;
-    uint8_t read();
 
 private:
     Usart();

@@ -15,28 +15,24 @@
 
 #pragma once
 
-#include "devices/lcd1602.h"
+#include <stdint.h>
+
 #include "stream/outputstream.h"
 
 namespace stream
 {
 
-class LcdStream : public OutputStream
+class Time
 {
 public:
-    LcdStream(devices::LCD16x2 &lcd);
-
-    void clear();
-    void move(const uint8_t x, const uint8_t y);
-
-    void setBacklight(const devices::LCD16x2::Backlight color);
-
-    devices::LCD16x2& getLCD() const;
+    Time(const uint8_t hh, const uint8_t mm);
 
 private:
-    void write(const char ch) override;
-
-    devices::LCD16x2 &lcd;
+    uint8_t hh;
+    uint8_t mm;
+    friend OutputStream& operator<< (OutputStream& out, const Time &time);
 };
+
+OutputStream& operator<< (OutputStream& out, const Time &time);
 
 }

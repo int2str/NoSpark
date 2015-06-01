@@ -31,7 +31,6 @@ public:
 
 private:
     void write(const char ch) override;
-    void write(const char *string) override;
 
     serial::Usart &uart;
 };

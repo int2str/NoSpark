@@ -35,7 +35,6 @@ private:
     void update();
 
     void write(const char ch) override;
-    void write(const char *str) override;
 
     uint32_t last_update;
 

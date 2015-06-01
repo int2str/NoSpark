@@ -22,6 +22,7 @@
 #include "evse/chargemonitor.h"
 #include "evse/settings.h"
 #include "evse/state.h"
+#include "stream/time.h"
 #include "utils/bcd.h"
 #include "customcharacters.h"
 #include "lcdstaterunning.h"
@@ -43,11 +44,6 @@ using stream::OutputStream;
 
 namespace
 {
-    void write_time(OutputStream &lcd, uint8_t hh, uint8_t mm)
-    {
-        lcd << stream::PAD_ZERO << hh << ':' << stream::PAD_ZERO << mm;
-    }
-
     void write_duration(OutputStream &lcd, const uint32_t ms)
     {
         if (!ms)
@@ -57,7 +53,7 @@ namespace
         }
 
         const uint32_t mins = ms / 1000 / 60;
-        write_time(lcd, mins / 60, mins % 60);
+        lcd << stream::Time(mins / 60, mins % 60);
     }
 
     void write_kwh(OutputStream &lcd, const uint32_t wh)
@@ -130,9 +126,9 @@ void LcdStateRunning::drawDefault()
         amps = chargeMonitor.chargeCurrent() / 1000;
 
     lcd.move(0,0);
-    write_time(lcd, rtc.hour, rtc.minute);
-    lcd << ' ' << stream::PAD_SPACE << rtc.readTemp() << static_cast<char>(0xDF)
-        << ' ' << static_cast<char>(CustomCharacters::SEPARATOR) << ' ';
+    lcd << stream::Time(rtc.hour, rtc.minute)
+      << ' ' << stream::PAD_SPACE << rtc.readTemp() << static_cast<char>(0xDF)
+      << ' ' << static_cast<char>(CustomCharacters::SEPARATOR) << ' ';
 
     if (amps)
         lcd << stream::PAD_SPACE << amps;

@@ -56,7 +56,8 @@ OutputStream& OutputStream::operator<< (const char* str)
         while (pgm_read_byte(str))
             write(pgm_read_byte(str++));
     } else {
-        write(str);
+        while (*str)
+            write(*str++);
     }
     flags = 0;
     return *this;
@@ -68,24 +69,19 @@ OutputStream& OutputStream::operator<< (const uint8_t val)
     {
         char buffer[6] = {0};
         utoa(val, buffer, 10);
-        return (*this << buffer);
+        return *this << buffer;
     }
 
-    if (flags & (1 << Flags::PAD_BCD))
+    else if (flags & (1 << Flags::PAD_BCD))
     {
         *this << static_cast<char>('0' + (val >> 4));
         *this << static_cast<char>('0' + (val & 0x0F));
+    }
 
-    } else if (flags & (1 << Flags::PAD_ZERO)) {
+    else if (flags & ((1 << Flags::PAD_ZERO) | (1 << Flags::PAD_SPACE)))
+    {
         if (val < 10)
-            *this << static_cast<char>('0');
-        else
-            *this << static_cast<char>('0' + val / 10);
-        *this << static_cast<char>('0' + val % 10);
-
-    } else if (flags & (1 << Flags::PAD_SPACE)) {
-        if (val < 10)
-            *this << static_cast<char>(' ');
+            *this << static_cast<char>(flags & (1 << Flags::PAD_ZERO) ? '0' : ' ');
         else
             *this << static_cast<char>('0' + val / 10);
         *this << static_cast<char>('0' + val % 10);
@@ -99,7 +95,7 @@ OutputStream& OutputStream::operator<< (const uint32_t val)
 {
     char buffer[6] = {0};
     ltoa(val, buffer, 10);
-    return (*this << buffer);
+    return *this << buffer;
 }
 
 }

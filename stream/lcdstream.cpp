@@ -45,11 +45,6 @@ void LcdStream::setBacklight(const LCD16x2::Backlight color)
     lcd.setBacklight(color);
 }
 
-void LcdStream::write(const char *string)
-{
-    lcd.write(string);
-}
-
 void LcdStream::write(const char ch)
 {
     lcd.write(ch);

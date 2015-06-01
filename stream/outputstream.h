@@ -49,7 +49,6 @@ public:
     OutputStream& operator<< (const uint32_t val);
 
 protected:
-    virtual void write(const char *str) = 0;
     virtual void write(const char ch) = 0;
 
 private:

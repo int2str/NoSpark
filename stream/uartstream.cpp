@@ -34,11 +34,6 @@ UartStream& UartStream::operator>> (char &ch)
     return *this;
 }
 
-void UartStream::write(const char *string)
-{
-    uart.write(string);
-}
-
 void UartStream::write(const char ch)
 {
     uart.write(ch);

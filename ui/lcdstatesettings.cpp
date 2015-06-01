@@ -18,14 +18,15 @@
 #include "devices/ds3231.h"
 #include "event/loop.h"
 #include "evse/state.h"
+#include "stream/time.h"
 #include "system/timer.h"
 #include "system/watchdog.h"
 #include "utils/bcd.h"
 #include "utils/math.h"
-#include "customcharacters.h"
+#include "ui/customcharacters.h"
+#include "ui/lcdstatesettings.h"
+#include "ui/strings.h"
 #include "events.h"
-#include "lcdstatesettings.h"
-#include "strings.h"
 
 #define SETTINGS_TIMEOUT    10000
 #define BLINK_TIMEOUT       500
@@ -66,12 +67,8 @@ using system::Watchdog;
 
 namespace
 {
-    static uint8_t temp_buffer[8] = {0};
-
-    void write_time(stream::LcdStream &lcd, uint8_t hh, uint8_t mm)
-    {
-        lcd << stream::PAD_ZERO <<  hh << ':' << stream::PAD_ZERO << mm;
-    }
+    // Temporary memory for settings in progress...
+    uint8_t temp_buffer[8] = {0};
 }
 
 namespace ui
@@ -314,11 +311,10 @@ bool LcdStateSettings::pageChargeTimer()
             lcd << stream::Spaces(14);
 
     } else {
-        lcd << PGM << STR_ON << ' ';
-
-        write_time(lcd, temp_buffer[1], temp_buffer[2]);
-        lcd << static_cast<char>(126);
-        write_time(lcd, temp_buffer[3], temp_buffer[4]);
+        lcd << PGM << STR_ON << ' '
+          << stream::Time(temp_buffer[1], temp_buffer[2])
+          << static_cast<char>(126)
+          << stream::Time(temp_buffer[3], temp_buffer[4]);
 
         if (blink_state.get())
         {

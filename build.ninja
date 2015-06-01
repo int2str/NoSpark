@@ -76,8 +76,9 @@ build $builddir/lcdstream.o: cxx stream/lcdstream.cpp
 build $builddir/outputstream.o: cxx stream/outputstream.cpp
 build $builddir/scrollingtext.o: cxx stream/scrollingtext.cpp
 build $builddir/uartstream.o: cxx stream/uartstream.cpp
+build $builddir/time.o: cxx stream/time.cpp
 build $builddir/libstream.a: ar $builddir/lcdstream.o $builddir/outputstream.o $
-    $builddir/scrollingtext.o $builddir/uartstream.o
+    $builddir/scrollingtext.o $builddir/uartstream.o $builddir/time.o
 
 build $builddir/timer.o: cxx system/timer.cpp
 build $builddir/watchdog.o: cxx system/watchdog.cpp

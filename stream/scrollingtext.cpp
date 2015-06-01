@@ -85,18 +85,10 @@ void ScrollingText::update()
     }
 }
 
-void ScrollingText::write(const char *string)
-{
-    while (*string)
-        write(*string++);
-}
-
 void ScrollingText::write(const char ch)
 {
-    if (length >= (size-1))
-        return;
-
-    buffer[length++] = ch;
+    if (length < (size-1))
+        buffer[length++] = ch;
 }
 
 }

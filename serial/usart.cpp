@@ -15,7 +15,6 @@
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#include <avr/pgmspace.h>
 #include <stdint.h>
 
 #include "serial/usart.h"
@@ -29,9 +28,6 @@
 // Switched to 2x mode (U2X) to keep the error down. This
 // changes the divisor to 8....
 #define USART_BAUD_PRESCALE (((F_CPU  / USART_BAUD_RATE) / 8) - 1)
-
-#define CR '\r'
-#define LF '\n'
 
 namespace
 {
@@ -104,37 +100,10 @@ uint8_t Usart::read()
     return usart_read();
 }
 
-void Usart::write(const char *str)
-{
-    while (*str)
-        write(*str++);
-}
-
-void Usart::writeln(const char *str)
-{
-    write(str);
-    write(CR);
-    write(LF);
-}
-
-void Usart::write_P(const char *str)
-{
-    while (pgm_read_byte(str))
-        write(pgm_read_byte(str++));
-}
-
-void Usart::writeln_P(const char *str)
-{
-    write_P(str);
-    write(CR);
-    write(LF);
-}
-
 bool Usart::avail() const
 {
     return usart_available();
 }
-
 
 }
 

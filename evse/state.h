@@ -35,14 +35,6 @@ public:
       , FAULT
     };
 
-    enum ReadyState
-    {
-        READY
-      , SCHEDULED
-      , KWH_LIMIT
-      , MANUAL_OVERRIDE
-    };
-
     enum ControllerFault
     {
         NOTHING_WRONG
@@ -51,6 +43,14 @@ public:
       , FAULT_GROUND_FAULT
       , FAULT_GFCI_TRIPPED
       , FAULT_TEMPERATURE_CRITICAL
+    };
+
+    enum ReadyState
+    {
+        READY
+      , SCHEDULED
+      , KWH_LIMIT
+      , MANUAL_OVERRIDE
     };
 
     static State& get();

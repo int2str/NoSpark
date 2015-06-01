@@ -21,6 +21,7 @@
 #include "evse/chargemonitor.h"
 #include "evse/settings.h"
 #include "evse/state.h"
+#include "stream/time.h"
 #include "system/watchdog.h"
 #include "ui/serialconsole.h"
 #include "ui/strings.h"
@@ -44,20 +45,6 @@ namespace
         return ((msb_ch - '0') << 4) | ((lsb_ch - '0') & 0x0F);
     }
 
-    void write_time(stream::OutputStream &out, DS3231 &rtc)
-    {
-        uint8_t buffer[8] = {0};
-        rtc.readRaw(buffer, 8);
-
-        out << stream::PAD_BCD << buffer[3] << ':';
-        out << stream::PAD_BCD << buffer[2] << ':';
-        out << stream::PAD_BCD << buffer[1] << ' ';
-
-        out << stream::PAD_BCD << buffer[5] << '.';
-        out << stream::PAD_BCD << buffer[6] << '.';
-        out << "20" << stream::PAD_BCD << buffer[7];
-    }
-
     void write_help(stream::OutputStream &out, const char *cmd, const char *help)
     {
         out << ' ' << PGM << cmd;
@@ -75,7 +62,7 @@ namespace
 
         if (cents != 0)
         {
-            const char currencies[3] = {'$', 'E', 'Y'}; // Backslash = Yen
+            const char currencies[3] = {'$', 'E', 'Y'};
             uint32_t cost = kwh * cents;
 
             char buffer[10] = {0};
@@ -312,16 +299,19 @@ void SerialConsole::commandDebug(const char *buffer, const uint8_t len)
 
 void SerialConsole::commandStatus(const char *, const uint8_t)
 {
-    DS3231 &rtc = DS3231::get();
     State &state = State::get();
     ChargeMonitor &cm = ChargeMonitor::get();
 
     Settings settings;
     EepromSettings::load(settings);
 
-    uart << PGM << STR_STATUS_TIME;
-    write_time(uart, rtc);
-    uart << EOL;
+    DS3231 &rtc = DS3231::get();
+    rtc.read();
+
+    uart << PGM << STR_STATUS_TIME
+      << stream::Time(rtc.hour, rtc.minute) << ' '
+      << rtc.day << '.' << rtc.month << '.' << "20" << rtc.year
+      << EOL;
 
     uart << PGM << STR_STATUS_TEMP
       << rtc.readTemp() << 'C' << EOL;
