@@ -21,7 +21,7 @@
 #include "utils/cpp.h"
 #include "stream/uartstream.h"
 
-#define MAX_COMMANDS 8
+#define MAX_COMMANDS 9
 
 namespace ui
 {
@@ -49,6 +49,7 @@ private:
     void commandHelp(const char *buffer, const uint8_t len);
     void commandReset(const char *buffer, const uint8_t len);
     void commandSetCurrent(const char *buffer, const uint8_t len);
+    void commandSetLimit(const char *buffer, const uint8_t len);
     void commandSetTime(const char *buffer, const uint8_t len);
     void commandStatus(const char *buffer, const uint8_t len);
     void commandVersion(const char *buffer, const uint8_t len);

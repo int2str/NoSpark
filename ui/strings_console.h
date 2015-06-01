@@ -29,11 +29,13 @@
 #define STR_STATUS_CHARGING         PSTR("Charge state: ")
 #define STR_STATUS_READY            PSTR("Ready state: ")
 #define STR_STATUS_MAX_CURRENT      PSTR("Max. current: ")
+#define STR_STATUS_LIMIT            PSTR("Charge limit: ")
 
 // Console commands
 #define STR_CMD_HELP                PSTR("help")
 #define STR_CMD_RESET               PSTR("reset")
 #define STR_CMD_SETCURRENT          PSTR("setcurrent")
+#define STR_CMD_SETLIMIT            PSTR("setlimit")
 #define STR_CMD_SETTIME             PSTR("settime")
 #define STR_CMD_STATUS              PSTR("status")
 #define STR_CMD_ENERGY              PSTR("energy")
@@ -49,7 +51,8 @@
 #define STR_HELP_DEBUG              PSTR("enable (1) or disable (0) debug events")
 #define STR_HELP_ENERGY             PSTR("show charge statistics")
 #define STR_HELP_RESET              PSTR("force watchdog timeout to reset device")
-#define STR_HELP_SETCURRENT         PSTR("set maximum charge current")
+#define STR_HELP_SETCURRENT         PSTR("set maximum charge current (A)")
+#define STR_HELP_SETLIMIT           PSTR("set maximum kWh per charge")
 #define STR_HELP_SETTIME            PSTR("set the clock <hhmmss ddmmyy>")
 #define STR_HELP_STATUS             PSTR("shows the device/charging status")
 #define STR_HELP_VERSION            PSTR("displays version information")

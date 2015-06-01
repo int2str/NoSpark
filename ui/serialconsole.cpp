@@ -113,6 +113,7 @@ SerialConsole::SerialConsole(stream::UartStream &uart)
       , { STR_CMD_VERSION,    &SerialConsole::commandVersion }
       , { STR_CMD_RESET,      &SerialConsole::commandReset }
       , { STR_CMD_SETCURRENT, &SerialConsole::commandSetCurrent }
+      , { STR_CMD_SETLIMIT  , &SerialConsole::commandSetLimit }
       , { STR_CMD_SETTIME,    &SerialConsole::commandSetTime }
       , { STR_CMD_DEBUG,      &SerialConsole::commandDebug }
     })
@@ -199,6 +200,7 @@ void SerialConsole::commandHelp(const char *, const uint8_t)
     write_help(uart, STR_CMD_ENERGY, STR_HELP_ENERGY);
     write_help(uart, STR_CMD_RESET, STR_HELP_RESET);
     write_help(uart, STR_CMD_SETCURRENT, STR_HELP_SETCURRENT);
+    write_help(uart, STR_CMD_SETLIMIT, STR_HELP_SETLIMIT);
     write_help(uart, STR_CMD_SETTIME, STR_HELP_SETTIME);
     write_help(uart, STR_CMD_STATUS, STR_HELP_STATUS);
     write_help(uart, STR_CMD_VERSION, STR_HELP_VERSION);
@@ -221,12 +223,35 @@ void SerialConsole::commandSetCurrent(const char *buffer, const uint8_t len)
         return;
     }
 
-    int amps = atoi(buffer + cmd_len);
+    const int amps = atoi(buffer + cmd_len);
     if (amps >= AMPS_MIN && amps <= AMPS_MAX)
     {
         State::get().max_amps_target = amps;
         saveMaxAmps(amps);
         event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, amps));
+
+    } else {
+        uart << PGM << STR_ERR_PARAM << EOL;
+    }
+}
+
+void SerialConsole::commandSetLimit(const char *buffer, const uint8_t len)
+{
+    const uint8_t cmd_len = strlen_P(STR_CMD_SETLIMIT);
+
+    if (len < cmd_len + 2 || len > cmd_len + 3)
+    {
+        uart << PGM << STR_ERR_PARAM << EOL;
+        return;
+    }
+
+    const int kwh = atoi(buffer + cmd_len);
+    if (kwh >= 0)
+    {
+        Settings settings;
+        EepromSettings::load(settings);
+        settings.kwh_limit = kwh;
+        EepromSettings::save(settings);
 
     } else {
         uart << PGM << STR_ERR_PARAM << EOL;
@@ -291,6 +316,9 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     State &state = State::get();
     ChargeMonitor &cm = ChargeMonitor::get();
 
+    Settings settings;
+    EepromSettings::load(settings);
+
     uart << PGM << STR_STATUS_TIME;
     write_time(uart, rtc);
     uart << EOL;
@@ -301,20 +329,24 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     uart << PGM << (STR_STATUS_J1772)
       << static_cast<char>('A' - 1 + state.j1772) << EOL;
 
-    uart << PGM << (STR_STATUS_CHARGING);
+    uart << PGM << STR_STATUS_CHARGING;
     if (!cm.isCharging())
         uart << PGM << STR_OFF;
     else
         uart << cm.chargeCurrent() << "mA";
+
     uart << ' ' << (cm.chargeDuration() / 1000 / 60) << "min "
       << cm.wattHours() << "Wh" << EOL;
 
     uart << PGM << (STR_STATUS_READY)
       << static_cast<char>('0' + state.ready) << EOL;
 
-    uart << PGM << (STR_STATUS_MAX_CURRENT)
+    uart << PGM << STR_STATUS_MAX_CURRENT
       << state.max_amps_limit << 'A' << '/'
       << state.max_amps_target << 'A' << EOL;
+
+    if (settings.kwh_limit > 0)
+        uart << PGM << STR_STATUS_LIMIT << settings.kwh_limit << "kWh" << EOL;
 
     uart << EOL;
 }
