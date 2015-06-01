@@ -48,6 +48,10 @@ rule hex
     command = $objcopy -O ihex -R .eeprom $in $out
     description = HEX $out
 
+rule size
+    command = $size $in
+    description = $size $in...
+
 rule upload
     command = $dude $dudeflags -U flash:w:$in
     description = Uploading $in...

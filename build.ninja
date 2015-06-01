@@ -21,6 +21,7 @@ builddir = build
 ldflags = $ldflags -L$builddir
 
 build NoSpark.hex: hex $builddir/nospark.elf
+build size: size $builddir/nospark.elf
 build upload: upload NoSpark.hex
 default NoSpark.hex
 
