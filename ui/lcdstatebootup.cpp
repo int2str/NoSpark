@@ -51,6 +51,8 @@ bool LcdStateBootup::draw()
     if (intro_shown)
         return false;
 
+    lcd.setBacklight(devices::LCD16x2::GREEN);
+
     lcd.move(0,0);
     lcd << stream::PGM << STR_OPENEVSE;
     lcd.move(0,1);

@@ -175,7 +175,7 @@ void LcdStateRunning::drawDefault()
             break;
 
         case J1772Pilot::STATE_B:
-            lcd.setBacklight(LCD16x2::GREEN);
+            lcd.setBacklight(state.ready == State::READY ? LCD16x2::GREEN : LCD16x2::YELLOW);
             center_P(lcd, STR_CONNECTED);
             break;
 

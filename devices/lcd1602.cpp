@@ -139,6 +139,8 @@ LCD16x2::LCD16x2()
 
     writeCommand(LCD_ENTRY | LCD_ENTRY_INC);
     _delay_us(LCD_COMMAND_DELAY_US);
+
+    setBacklight(OFF);
 }
 
 void LCD16x2::clear()
