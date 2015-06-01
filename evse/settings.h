@@ -51,6 +51,9 @@ public:
     uint16_t ammeter_factor;
     uint16_t ammeter_offset;
 
+    // Rev 6
+    uint8_t lcd_type;
+
     Settings();
 
     void defaults();

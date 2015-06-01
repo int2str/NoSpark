@@ -19,14 +19,14 @@
 #include "evse/settings.h"
 #include "evse/state.h"
 #include "system/timer.h"
+#include "ui/lcdconsole.h"
+#include "ui/lcdstatebootup.h"
+#include "ui/lcdstateerror.h"
+#include "ui/lcdstaterunning.h"
+#include "ui/lcdstatesettings.h"
+#include "ui/lcdstatesleeping.h"
+#include "ui/strings.h"
 #include "events.h"
-#include "lcdconsole.h"
-#include "lcdstatebootup.h"
-#include "lcdstateerror.h"
-#include "lcdstaterunning.h"
-#include "lcdstatesettings.h"
-#include "lcdstatesleeping.h"
-#include "strings.h"
 
 #define SLEEP_DELAY_MS (900l * 1000l)
 
@@ -39,11 +39,20 @@ using system::Timer;
 
 namespace
 {
+    using devices::LCD16x2;
+
     bool isWakeEvent(const uint8_t event_id)
     {
         return event_id != EVENT_UPDATE_CHARGE_TIMER
             && event_id != EVENT_KEYDOWN
             && event_id != EVENT_REQUEST_SLEEP;
+    }
+
+    void updateBacklightType(LCD16x2 &lcd)
+    {
+        evse::Settings settings;
+        evse::EepromSettings::load(settings);
+        lcd.setBacklightType(settings.lcd_type == 0 ? LCD16x2::RGB : LCD16x2::MONOCHROME);
     }
 }
 
@@ -63,6 +72,7 @@ LcdConsole::LcdConsole()
     , lcdState(new LcdStateBootup(lcd))
     , lcd(lcd_int)
 {
+    updateBacklightType(lcd_int);
 }
 
 void LcdConsole::setState(LcdState *newState)
@@ -74,7 +84,6 @@ void LcdConsole::setState(LcdState *newState)
     lcdState = newState;
     lcdState->draw();
 }
-
 
 void LcdConsole::update()
 {
@@ -97,13 +106,6 @@ void LcdConsole::onEvent(const event::Event &event)
             update();
             break;
 
-        case EVENT_CONTROLLER_STATE:
-            if (event.param == State::RUNNING)
-                setState(new LcdStateRunning(lcd));
-            else if (event.param == State::FAULT)
-                setState(new LcdStateError(lcd));
-            break;
-
         case EVENT_KEYHOLD:
             if (!sleeping)
             {
@@ -117,6 +119,18 @@ void LcdConsole::onEvent(const event::Event &event)
             }
             break;
 
+        case EVENT_KEYUP:
+            if (!sleeping)
+                lcdState->select();
+            break;
+
+        case EVENT_CONTROLLER_STATE:
+            if (event.param == State::RUNNING)
+                setState(new LcdStateRunning(lcd));
+            else if (event.param == State::FAULT)
+                setState(new LcdStateError(lcd));
+            break;
+
         case EVENT_REQUEST_SLEEP:
             sleeping = event.param;
             in_settings = false;
@@ -127,9 +141,8 @@ void LcdConsole::onEvent(const event::Event &event)
                 setState(new LcdStateRunning(lcd));
             break;
 
-        case EVENT_KEYUP:
-            if (!sleeping)
-                lcdState->select();
+        case EVENT_SETTINGS_CHANGED:
+            updateBacklightType(lcd_int);
             break;
     }
 

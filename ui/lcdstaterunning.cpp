@@ -30,6 +30,8 @@
 
 #define LCD_COLUMNS 16
 
+#define DEGREE_SYMBOL  static_cast<char>(0xDF)
+
 #define PAGE_TIMEOUT 5000
 
 using board::J1772Pilot;
@@ -127,7 +129,7 @@ void LcdStateRunning::drawDefault()
 
     lcd.move(0,0);
     lcd << stream::Time(rtc.hour, rtc.minute)
-      << ' ' << stream::PAD_SPACE << rtc.readTemp() << static_cast<char>(0xDF)
+      << ' ' << stream::PAD_SPACE << rtc.readTemp() << DEGREE_SYMBOL
       << ' ' << static_cast<char>(CustomCharacters::SEPARATOR) << ' ';
 
     if (amps)

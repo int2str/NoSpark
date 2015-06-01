@@ -22,7 +22,7 @@
 #include "ui/lcdstate.h"
 #include "ui/timedflipflop.h"
 
-#define SETTINGS_PAGES 9
+#define SETTINGS_PAGES 10
 
 namespace ui
 {
@@ -44,6 +44,7 @@ public:
     bool pageKwhLimit();
     bool pageKwhCost();
     bool pageSleepmode();
+    bool pageLcdType();
     bool pageReset();
     bool pageExit();
 

@@ -39,6 +39,9 @@
 #define STR_SET_SLEEPMODE_TIME      PSTR("Zeit anzeigen")
 #define STR_SET_SLEEPMODE_OFF       PSTR("Display aus")
 #define STR_SET_SLEEPMODE_DISABLED  PSTR("Immer an")
+#define STR_SET_LCD_TYPE            PSTR(" Beleuchtung")
+#define STR_SET_TYPE_RGB            PSTR("Farbe (RGB)")
+#define STR_SET_TYPE_MONO           PSTR("Monochrom")
 #define STR_SET_RESET               PSTR(" Neustart")
 #define STR_SET_EXIT                PSTR(" Zurueck")
 

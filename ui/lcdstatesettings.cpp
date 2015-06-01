@@ -89,6 +89,7 @@ LcdStateSettings::LcdStateSettings(stream::LcdStream &lcd)
       , &LcdStateSettings::pageSetDate
       , &LcdStateSettings::pageKwhCost
       , &LcdStateSettings::pageSleepmode
+      , &LcdStateSettings::pageLcdType
       , &LcdStateSettings::pageReset
       , &LcdStateSettings::pageExit
     }
@@ -456,6 +457,46 @@ bool LcdStateSettings::pageSleepmode()
                 break;
             case 2:
                 lcd << PGM << STR_SET_SLEEPMODE_DISABLED;
+                break;
+        }
+    } else {
+        lcd << stream::Spaces(13);
+    }
+
+    return true;
+}
+
+bool LcdStateSettings::pageLcdType()
+{
+    if (value == UNINITIALIZED)
+        value = settings.lcd_type;
+
+    // Save new state if we're done adjusting
+    if (option > ADJUST_SINGLE)
+    {
+        settings.lcd_type = value;
+        EepromSettings::save(settings);
+        option = NOT_ADJUSTING;
+    }
+
+    // Draw screen, flashing value while adjusting
+
+    lcd.move(0, 0);
+    lcd << static_cast<char>(0xDB) << PGM << STR_SET_LCD_TYPE;
+
+    lcd.move(2, 1);
+    if (option == NOT_ADJUSTING || blink_state.get())
+    {
+        switch (value)
+        {
+            default:
+                value = 0;
+                // fall-through intended
+            case 0:
+                lcd << PGM << STR_SET_TYPE_RGB;
+                break;
+            case 1:
+                lcd << PGM << STR_SET_TYPE_MONO;
                 break;
         }
     } else {

@@ -22,7 +22,7 @@
 
 #define SETTINGS_OFFSET     0x08
 #define SETTINGS_MARKER     0xAEAE
-#define SETTINGS_REVISION   0x05
+#define SETTINGS_REVISION   0x06
 
 namespace evse
 {
@@ -81,6 +81,12 @@ void Settings::upgrade()
         kwh_cost = 0;
         ammeter_factor = 200;
         ammeter_offset = 0;
+    }
+
+    // Rev 5
+    if (revision < 6)
+    {
+        lcd_type = 0;
     }
 
     revision = SETTINGS_REVISION;

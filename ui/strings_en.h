@@ -39,6 +39,9 @@
 #define STR_SET_SLEEPMODE_TIME      PSTR("show time")
 #define STR_SET_SLEEPMODE_OFF       PSTR("display off")
 #define STR_SET_SLEEPMODE_DISABLED  PSTR("always on")
+#define STR_SET_LCD_TYPE            PSTR(" LCD backlight")
+#define STR_SET_TYPE_RGB            PSTR("Color (RGB)")
+#define STR_SET_TYPE_MONO           PSTR("Monochrome")
 #define STR_SET_RESET               PSTR(" Force restart")
 #define STR_SET_EXIT                PSTR(" Exit settings")
 
