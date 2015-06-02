@@ -20,8 +20,8 @@
 
 #define LCD_I2C_ADDR            0x20    // LCD backpack has buttons
 
-#define DEBOUNCE_DELAY            50
-#define KEYHOLD_DELAY           1000
+#define DEBOUNCE_DELAY            30
+#define KEYHOLD_DELAY            600
 
 #define BUTTON_MASK             0x01
 
