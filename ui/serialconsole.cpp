@@ -306,15 +306,18 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     EepromSettings::load(settings);
 
     DS3231 &rtc = DS3231::get();
-    rtc.read();
+    if (rtc.isPresent())
+    {
+        rtc.read();
 
-    uart << PGM << STR_STATUS_TIME
-      << stream::Time(rtc.hour, rtc.minute) << ' '
-      << rtc.day << '.' << rtc.month << '.' << "20" << rtc.year
-      << EOL;
+        uart << PGM << STR_STATUS_TIME
+          << stream::Time(rtc.hour, rtc.minute) << ' '
+          << rtc.day << '.' << rtc.month << '.' << "20" << rtc.year
+          << EOL;
 
-    uart << PGM << STR_STATUS_TEMP
-      << rtc.readTemp() << 'C' << EOL;
+        uart << PGM << STR_STATUS_TEMP
+          << rtc.readTemp() << 'C' << EOL;
+    }
 
     uart << PGM << (STR_STATUS_J1772)
       << static_cast<char>('A' - 1 + state.j1772) << EOL;

@@ -42,8 +42,10 @@ LcdStateSleeping::LcdStateSleeping(LcdStream &lcd)
 
 bool LcdStateSleeping::draw()
 {
+    DS3231 &rtc = DS3231::get();
+
     // Display off mode
-    if (sleep_mode == 1)
+    if (sleep_mode == 1 || !rtc.isPresent())
     {
         lcd.setBacklight(devices::LCD16x2::OFF);
         return true;
@@ -54,7 +56,6 @@ bool LcdStateSleeping::draw()
     lcd.setBacklight(devices::LCD16x2::GREEN);
 
     uint8_t buffer[10] = {0};
-    DS3231 &rtc = DS3231::get();
     rtc.readRaw(buffer, 8);
 
     const uint8_t hh = buffer[3];

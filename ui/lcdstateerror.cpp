@@ -32,7 +32,7 @@ bool LcdStateError::draw()
     lcd.setBacklight(devices::LCD16x2::RED);
 
     lcd.move(0, 0);
-    lcd << stream::PGM << STR_ERROR_STATE;
+    lcd << stream::PGM << STR_STATE_ERROR;
 
     lcd.move(0, 1);
 

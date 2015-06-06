@@ -120,17 +120,41 @@ void LcdStateRunning::drawDefault()
 {
     const State &state = State::get();
     const ChargeMonitor &chargeMonitor = ChargeMonitor::get();
-    DS3231 &rtc = DS3231::get();
-    rtc.read();
 
     uint8_t amps = state.max_amps_limit;
     if (chargeMonitor.isCharging())
         amps = chargeMonitor.chargeCurrent() / 1000;
 
     lcd.move(0,0);
-    lcd << stream::Time(rtc.hour, rtc.minute)
-      << ' ' << stream::PAD_SPACE << rtc.readTemp() << DEGREE_SYMBOL
-      << ' ' << static_cast<char>(CustomCharacters::SEPARATOR) << ' ';
+        
+    DS3231 &rtc = DS3231::get();
+    if (rtc.isPresent())
+    {
+        rtc.read();
+        lcd << stream::Time(rtc.hour, rtc.minute)
+          << ' ' << stream::PAD_SPACE << rtc.readTemp() << DEGREE_SYMBOL;
+    } else {
+        switch (state.j1772)
+        {
+            case J1772Pilot::STATE_A:
+                lcd << stream::PGM << STR_STATE_READY;
+                break;
+
+            case J1772Pilot::STATE_B:
+                lcd << stream::PGM << STR_STATE_CONNECTED;
+                break;
+
+            case J1772Pilot::STATE_C:
+                lcd << stream::PGM << STR_STATE_CHARGING;
+                break;
+
+            default:
+                lcd << stream::PGM << STR_STATE_ERROR;
+                break;
+        }
+    }
+
+    lcd << ' ' << static_cast<char>(CustomCharacters::SEPARATOR) << ' ';
 
     if (amps)
         lcd << stream::PAD_SPACE << amps;
@@ -155,7 +179,7 @@ void LcdStateRunning::drawDefault()
 
         case J1772Pilot::STATE_E:
             lcd.setBacklight(LCD16x2::RED);
-            center_P(lcd, STR_ERROR_STATE);
+            center_P(lcd, STR_STATE_ERROR);
             break;
 
         case J1772Pilot::STATE_A:
@@ -175,7 +199,7 @@ void LcdStateRunning::drawDefault()
             break;
 
         case J1772Pilot::STATE_B:
-            lcd.setBacklight(state.ready == State::READY ? LCD16x2::GREEN : LCD16x2::YELLOW);
+            lcd.setBacklight(LCD16x2::YELLOW);
             center_P(lcd, STR_CONNECTED);
             break;
 
@@ -184,7 +208,8 @@ void LcdStateRunning::drawDefault()
             lcd.setBacklight(LCD16x2::CYAN);
 
             scrolling_text.setWidth(10);
-            scrolling_text << stream::PGM << STR_CHARGING << " ";
+            if (rtc.isPresent())
+                scrolling_text << stream::PGM << STR_CHARGING << " ";
             write_kwh(scrolling_text, chargeMonitor.wattHours());
             write_cost(scrolling_text, settings.kwh_currency, settings.kwh_cost, chargeMonitor.wattHours());
             scrolling_text >> lcd;

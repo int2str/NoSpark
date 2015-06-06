@@ -91,18 +91,19 @@ namespace
 
     void cmdGetStatus(char *response)
     {
-        DS3231 &rtc = DS3231::get();
         State &state = State::get();
 
         paramAdd(response, 'J', state.j1772);
-        paramAdd(response, 'T', rtc.readTemp());
         paramAdd(response, 'R', state.ready);
+
+        DS3231 &rtc = DS3231::get();
+        if (rtc.isPresent())
+            paramAdd(response, 'T', rtc.readTemp());
     }
 
     void cmdGetChargeStatus(char *response)
     {
         ChargeMonitor &cm = ChargeMonitor::get();
-        DS3231 &rtc = DS3231::get();
 
         const uint8_t charging = !!cm.isCharging();
         paramAdd(response, 'C', charging);
@@ -110,7 +111,10 @@ namespace
             paramAdd(response, 'A', cm.chargeCurrent());
         paramAdd(response, 'D', cm.chargeDuration() / 1000);
         paramAdd(response, 'W', cm.wattHours());
-        paramAdd(response, 'T', rtc.readTemp());
+
+        DS3231 &rtc = DS3231::get();
+        if (rtc.isPresent())
+            paramAdd(response, 'T', rtc.readTemp());
     }
 
     void cmdGetKwhStats(char *response)

@@ -50,6 +50,18 @@
 #define DS3231_A2F              1
 #define DS3231_A1F              0
 
+namespace
+{
+    bool checkPresent(devices::I2CMaster &i2c, const uint8_t i2c_addr)
+    {
+        uint8_t temp = DS3231_REG_CONTROL;
+        i2c.write(i2c_addr, &temp, 1);
+        temp = 0;
+        i2c.read(i2c_addr, &temp, 1);
+        return temp != 0;
+    }
+}
+
 namespace devices
 {
 
@@ -62,6 +74,7 @@ DS3231& DS3231::get()
 DS3231::DS3231()
     : i2c_addr(DS3231_I2C_ADDRESS)
     , i2c(I2CMaster::get())
+    , present(checkPresent(i2c, i2c_addr))
 {
 }
 
@@ -73,6 +86,11 @@ void DS3231::readRaw(uint8_t *buffer, const uint8_t len)
 {
     i2c.write(i2c_addr, buffer++, 1);
     i2c.read(i2c_addr, buffer, len-1);
+}
+
+bool DS3231::isPresent() const
+{
+    return present;
 }
 
 void DS3231::read()
@@ -115,6 +133,7 @@ uint8_t DS3231::readTemp()
 {
     uint8_t buffer[2] = {DS3231_REG_TEMP_MSB, 0};
     i2c.write(i2c_addr, buffer, 1);
+    buffer[0] = 0;
     i2c.read(i2c_addr, buffer, 2);
     return buffer[0];
 }

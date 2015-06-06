@@ -114,6 +114,12 @@ bool LcdStateSettings::draw()
 
 bool LcdStateSettings::pageSetTime()
 {
+    if (!DS3231::get().isPresent())
+    {
+        ++page;
+        return true;
+    }
+
     lcd.move(0,0);
     lcd << static_cast<char>(CustomCharacters::CLOCK)
       << PGM << STR_SET_CLOCK;
@@ -158,6 +164,12 @@ bool LcdStateSettings::pageSetTime()
 
 bool LcdStateSettings::pageSetDate()
 {
+    if (!DS3231::get().isPresent())
+    {
+        ++page;
+        return true;
+    }
+
     lcd.move(0,0);
     lcd << static_cast<char>(CustomCharacters::CALENDAR)
       << PGM << STR_SET_DATE;
@@ -257,6 +269,12 @@ bool LcdStateSettings::pageSetCurrent()
 
 bool LcdStateSettings::pageChargeTimer()
 {
+    if (!DS3231::get().isPresent())
+    {
+        ++page;
+        return true;
+    }
+
     if ((option > ADJUST_T2_MM)
      || (option > ADJUST_TIMER_ONOFF && temp_buffer[0] == 0))
     {
@@ -450,8 +468,14 @@ bool LcdStateSettings::pageSleepmode()
                 value = 0;
                 // fall-through intended
             case 0:
-                lcd << PGM << STR_SET_SLEEPMODE_TIME;
-                break;
+                if (devices::DS3231::get().isPresent())
+                {
+                    lcd << PGM << STR_SET_SLEEPMODE_TIME;
+                    break;
+                } else {
+                    ++value;
+                }
+                // fall-through possible
             case 1:
                 lcd << PGM << STR_SET_SLEEPMODE_OFF;
                 break;

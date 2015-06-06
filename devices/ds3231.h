@@ -15,6 +15,9 @@
 
 #pragma once
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "utils/cpp.h"
 #include "i2c_master.h"
 
@@ -28,6 +31,8 @@ class DS3231
 
 public:
     static DS3231& get();
+
+    bool isPresent() const;
 
     void read();
     void write();
@@ -48,10 +53,9 @@ public:
     uint8_t weekday;
 
 private:
-    void read_impl();
-
     const uint8_t i2c_addr;
     I2CMaster& i2c;
+    const bool present;
 
     DISALLOW_COPY_AND_ASSIGN(DS3231);
 };

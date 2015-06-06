@@ -95,6 +95,9 @@ void Settings::upgrade()
 void Settings::postLoad()
 {
     devices::DS3231 &rtc = devices::DS3231::get();
+    if (!rtc.isPresent())
+        return;
+
     rtc.read();
 
     if (rtc.year != (kwh_index & 0xFF))
