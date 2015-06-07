@@ -37,11 +37,10 @@ usbtiny based programmer. The programmer and upload protocol can be set in the
 top level Makefile.inc (or rules.ninja).
 
 ## Recent revision history
+* v0.17 - Monochrome LCD support
 * v0.16 - 400kHz I2C bus; cleanups
 * v0.15 - Continuous relay monitoring
 * v0.14 - Added DC relay support (untested); Ninja build support
 * v0.13 - Interrupt driven ADC sampling
-* v0.12 - Cost per kWh added
-* v0.11 - Added suspend state pin; LCD sleep mode fixed
 * ...
 
