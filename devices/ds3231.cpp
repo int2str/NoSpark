@@ -54,7 +54,7 @@ namespace
 {
     bool checkPresent(devices::I2CMaster &i2c, const uint8_t i2c_addr)
     {
-        uint8_t temp = DS3231_REG_CONTROL;
+        uint8_t temp = DS3231_REG_STATUS;
         i2c.write(i2c_addr, &temp, 1);
         temp = 0;
         i2c.read(i2c_addr, &temp, 1);
