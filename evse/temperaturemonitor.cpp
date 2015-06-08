@@ -20,9 +20,9 @@
 #include "events.h"
 #include "temperaturemonitor.h"
 
-#define TEMPERATURE_ALARM_LEVEL1    50
-#define TEMPERATURE_ALARM_LEVEL2    55
-#define TEMPERATURE_ALARM_LEVEL3    60
+#define TEMPERATURE_ALARM_LEVEL1    60
+#define TEMPERATURE_ALARM_LEVEL2    70
+#define TEMPERATURE_ALARM_LEVEL3    75
 
 #define MINIMUM_CHARGE_CURRENT       6
 
