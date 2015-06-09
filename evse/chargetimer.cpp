@@ -78,14 +78,14 @@ void ChargeTimer::checkTime()
         rtc.read();
 
         uint16_t now = (rtc.hour << 8) | rtc.minute;
-        uint16_t t1 = settings.charge_timer_t1;
-        uint16_t t2 = settings.charge_timer_t2;
-        if (now < t1)
+        uint16_t start_time = settings.charge_timer_t1;
+        uint16_t end_time = settings.charge_timer_t2;
+        if (now < start_time)
             now += (24 << 8);
-        if (t2 < t1)
-            t2 += (24 << 8);
+        if (end_time < start_time)
+            end_time += (24 << 8);
 
-        can_charge_now = (now >= t1) && (now <= t2);
+        can_charge_now = (now >= start_time) && (now <= end_time);
     }
 
     if (can_charge != can_charge_now)
