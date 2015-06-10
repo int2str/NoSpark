@@ -28,18 +28,33 @@
 #define SENSE_ACTIVE_2          0x02
 #define SENSE_ACTIVE_BOTH       (SENSE_ACTIVE_1 | SENSE_ACTIVE_2)
 
+static board::Relays *relays = 0;
+
+ISR(TIMER2_OVF_vect)
+{
+    if (relays)
+        relays->updateState();
+}
+
 namespace board
 {
 
 Relays::Relays()
     : state(UNKNOWN)
     , enabled(false)
+    , sample_history(0)
     , pinACRelay(PIN_AC_RELAY)
     , pinDCRelay1(PIN_DC_RELAY1)
     , pinDCRelay2(PIN_DC_RELAY2)
     , pinSense1(PIN_AC_TEST1)
     , pinSense2(PIN_AC_TEST2)
 {
+    relays = this;
+
+    // Start timer 2 to sample AC pins
+    TCCR2A |= _BV(WGM21) | _BV(WGM20);
+    TCCR2B |= _BV(CS22);
+    TIMSK2 |= _BV(TOIE2);
 }
 
 void Relays::set(const bool enable)
@@ -68,25 +83,28 @@ Relays::RelayState Relays::checkStatus()
         return state;
 
     // Now check appropriate state...
-    if (isActive())
-        state = enabled ? OK : STUCK_RELAY;
+    if (enabled)
+        state = isActive() ? OK : GROUND_FAULT;
     else
-        state = enabled ? GROUND_FAULT : OK;
+        state = isActive() ? STUCK_RELAY : OK;
 
     return state;
 }
 
 bool Relays::isActive() const
 {
-    const uint32_t start_ms = system::Timer::millis();
+    return (sample_history != 0);
+}
 
-    while ((system::Timer::millis() - start_ms) < RELAY_SAMPLE_MS)
-    {
-        if (!pinSense1 || !pinSense2) // <- inputs are pulled-up; active low
-            return true;
-    }
+void Relays::updateState()
+{
+    // This function is called about every millisecond.
+    // We keep 16 bits of sample history, giving us 16ms
+    // of coverage, which more than covers half a sine
+    // wave at 50/60Hz.
 
-    return false;
+    const bool active = !pinSense1 || !pinSense2;
+    sample_history = (sample_history << 1) | active;
 }
 
 }

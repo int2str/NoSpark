@@ -21,6 +21,8 @@
 #include "board/pin.h"
 #include "utils/cpp.h"
 
+extern "C" void TIMER2_OVF_vect(void) __attribute__((signal));
+
 namespace board
 {
 
@@ -50,6 +52,7 @@ private:
     RelayState state;
     bool enabled;
     uint32_t last_change;
+    uint16_t sample_history;
 
     board::Pin pinACRelay;
     board::Pin pinDCRelay1;
@@ -62,6 +65,8 @@ private:
 
     bool isActive() const;
 
+    void updateState();
+    friend void ::TIMER2_OVF_vect(void);
     DISALLOW_COPY_AND_ASSIGN(Relays);
 };
 
