@@ -22,7 +22,7 @@
 #include "utils/cpp.h"
 #include "utils/movingaverage.h"
 
-#define MOVING_AVERAGE_WINDOW   32
+#define MOVING_AVERAGE_WINDOW   64
 
 namespace evse
 {
