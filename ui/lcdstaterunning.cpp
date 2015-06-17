@@ -286,6 +286,10 @@ void LcdStateRunning::select()
     lcd.clear();
     if (++page == PAGE_MAX)
         page = PAGE_DEFAULT;
+
+    // If we're about to display KWH stats, refresh the settings first
+    if (page != PAGE_DEFAULT)
+        EepromSettings::load(settings);
 }
 
 }
