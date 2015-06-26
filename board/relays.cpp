@@ -21,12 +21,7 @@
 #include "system/timer.h"
 #include "events.h"
 
-#define RELAY_TOGGLE_DELAY_MS   150
-#define RELAY_SAMPLE_MS         13 // Capture slightly more than half an AC sine wave
-
-#define SENSE_ACTIVE_1          0x01
-#define SENSE_ACTIVE_2          0x02
-#define SENSE_ACTIVE_BOTH       (SENSE_ACTIVE_1 | SENSE_ACTIVE_2)
+#define RELAY_TOGGLE_DELAY_MS   1000
 
 static board::Relays *relays = 0;
 
