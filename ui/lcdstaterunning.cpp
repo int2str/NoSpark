@@ -184,7 +184,9 @@ void LcdStateRunning::drawDefault()
 
         case J1772Pilot::STATE_A:
             lcd.setBacklight(LCD16x2::GREEN);
-            if (chargeMonitor.chargeDuration() == 0)
+            if ((chargeMonitor.chargeDuration() / 60000 == 0) &&
+                (chargeMonitor.wattHours() / 100 == 0) &&
+                (chargeMonitor.wattHours() * settings.kwh_cost / 1000 == 0))
             {
                 center_P(lcd, STR_NOT_CONNECTED);
             } else {
