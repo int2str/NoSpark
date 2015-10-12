@@ -121,10 +121,10 @@ namespace
     {
         Settings settings;
         EepromSettings::load(settings);
-        paramAdd(response, 'W', settings.kwh_week);
-        paramAdd(response, 'M', settings.kwh_month);
-        paramAdd(response, 'Y', settings.kwh_year);
-        paramAdd(response, 'T', settings.kwh_total);
+        paramAdd(response, 'W', settings.wh_week / 1000);
+        paramAdd(response, 'M', settings.wh_month / 1000);
+        paramAdd(response, 'Y', settings.wh_year / 1000);
+        paramAdd(response, 'T', settings.wh_total / 1000);
     }
 
     uint8_t cmdSetCurrent(const char *buffer)

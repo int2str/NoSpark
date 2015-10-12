@@ -54,16 +54,15 @@ namespace
         out << PGM << help << EOL;
     }
 
-    void write_energy_stat(stream::OutputStream &out, const char *label, const uint8_t currency, const uint32_t cents, const uint32_t kwh)
+    void write_energy_stat(stream::OutputStream &out, const char *label, const uint8_t currency, const uint32_t wh, uint32_t cost)
     {
         char buffer[10] = {0};
-        ltoa(kwh, buffer, 10);
+        ltoa(wh / 1000, buffer, 10);
         out << ' ' << PGM << label << ": " << buffer << " kWh";
 
-        if (cents != 0)
+        if (cost != 0)
         {
             const char currencies[3] = {'$', 'E', 'Y'};
-            uint32_t cost = kwh * cents;
 
             char buffer[10] = {0};
             ltoa(cost / 100, buffer, 10);
@@ -277,10 +276,10 @@ void SerialConsole::commandEnergy(const char*, const uint8_t)
     EepromSettings::load(settings);
 
     uart << PGM << STR_STATS_KWH << EOL;
-    write_energy_stat(uart, STR_STATS_WEEK, settings.kwh_currency, settings.kwh_cost, settings.kwh_week);
-    write_energy_stat(uart, STR_STATS_MONTH, settings.kwh_currency, settings.kwh_cost, settings.kwh_month);
-    write_energy_stat(uart, STR_STATS_YEAR, settings.kwh_currency, settings.kwh_cost, settings.kwh_year);
-    write_energy_stat(uart, STR_STATS_TOTAL, settings.kwh_currency, settings.kwh_cost, settings.kwh_total);
+    write_energy_stat(uart, STR_STATS_WEEK, settings.kwh_currency, settings.wh_week, settings.cost_week);
+    write_energy_stat(uart, STR_STATS_MONTH, settings.kwh_currency, settings.wh_month, settings.cost_month);
+    write_energy_stat(uart, STR_STATS_YEAR, settings.kwh_currency, settings.wh_year, settings.cost_year);
+    write_energy_stat(uart, STR_STATS_TOTAL, settings.kwh_currency, settings.wh_total, settings.cost_total);
     uart << EOL;
 }
 
