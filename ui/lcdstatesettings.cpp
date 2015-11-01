@@ -114,7 +114,9 @@ bool LcdStateSettings::draw()
 
 bool LcdStateSettings::pageSetTime()
 {
-    if (!DS3231::get().isPresent())
+    DS3231 &rtc = DS3231::get();
+
+    if (!rtc.isPresent())
     {
         ++page;
         return true;
@@ -127,29 +129,23 @@ bool LcdStateSettings::pageSetTime()
 
     if (option > ADJUST_MM)
     {
-        DS3231::get().writeRaw(temp_buffer, 8);
+        rtc.write();
         option = NOT_ADJUSTING;
     }
 
     if (option == NOT_ADJUSTING)
-    {
-        temp_buffer[0] = 0;
-        DS3231::get().readRaw(temp_buffer, 8);
-    }
+        rtc.read();
 
     if (value == UNINITIALIZED)
         value = 0;
 
-    const uint8_t hh = utils::bcd2dec(temp_buffer[3]);
     if (option == ADJUST_HH)
-        temp_buffer[3] = utils::dec2bcd((hh + value) % 24);
+        rtc.hour = (rtc.hour + value) % 24;
 
-    const uint8_t mm = utils::bcd2dec(temp_buffer[2]);
     if (option == ADJUST_MM)
-        temp_buffer[2] = utils::dec2bcd((mm + value) % 60);
+        rtc.minute = (rtc.minute + value) % 60;
 
-    lcd << stream::PAD_BCD << temp_buffer[3] << ':'
-      << stream::PAD_BCD << temp_buffer[2];
+    lcd << stream::Time(rtc.hour, rtc.minute);
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
@@ -164,7 +160,9 @@ bool LcdStateSettings::pageSetTime()
 
 bool LcdStateSettings::pageSetDate()
 {
-    if (!DS3231::get().isPresent())
+    DS3231 &rtc = DS3231::get();
+
+    if (!rtc.isPresent())
     {
         ++page;
         return true;
@@ -177,34 +175,28 @@ bool LcdStateSettings::pageSetDate()
 
     if (option > ADJUST_YY)
     {
-        DS3231::get().writeRaw(temp_buffer, 8);
+        rtc.write();
         option = NOT_ADJUSTING;
     }
 
     if (option == NOT_ADJUSTING)
-    {
-        temp_buffer[0] = 0;
-        DS3231::get().readRaw(temp_buffer, 8);
-    }
+        rtc.read();
 
     if (value == UNINITIALIZED)
         value = 0;
 
-    const uint8_t dd = utils::bcd2dec(temp_buffer[5]);
     if (option == ADJUST_DD)
-        temp_buffer[5] = utils::dec2bcd(utils::max((dd + value) % 32, 1));
+        rtc.day = utils::max((rtc.day + value) % 32, 1);
 
-    const uint8_t mm = utils::bcd2dec(temp_buffer[6]);
     if (option == ADJUST_MM)
-        temp_buffer[6] = utils::dec2bcd(utils::max((mm + value) % 13, 1));
+        rtc.month = utils::max((rtc.month + value) % 13, 1);
 
-    const uint8_t yy = utils::bcd2dec(temp_buffer[7]);
     if (option == ADJUST_YY)
-        temp_buffer[7] = utils::dec2bcd((yy + value) % 30); // <-- Year 2030 issue :)
+        rtc.year = (rtc.year + value) % 30; // <-- Year 2030 issue :)
 
-    lcd << stream::PAD_BCD << temp_buffer[5] << '.'
-      << stream::PAD_BCD << temp_buffer[6] << '.'
-      << "20" << stream::PAD_BCD << temp_buffer[7];
+    lcd << stream::PAD_ZERO << rtc.day << '.'
+      << stream::PAD_ZERO << rtc.month << '.'
+      << "20" << stream::PAD_ZERO << rtc.year;
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
