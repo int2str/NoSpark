@@ -129,6 +129,7 @@ bool LcdStateSettings::pageSetTime()
 
     if (option > ADJUST_MM)
     {
+        rtc.second = 0;
         rtc.write();
         option = NOT_ADJUSTING;
     }
