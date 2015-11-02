@@ -72,12 +72,6 @@ OutputStream& OutputStream::operator<< (const uint8_t val)
         return *this << buffer;
     }
 
-    else if (flags & (1 << Flags::PAD_BCD))
-    {
-        *this << static_cast<char>('0' + (val >> 4));
-        *this << static_cast<char>('0' + (val & 0x0F));
-    }
-
     else if (flags & ((1 << Flags::PAD_ZERO) | (1 << Flags::PAD_SPACE)))
     {
         if (val < 10)
