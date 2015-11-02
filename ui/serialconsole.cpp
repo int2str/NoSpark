@@ -40,9 +40,12 @@ using stream::PGM;
 
 namespace
 {
-    uint8_t bcd_enc(const char msb_ch, const char lsb_ch)
+    uint8_t dec_from_charpair(const char *s)
     {
-        return ((msb_ch - '0') << 4) | ((lsb_ch - '0') & 0x0F);
+        if (s[0] < '0' || s[0] > '9' ||
+            s[1] < '0' || s[1] > '9')
+            return 0;
+        return (s[0] - '0') * 10 + (s[1] - '0');
     }
 
     void write_help(stream::OutputStream &out, const char *cmd, const char *help)
@@ -255,20 +258,20 @@ void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
         return;
     }
 
-    const char *pp = buffer + cmd_len;
-    uint8_t time_buffer[8] = {
-        0 // <-- Register
-      , bcd_enc(pp[4], pp[5])
-      , bcd_enc(pp[2], pp[3])
-      , bcd_enc(pp[0], pp[1])
-      , 0
-      , bcd_enc(pp[7], pp[8])
-      , bcd_enc(pp[9], pp[10])
-      , bcd_enc(pp[11], pp[12])
-    };
-
     DS3231 &rtc = DS3231::get();
-    rtc.writeRaw(time_buffer, 8);
+    const char *pp = buffer + cmd_len;
+
+    rtc.hour = dec_from_charpair(pp);
+    rtc.minute = dec_from_charpair(pp + 2);
+    rtc.second = dec_from_charpair(pp + 4);
+
+    rtc.weekday = 0;
+
+    rtc.day = dec_from_charpair(pp + 7);
+    rtc.month = dec_from_charpair(pp + 9);
+    rtc.year = dec_from_charpair(pp + 11);
+
+    rtc.write();
 }
 
 void SerialConsole::commandEnergy(const char*, const uint8_t)

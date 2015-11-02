@@ -37,9 +37,6 @@ public:
     void read();
     void write();
 
-    void readRaw(uint8_t *buffer, const uint8_t len);
-    void writeRaw(uint8_t *buffer, const uint8_t len);
-
     // Returns temperature in deg. C (whole deg. only)
     uint8_t readTemp();
 

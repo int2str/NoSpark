@@ -55,16 +55,12 @@ bool LcdStateSleeping::draw()
 
     lcd.setBacklight(devices::LCD16x2::GREEN);
 
-    uint8_t buffer[10] = {0};
-    rtc.readRaw(buffer, 8);
+    rtc.read();
 
-    const uint8_t hh = buffer[3];
-    const uint8_t mm = buffer[2];
-
-    CustomCharacters::largeDigit(lcd.getLCD(), hh >>  4,  1);
-    CustomCharacters::largeDigit(lcd.getLCD(), hh & 0xF,  4);
-    CustomCharacters::largeDigit(lcd.getLCD(), mm >>  4,  8);
-    CustomCharacters::largeDigit(lcd.getLCD(), mm & 0xF, 11);
+    CustomCharacters::largeDigit(lcd.getLCD(), rtc.hour / 10,  1);
+    CustomCharacters::largeDigit(lcd.getLCD(), rtc.hour % 10,  4);
+    CustomCharacters::largeDigit(lcd.getLCD(), rtc.minute / 10,  8);
+    CustomCharacters::largeDigit(lcd.getLCD(), rtc.minute % 10, 11);
 
     const char o = blink_state.get() ? ' ' : 7;
 
