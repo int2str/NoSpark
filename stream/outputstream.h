@@ -24,7 +24,6 @@ namespace stream
 enum Flags
 {
     PGM
-  , PAD_BCD
   , PAD_ZERO
   , PAD_SPACE
 };
