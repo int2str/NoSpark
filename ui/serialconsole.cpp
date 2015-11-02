@@ -40,9 +40,9 @@ using stream::PGM;
 
 namespace
 {
-    uint8_t bcd_enc(const char msb_ch, const char lsb_ch)
+    uint8_t asc_bin(const char *s)
     {
-        return ((msb_ch - '0') << 4) | ((lsb_ch - '0') & 0x0F);
+        return (s[0] - '0') * 10 + (s[1] - '0');
     }
 
     void write_help(stream::OutputStream &out, const char *cmd, const char *help)
@@ -254,20 +254,20 @@ void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
         return;
     }
 
-    const char *pp = buffer + cmd_len;
-    uint8_t time_buffer[8] = {
-        0 // <-- Register
-      , bcd_enc(pp[4], pp[5])
-      , bcd_enc(pp[2], pp[3])
-      , bcd_enc(pp[0], pp[1])
-      , 0
-      , bcd_enc(pp[7], pp[8])
-      , bcd_enc(pp[9], pp[10])
-      , bcd_enc(pp[11], pp[12])
-    };
-
     DS3231 &rtc = DS3231::get();
-    rtc.writeRaw(time_buffer, 8);
+    const char *pp = buffer + cmd_len;
+
+    rtc.hour = asc_bin(pp);
+    rtc.minute = asc_bin(pp + 2);
+    rtc.second = asc_bin(pp + 4);
+
+    rtc.weekday = 0;
+
+    rtc.day = asc_bin(pp + 7);
+    rtc.month = asc_bin(pp + 9);
+    rtc.year = asc_bin(pp + 11);
+
+    rtc.write();
 }
 
 void SerialConsole::commandEnergy(const char*, const uint8_t)

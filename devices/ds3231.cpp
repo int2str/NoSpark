@@ -82,12 +82,6 @@ DS3231::~DS3231()
 {
 }
 
-void DS3231::readRaw(uint8_t *buffer, const uint8_t len)
-{
-    i2c.write(i2c_addr, buffer++, 1);
-    i2c.read(i2c_addr, buffer, len-1);
-}
-
 bool DS3231::isPresent() const
 {
     return present;
@@ -98,7 +92,8 @@ void DS3231::read()
     uint8_t buffer[8] = {0};
     buffer[0] = DS3231_REG_SECOND;
 
-    readRaw(buffer, 8);
+    i2c.write(i2c_addr, buffer, 1);
+    i2c.read(i2c_addr, buffer + 1, 7);
 
     second  = utils::bcd2dec(buffer[1]);
     minute  = utils::bcd2dec(buffer[2]);
@@ -107,11 +102,6 @@ void DS3231::read()
     day     = utils::bcd2dec(buffer[5]);
     month   = utils::bcd2dec(buffer[6]);
     year    = utils::bcd2dec(buffer[7]);
-}
-
-void DS3231::writeRaw(uint8_t *buffer, const uint8_t len)
-{
-    i2c.write(i2c_addr, buffer, len);
 }
 
 void DS3231::write()
@@ -126,7 +116,7 @@ void DS3231::write()
       , utils::dec2bcd(month)
       , utils::dec2bcd(year)
     };
-    writeRaw(buffer, 8);
+    i2c.write(i2c_addr, buffer, 8);
 }
 
 uint8_t DS3231::readTemp()
