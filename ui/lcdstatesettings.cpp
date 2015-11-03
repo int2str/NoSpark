@@ -193,7 +193,7 @@ bool LcdStateSettings::pageSetDate()
         rtc.month = utils::max((rtc.month + value) % 13, 1);
 
     if (option == ADJUST_YY)
-        rtc.year = (rtc.year + value) % 30; // <-- Year 2030 issue :)
+        rtc.year = utils::max((rtc.year + value) % 30, 15); // <-- Year 2030 issue :)
 
     lcd << stream::PAD_ZERO << rtc.day << '.'
       << stream::PAD_ZERO << rtc.month << '.'
