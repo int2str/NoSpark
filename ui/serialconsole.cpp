@@ -257,11 +257,11 @@ void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
     DS3231 &rtc = DS3231::get();
     const char *pp = buffer + cmd_len;
 
+    rtc.read();
+
     rtc.hour = asc_bin(pp);
     rtc.minute = asc_bin(pp + 2);
     rtc.second = asc_bin(pp + 4);
-
-    rtc.weekday = 0;
 
     rtc.day = asc_bin(pp + 7);
     rtc.month = asc_bin(pp + 9);

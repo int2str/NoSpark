@@ -165,20 +165,21 @@ namespace
 
     void cmdSetTime(const char *buffer)
     {
+        uint8_t h = paramGet(buffer, 'H');
+        uint8_t m = paramGet(buffer, 'M');
+        uint8_t s = paramGet(buffer, 'S');
+
         DS3231 &rtc = DS3231::get();
         rtc.read();
 
-        uint8_t p = paramGet(buffer, 'H');
-        if (p < 24)
-            rtc.hour = p;
+        if (h < 24)
+            rtc.hour = h;
 
-        p = paramGet(buffer, 'M');
-        if (p < 60)
-            rtc.minute = p;
+        if (m < 60)
+            rtc.minute = m;
 
-        p = paramGet(buffer, 'S');
-        if (p < 60)
-            rtc.second = p;
+        if (s < 60)
+            rtc.second = s;
 
         rtc.write();
     }
