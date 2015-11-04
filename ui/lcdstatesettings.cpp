@@ -43,7 +43,8 @@
 
 #define ADJUST_DD           0x01
 #define ADJUST_MM           0x02
-#define ADJUST_YY           0x03
+#define ADJUST_Y_TENS       0x03
+#define ADJUST_Y_ONES       0x04
 
 #define ADJUST_TIMER_ONOFF  0x01
 #define ADJUST_T1_HH        0x02
@@ -179,7 +180,8 @@ bool LcdStateSettings::pageSetDate()
         return true;
     }
 
-    static uint8_t year = 0;
+    static uint8_t year_tens = 0;
+    static uint8_t year_ones = 0;
     static uint8_t month = 0;
     static uint8_t day = 0;
 
@@ -188,10 +190,10 @@ bool LcdStateSettings::pageSetDate()
       << PGM << STR_SET_DATE;
     lcd.move(2, 1);
 
-    if (option > ADJUST_YY)
+    if (option > ADJUST_Y_ONES)
     {
         rtc.read();
-        rtc.year = year;
+        rtc.year = year_tens * 10 + year_ones;
         rtc.month = month;
         rtc.day = day;
         rtc.write();
@@ -201,7 +203,8 @@ bool LcdStateSettings::pageSetDate()
     if (option == NOT_ADJUSTING)
     {
        rtc.read();
-       year = rtc.year;
+       year_tens = rtc.year / 10;
+       year_ones = rtc.year % 10;
        month = rtc.month;
        day = rtc.day;
     }
@@ -215,18 +218,21 @@ bool LcdStateSettings::pageSetDate()
     if (option == ADJUST_MM)
         month = utils::max((month + value) % 13, 1);
 
-    if (option == ADJUST_YY)
-        year = utils::max((year + value) % 30, 15); // <-- Year 2030 issue :)
+    if (option == ADJUST_Y_TENS)
+        year_tens = utils::max((year_tens + value) % 10, 1);
+
+    if (option == ADJUST_Y_ONES)
+        year_ones = (year_ones + value) % 10;
 
     lcd << stream::PAD_ZERO << day << '.'
       << stream::PAD_ZERO << month << '.'
-      << "20" << stream::PAD_ZERO << year;
+      << "20" << year_tens << year_ones;
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
-        const uint8_t offset[3] = {2, 5, 8};
+        const uint8_t offset[4] = {2, 5, 10, 11};
         lcd.move(offset[option - 1], 1);
-        lcd << stream::Spaces(option == ADJUST_YY ? 4 : 2);
+        lcd << stream::Spaces(option >= ADJUST_Y_TENS ? 1 : 2);
     }
 
     value = 0;
