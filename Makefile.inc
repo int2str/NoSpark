@@ -44,9 +44,8 @@ AR = avr-ar
 SIZE = avr-size
 OBJCOPY = avr-objcopy
 AVRDUDE = avrdude
-CONF = /Applications/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf
 
-DUDEFLAGS = -C $(CONF) -p $(BUILD_MCU) $(PORT) -c $(UPLOAD_PROTOCOL) -b $(UPLOAD_SPEED)
+DUDEFLAGS = $(AVRCONF) -p $(BUILD_MCU) $(PORT) -c $(UPLOAD_PROTOCOL) -b $(UPLOAD_SPEED)
 FUSES = -U lfuse:w:0xFF:m -U hfuse:w:0xD6:m -U efuse:w:0x05:m
 
 SIZEFLAGS = 
