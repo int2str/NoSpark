@@ -122,6 +122,9 @@ bool LcdStateSettings::pageSetTime()
         return true;
     }
 
+    static uint8_t hour = 0;
+    static uint8_t minute = 0;
+
     lcd.move(0,0);
     lcd << static_cast<char>(CustomCharacters::CLOCK)
       << PGM << STR_SET_CLOCK;
@@ -129,24 +132,31 @@ bool LcdStateSettings::pageSetTime()
 
     if (option > ADJUST_MM)
     {
+        rtc.read();
+        rtc.hour = hour;
+        rtc.minute = minute;
         rtc.second = 0;
         rtc.write();
         option = NOT_ADJUSTING;
     }
 
     if (option == NOT_ADJUSTING)
+    {
         rtc.read();
+        hour = rtc.hour;
+        minute = rtc.minute;
+    }
 
     if (value == UNINITIALIZED)
         value = 0;
 
     if (option == ADJUST_HH)
-        rtc.hour = (rtc.hour + value) % 24;
+        hour = (hour + value) % 24;
 
     if (option == ADJUST_MM)
-        rtc.minute = (rtc.minute + value) % 60;
+        minute = (minute + value) % 60;
 
-    lcd << stream::Time(rtc.hour, rtc.minute);
+    lcd << stream::Time(hour, minute);
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
@@ -169,6 +179,10 @@ bool LcdStateSettings::pageSetDate()
         return true;
     }
 
+    static uint8_t year = 0;
+    static uint8_t month = 0;
+    static uint8_t day = 0;
+
     lcd.move(0,0);
     lcd << static_cast<char>(CustomCharacters::CALENDAR)
       << PGM << STR_SET_DATE;
@@ -176,28 +190,37 @@ bool LcdStateSettings::pageSetDate()
 
     if (option > ADJUST_YY)
     {
+        rtc.read();
+        rtc.year = year;
+        rtc.month = month;
+        rtc.day = day;
         rtc.write();
         option = NOT_ADJUSTING;
     }
 
     if (option == NOT_ADJUSTING)
-        rtc.read();
+    {
+       rtc.read();
+       year = rtc.year;
+       month = rtc.month;
+       day = rtc.day;
+    }
 
     if (value == UNINITIALIZED)
         value = 0;
 
     if (option == ADJUST_DD)
-        rtc.day = utils::max((rtc.day + value) % 32, 1);
+        day = utils::max((day + value) % 32, 1);
 
     if (option == ADJUST_MM)
-        rtc.month = utils::max((rtc.month + value) % 13, 1);
+        month = utils::max((month + value) % 13, 1);
 
     if (option == ADJUST_YY)
-        rtc.year = utils::max((rtc.year + value) % 30, 15); // <-- Year 2030 issue :)
+        year = utils::max((year + value) % 30, 15); // <-- Year 2030 issue :)
 
-    lcd << stream::PAD_ZERO << rtc.day << '.'
-      << stream::PAD_ZERO << rtc.month << '.'
-      << "20" << stream::PAD_ZERO << rtc.year;
+    lcd << stream::PAD_ZERO << day << '.'
+      << stream::PAD_ZERO << month << '.'
+      << "20" << stream::PAD_ZERO << year;
 
     if (option != NOT_ADJUSTING && !blink_state.get())
     {
