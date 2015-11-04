@@ -202,11 +202,11 @@ bool LcdStateSettings::pageSetDate()
 
     if (option == NOT_ADJUSTING)
     {
-       rtc.read();
-       year_tens = rtc.year / 10;
-       year_ones = rtc.year % 10;
-       month = rtc.month;
-       day = rtc.day;
+        rtc.read();
+        year_tens = rtc.year / 10;
+        year_ones = rtc.year % 10;
+        month = rtc.month;
+        day = rtc.day;
     }
 
     if (value == UNINITIALIZED)
