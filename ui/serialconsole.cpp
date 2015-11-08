@@ -36,7 +36,7 @@ using evse::EepromSettings;
 using evse::Settings;
 using evse::State;
 using devices::DS3231;
-using devices::tm;
+using devices::TM;
 using stream::PGM;
 
 namespace
@@ -257,7 +257,7 @@ void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
 
     DS3231 &rtc = DS3231::get();
     const char *pp = buffer + cmd_len;
-    tm t;
+    TM t;
 
     rtc.read(t);
 
@@ -311,7 +311,7 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     DS3231 &rtc = DS3231::get();
     if (rtc.isPresent())
     {
-        tm t;
+        TM t;
         rtc.read(t);
 
         uart << PGM << STR_STATUS_TIME

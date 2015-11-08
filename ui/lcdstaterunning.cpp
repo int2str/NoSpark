@@ -36,7 +36,7 @@
 
 using board::J1772Pilot;
 using devices::DS3231;
-using devices::tm;
+using devices::TM;
 using devices::LCD16x2;
 using evse::ChargeMonitor;
 using evse::Settings;
@@ -133,7 +133,7 @@ void LcdStateRunning::drawDefault()
     DS3231 &rtc = DS3231::get();
     if (rtc.isPresent())
     {
-        tm t;
+        TM t;
         rtc.read(t);
         lcd << stream::Time(t.hour, t.minute)
           << ' ' << stream::PAD_SPACE << rtc.readTemp() << DEGREE_SYMBOL;

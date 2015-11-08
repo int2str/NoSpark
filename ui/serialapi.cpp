@@ -35,7 +35,7 @@ using evse::EepromSettings;
 using evse::Settings;
 using evse::State;
 using devices::DS3231;
-using devices::tm;
+using devices::TM;
 using serial::Usart;
 
 namespace
@@ -158,7 +158,7 @@ namespace
     {
         DS3231 &rtc = DS3231::get();
 
-        tm t;
+        TM t;
         rtc.read(t);
 
         paramAdd(response, 'H', t.hour);
@@ -174,7 +174,7 @@ namespace
 
         DS3231 &rtc = DS3231::get();
 
-        tm t;
+        TM t;
         rtc.read(t);
 
         if (h < 24)
@@ -193,7 +193,7 @@ namespace
     {
         DS3231 &rtc = DS3231::get();
 
-        tm t;
+        TM t;
         rtc.read(t);
 
         paramAdd(response, 'D', t.day);
@@ -210,7 +210,7 @@ namespace
 
         DS3231 &rtc = DS3231::get();
 
-        tm t;
+        TM t;
         rtc.read(t);
 
         if (d > 0 && d < 32)

@@ -65,7 +65,7 @@ namespace
 namespace devices
 {
 
-void tm::setWeekday()
+void TM::setWeekday()
 {
     static int wkd[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
     uint8_t y = year - (month < 3);
@@ -95,7 +95,7 @@ bool DS3231::isPresent() const
     return present;
 }
 
-void DS3231::read(tm &t)
+void DS3231::read(TM &t)
 {
     uint8_t buffer[8] = {0};
     buffer[0] = DS3231_REG_SECOND;
@@ -112,7 +112,7 @@ void DS3231::read(tm &t)
     t.year    = utils::bcd2dec(buffer[7]);
 }
 
-void DS3231::write(tm &t)
+void DS3231::write(TM &t)
 {
     uint8_t buffer[8] = {
         DS3231_REG_SECOND

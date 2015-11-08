@@ -24,8 +24,9 @@
 namespace devices
 {
 
-struct tm
+class TM
 {
+public:
     uint8_t second;
     uint8_t minute;
     uint8_t hour;
@@ -49,8 +50,8 @@ public:
 
     bool isPresent() const;
 
-    void read(tm &t);
-    void write(tm &t);
+    void read(TM &t);
+    void write(TM &t);
 
     // Returns temperature in deg. C (whole deg. only)
     uint8_t readTemp();

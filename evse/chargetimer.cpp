@@ -25,7 +25,7 @@
 #define CHARGE_TIMER_UPDATE_DELAY_MS 60000
 
 using devices::DS3231;
-using devices::tm;
+using devices::TM;
 using event::Event;
 using evse::Settings;
 using evse::EepromSettings;
@@ -76,7 +76,7 @@ void ChargeTimer::checkTime()
     if (settings.charge_timer_enabled)
     {
         DS3231 &rtc = DS3231::get();
-        tm t;
+        TM t;
 
         rtc.read(t);
 

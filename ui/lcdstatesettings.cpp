@@ -58,7 +58,7 @@
 #define ADJUST_HUNDREDTH    0x04
 
 using devices::DS3231;
-using devices::tm;
+using devices::TM;
 using devices::LCD16x2;
 using evse::EepromSettings;
 using evse::State;
@@ -126,7 +126,7 @@ bool LcdStateSettings::pageSetTime()
 
     static uint8_t hour = 0;
     static uint8_t minute = 0;
-    tm t;
+    TM t;
 
     lcd.move(0,0);
     lcd << static_cast<char>(CustomCharacters::CLOCK)
@@ -186,7 +186,7 @@ bool LcdStateSettings::pageSetDate()
     static uint8_t year_ones = 0;
     static uint8_t month = 0;
     static uint8_t day = 0;
-    tm t;
+    TM t;
 
     lcd.move(0,0);
     lcd << static_cast<char>(CustomCharacters::CALENDAR)

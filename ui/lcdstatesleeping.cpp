@@ -22,7 +22,7 @@
 #define BLINK_TIMEOUT 800
 
 using devices::DS3231;
-using devices::tm;
+using devices::TM;
 using evse::EepromSettings;
 using evse::Settings;
 using stream::LcdStream;
@@ -56,7 +56,7 @@ bool LcdStateSleeping::draw()
 
     lcd.setBacklight(devices::LCD16x2::GREEN);
 
-    tm t;
+    TM t;
     rtc.read(t);
 
     CustomCharacters::largeDigit(lcd.getLCD(), t.hour / 10,  1);

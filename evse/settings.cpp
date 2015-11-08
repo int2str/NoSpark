@@ -112,7 +112,7 @@ void Settings::postLoad()
     if (!rtc.isPresent())
         return;
 
-    devices::tm t;
+    devices::TM t;
     rtc.read(t);
 
     if (t.year != (kwh_index & 0xFF))
@@ -126,7 +126,7 @@ void Settings::postLoad()
 void Settings::preSave()
 {
     devices::DS3231 &rtc = devices::DS3231::get();
-    devices::tm t;
+    devices::TM t;
 
     rtc.read(t);
     kwh_index = (t.weekday << 12) | (t.month << 8) | t.year;
