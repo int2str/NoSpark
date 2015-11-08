@@ -112,21 +112,24 @@ void Settings::postLoad()
     if (!rtc.isPresent())
         return;
 
-    rtc.read();
+    devices::tm t;
+    rtc.read(t);
 
-    if (rtc.year != (kwh_index & 0xFF))
+    if (t.year != (kwh_index & 0xFF))
         wh_year = cost_year = 0;
-    if (rtc.month != ((kwh_index >> 8) & 0xF))
+    if (t.month != ((kwh_index >> 8) & 0xF))
         wh_month = cost_month = 0;
-    if (rtc.weekday < ((kwh_index >> 12) & 0xF))
+    if (t.weekday < ((kwh_index >> 12) & 0xF))
         wh_week = cost_week = 0;
 }
 
 void Settings::preSave()
 {
     devices::DS3231 &rtc = devices::DS3231::get();
-    rtc.read();
-    kwh_index = (rtc.weekday << 12) | (rtc.month << 8) | rtc.year;
+    devices::tm t;
+
+    rtc.read(t);
+    kwh_index = (t.weekday << 12) | (t.month << 8) | t.year;
 }
 
 void EepromSettings::load(Settings &settings)

@@ -35,6 +35,7 @@ using evse::EepromSettings;
 using evse::Settings;
 using evse::State;
 using devices::DS3231;
+using devices::tm;
 using serial::Usart;
 
 namespace
@@ -156,11 +157,13 @@ namespace
     void cmdGetTime(char *response)
     {
         DS3231 &rtc = DS3231::get();
-        rtc.read();
 
-        paramAdd(response, 'H', rtc.hour);
-        paramAdd(response, 'M', rtc.minute);
-        paramAdd(response, 'S', rtc.second);
+        tm t;
+        rtc.read(t);
+
+        paramAdd(response, 'H', t.hour);
+        paramAdd(response, 'M', t.minute);
+        paramAdd(response, 'S', t.second);
     }
 
     void cmdSetTime(const char *buffer)
@@ -170,51 +173,59 @@ namespace
         uint8_t s = paramGet(buffer, 'S');
 
         DS3231 &rtc = DS3231::get();
-        rtc.read();
+
+        tm t;
+        rtc.read(t);
 
         if (h < 24)
-            rtc.hour = h;
+            t.hour = h;
 
         if (m < 60)
-            rtc.minute = m;
+            t.minute = m;
 
         if (s < 60)
-            rtc.second = s;
+            t.second = s;
 
-        rtc.write();
+        rtc.write(t);
     }
 
     void cmdGetDate(char *response)
     {
         DS3231 &rtc = DS3231::get();
-        rtc.read();
 
-        paramAdd(response, 'D', rtc.day);
-        paramAdd(response, 'M', rtc.month);
-        paramAdd(response, 'Y', rtc.year);
-        paramAdd(response, 'W', rtc.weekday);
+        tm t;
+        rtc.read(t);
+
+        paramAdd(response, 'D', t.day);
+        paramAdd(response, 'M', t.month);
+        paramAdd(response, 'Y', t.year);
+        paramAdd(response, 'W', t.weekday);
     }
 
     void cmdSetDate(const char *buffer)
     {
         DS3231 &rtc = DS3231::get();
-        rtc.read();
+
+        tm t;
+        rtc.read(t);
 
         uint8_t p = paramGet(buffer, 'D');
         if (p > 0 && p < 32)
-            rtc.day = p;
+            t.day = p;
 
         p = paramGet(buffer, 'M');
         if (p > 0 && p < 13)
-            rtc.minute = p;
+            t.minute = p;
 
         p = paramGet(buffer, 'Y');
         if (p < 100)
-            rtc.year = p;
+            t.year = p;
 
         p = paramGet(buffer, 'W');
         if (p > 0 && p < 8)
-            rtc.weekday = p;
+            t.weekday = p;
+
+        rtc.write(t);
     }
 
     void cmdGetTimer(char *response)

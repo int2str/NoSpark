@@ -24,6 +24,19 @@
 namespace devices
 {
 
+struct tm
+{
+    uint8_t second;
+    uint8_t minute;
+    uint8_t hour;
+
+    uint8_t weekday;
+
+    uint8_t day;
+    uint8_t month;
+    uint8_t year;
+};
+
 class DS3231
 {
     DS3231();
@@ -34,20 +47,11 @@ public:
 
     bool isPresent() const;
 
-    void read();
-    void write();
+    void read(tm &t);
+    void write(tm &t);
 
     // Returns temperature in deg. C (whole deg. only)
     uint8_t readTemp();
-
-    uint8_t hour;
-    uint8_t minute;
-    uint8_t second;
-
-    uint8_t day;
-    uint8_t month;
-    uint8_t year;
-    uint8_t weekday;
 
 private:
     const uint8_t i2c_addr;

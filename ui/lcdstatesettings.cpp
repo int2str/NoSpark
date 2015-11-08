@@ -58,6 +58,7 @@
 #define ADJUST_HUNDREDTH    0x04
 
 using devices::DS3231;
+using devices::tm;
 using devices::LCD16x2;
 using evse::EepromSettings;
 using evse::State;
@@ -125,6 +126,7 @@ bool LcdStateSettings::pageSetTime()
 
     static uint8_t hour = 0;
     static uint8_t minute = 0;
+    tm t;
 
     lcd.move(0,0);
     lcd << static_cast<char>(CustomCharacters::CLOCK)
@@ -133,19 +135,19 @@ bool LcdStateSettings::pageSetTime()
 
     if (option > ADJUST_MM)
     {
-        rtc.read();
-        rtc.hour = hour;
-        rtc.minute = minute;
-        rtc.second = 0;
-        rtc.write();
+        rtc.read(t);
+        t.hour = hour;
+        t.minute = minute;
+        t.second = 0;
+        rtc.write(t);
         option = NOT_ADJUSTING;
     }
 
     if (option == NOT_ADJUSTING)
     {
-        rtc.read();
-        hour = rtc.hour;
-        minute = rtc.minute;
+        rtc.read(t);
+        hour = t.hour;
+        minute = t.minute;
     }
 
     if (value == UNINITIALIZED)
@@ -184,6 +186,7 @@ bool LcdStateSettings::pageSetDate()
     static uint8_t year_ones = 0;
     static uint8_t month = 0;
     static uint8_t day = 0;
+    tm t;
 
     lcd.move(0,0);
     lcd << static_cast<char>(CustomCharacters::CALENDAR)
@@ -192,21 +195,21 @@ bool LcdStateSettings::pageSetDate()
 
     if (option > ADJUST_Y_ONES)
     {
-        rtc.read();
-        rtc.year = year_tens * 10 + year_ones;
-        rtc.month = month;
-        rtc.day = day;
-        rtc.write();
+        rtc.read(t);
+        t.year = year_tens * 10 + year_ones;
+        t.month = month;
+        t.day = day;
+        rtc.write(t);
         option = NOT_ADJUSTING;
     }
 
     if (option == NOT_ADJUSTING)
     {
-        rtc.read();
-        year_tens = rtc.year / 10;
-        year_ones = rtc.year % 10;
-        month = rtc.month;
-        day = rtc.day;
+        rtc.read(t);
+        year_tens = t.year / 10;
+        year_ones = t.year % 10;
+        month = t.month;
+        day = t.day;
     }
 
     if (value == UNINITIALIZED)

@@ -36,6 +36,7 @@ using evse::EepromSettings;
 using evse::Settings;
 using evse::State;
 using devices::DS3231;
+using devices::tm;
 using stream::PGM;
 
 namespace
@@ -256,18 +257,19 @@ void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
 
     DS3231 &rtc = DS3231::get();
     const char *pp = buffer + cmd_len;
+    tm t;
 
-    rtc.read();
+    rtc.read(t);
 
-    rtc.hour = asc_bin(pp);
-    rtc.minute = asc_bin(pp + 2);
-    rtc.second = asc_bin(pp + 4);
+    t.hour = asc_bin(pp);
+    t.minute = asc_bin(pp + 2);
+    t.second = asc_bin(pp + 4);
 
-    rtc.day = asc_bin(pp + 7);
-    rtc.month = asc_bin(pp + 9);
-    rtc.year = asc_bin(pp + 11);
+    t.day = asc_bin(pp + 7);
+    t.month = asc_bin(pp + 9);
+    t.year = asc_bin(pp + 11);
 
-    rtc.write();
+    rtc.write(t);
 }
 
 void SerialConsole::commandEnergy(const char*, const uint8_t)
@@ -307,11 +309,12 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     DS3231 &rtc = DS3231::get();
     if (rtc.isPresent())
     {
-        rtc.read();
+        tm t;
+        rtc.read(t);
 
         uart << PGM << STR_STATUS_TIME
-          << stream::Time(rtc.hour, rtc.minute) << ' '
-          << rtc.day << '.' << rtc.month << '.' << "20" << rtc.year
+          << stream::Time(t.hour, t.minute) << ' '
+          << t.day << '.' << t.month << '.' << "20" << t.year
           << EOL;
 
         uart << PGM << STR_STATUS_TEMP

@@ -22,6 +22,7 @@
 #define BLINK_TIMEOUT 800
 
 using devices::DS3231;
+using devices::tm;
 using evse::EepromSettings;
 using evse::Settings;
 using stream::LcdStream;
@@ -55,12 +56,13 @@ bool LcdStateSleeping::draw()
 
     lcd.setBacklight(devices::LCD16x2::GREEN);
 
-    rtc.read();
+    tm t;
+    rtc.read(t);
 
-    CustomCharacters::largeDigit(lcd.getLCD(), rtc.hour / 10,  1);
-    CustomCharacters::largeDigit(lcd.getLCD(), rtc.hour % 10,  4);
-    CustomCharacters::largeDigit(lcd.getLCD(), rtc.minute / 10,  8);
-    CustomCharacters::largeDigit(lcd.getLCD(), rtc.minute % 10, 11);
+    CustomCharacters::largeDigit(lcd.getLCD(), t.hour / 10,  1);
+    CustomCharacters::largeDigit(lcd.getLCD(), t.hour % 10,  4);
+    CustomCharacters::largeDigit(lcd.getLCD(), t.minute / 10,  8);
+    CustomCharacters::largeDigit(lcd.getLCD(), t.minute % 10, 11);
 
     const char o = blink_state.get() ? ' ' : 7;
 
