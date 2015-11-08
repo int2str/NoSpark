@@ -35,6 +35,8 @@ struct tm
     uint8_t day;
     uint8_t month;
     uint8_t year;
+
+    void setWeekday();
 };
 
 class DS3231

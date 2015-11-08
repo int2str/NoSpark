@@ -199,6 +199,7 @@ bool LcdStateSettings::pageSetDate()
         t.year = year_tens * 10 + year_ones;
         t.month = month;
         t.day = day;
+        t.setWeekday();
         rtc.write(t);
         option = NOT_ADJUSTING;
     }

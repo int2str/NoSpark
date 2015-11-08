@@ -204,27 +204,25 @@ namespace
 
     void cmdSetDate(const char *buffer)
     {
+        uint8_t d = paramGet(buffer, 'D');
+        uint8_t m = paramGet(buffer, 'M');
+        uint8_t y = paramGet(buffer, 'Y');
+
         DS3231 &rtc = DS3231::get();
 
         tm t;
         rtc.read(t);
 
-        uint8_t p = paramGet(buffer, 'D');
-        if (p > 0 && p < 32)
-            t.day = p;
+        if (d > 0 && d < 32)
+            t.day = d;
 
-        p = paramGet(buffer, 'M');
-        if (p > 0 && p < 13)
-            t.minute = p;
+        if (m > 0 && m < 13)
+            t.month = m;
 
-        p = paramGet(buffer, 'Y');
-        if (p < 100)
-            t.year = p;
+        if (y < 100)
+            t.year = y;
 
-        p = paramGet(buffer, 'W');
-        if (p > 0 && p < 8)
-            t.weekday = p;
-
+        t.setWeekday();
         rtc.write(t);
     }
 

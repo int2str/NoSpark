@@ -269,6 +269,8 @@ void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
     t.month = asc_bin(pp + 9);
     t.year = asc_bin(pp + 11);
 
+    t.setWeekday();
+
     rtc.write(t);
 }
 
