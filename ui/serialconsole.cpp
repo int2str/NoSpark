@@ -316,8 +316,8 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
 
         uart << PGM << STR_STATUS_TIME
           << stream::Time(t.hour, t.minute) << ' '
-          << t.day << '.' << t.month << '.' << "20" << t.year
-          << EOL;
+          << t.day << '.' << t.month << '.' << "20" << stream::PAD_ZERO
+          << t.year << EOL;
 
         uart << PGM << STR_STATUS_TEMP
           << rtc.readTemp() << 'C' << EOL;
