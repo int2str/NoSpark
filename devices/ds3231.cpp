@@ -67,7 +67,7 @@ namespace devices
 
 void TM::setWeekday()
 {
-    static int wkd[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+    static uint8_t wkd[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
     uint8_t y = year - (month < 3);
 
     weekday = (y + y / 4 + wkd[month - 1] + day) % 7 + 1;
