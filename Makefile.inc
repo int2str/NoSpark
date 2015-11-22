@@ -26,7 +26,7 @@
 # PORT = -P COM11
 # PORT = -P /dev/ttyACM*
 # UPLOAD_PROTOCOL = arduino
-UPLOAD_PROTOCOL = usbtiny
+UPLOAD_PROTOCOL = usbasp
 BUILD_MCU = atmega328p
 BUILD_VARIANT = standard
 UPLOAD_SPEED = 115200
@@ -45,7 +45,7 @@ SIZE = avr-size
 OBJCOPY = avr-objcopy
 AVRDUDE = avrdude
 
-DUDEFLAGS = -V -p $(BUILD_MCU) $(PORT) -c $(UPLOAD_PROTOCOL) -b $(UPLOAD_SPEED)
+DUDEFLAGS = $(AVRCONF) -p $(BUILD_MCU) $(PORT) -c $(UPLOAD_PROTOCOL) -b $(UPLOAD_SPEED)
 FUSES = -U lfuse:w:0xFF:m -U hfuse:w:0xD6:m -U efuse:w:0x05:m
 
 SIZEFLAGS = 

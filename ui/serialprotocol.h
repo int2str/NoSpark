@@ -165,13 +165,12 @@
 //   D - Day (1-31; optional)
 //   M - Month (1-12; optional)
 //   Y - Year (0-99; optional)
-//   W - Weekday (1-7; optional)
 //
 // Returns:
 //   none
 //
 // Example:
-//   -> $E15 D24 M12 Y15 W7
+//   -> $E15 D24 M12 Y15
 //   <- $OK
 #define CMD_SET_DATE            15
 

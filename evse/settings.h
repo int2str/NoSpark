@@ -30,10 +30,11 @@ public:
     uint8_t max_current;
 
     // Rev 2
-    uint16_t kwh_total;
-    uint16_t kwh_year;
-    uint16_t kwh_month;
-    uint16_t kwh_week;
+    uint16_t kwh_total;   // Deprecated -- these are replaced by
+    uint16_t kwh_year;    // wh_year, etc., as of revision 7, and
+    uint16_t kwh_month;   // are referenced only when upgrading.
+    uint16_t kwh_week;    // ...
+
     uint16_t kwh_index;
 
     // Rev 3
@@ -53,6 +54,17 @@ public:
 
     // Rev 6
     uint8_t lcd_type;
+
+    // Rev 7
+    uint32_t wh_total;
+    uint32_t wh_year;
+    uint32_t wh_month;
+    uint32_t wh_week;
+
+    uint32_t cost_total;
+    uint32_t cost_year;
+    uint32_t cost_month;
+    uint32_t cost_week;
 
     Settings();
 

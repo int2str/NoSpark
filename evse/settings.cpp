@@ -22,7 +22,7 @@
 
 #define SETTINGS_OFFSET     0x08
 #define SETTINGS_MARKER     0xAEAE
-#define SETTINGS_REVISION   0x06
+#define SETTINGS_REVISION   0x07
 
 namespace evse
 {
@@ -83,10 +83,24 @@ void Settings::upgrade()
         ammeter_offset = 0;
     }
 
-    // Rev 5
+    // Rev 6
     if (revision < 6)
     {
         lcd_type = 0;
+    }
+
+    // Rev 7
+    if (revision < 7)
+    {
+        wh_total = kwh_total * 1000;
+        wh_year = kwh_year * 1000;
+        wh_month = kwh_month * 1000;
+        wh_week = kwh_week * 1000;
+
+        cost_total = kwh_total * kwh_cost;
+        cost_year = kwh_year * kwh_cost;
+        cost_month = kwh_month * kwh_cost;
+        cost_week = kwh_week * kwh_cost;
     }
 
     revision = SETTINGS_REVISION;
@@ -98,21 +112,24 @@ void Settings::postLoad()
     if (!rtc.isPresent())
         return;
 
-    rtc.read();
+    devices::TM t;
+    rtc.read(t);
 
-    if (rtc.year != (kwh_index & 0xFF))
-        kwh_year = 0;
-    if (rtc.month != ((kwh_index >> 8) & 0xF))
-        kwh_month = 0;
-    if (rtc.weekday < ((kwh_index >> 12) & 0xF))
-        kwh_week = 0;
+    if (t.year != (kwh_index & 0xFF))
+        wh_year = cost_year = 0;
+    if (t.month != ((kwh_index >> 8) & 0xF))
+        wh_month = cost_month = 0;
+    if (t.weekday < ((kwh_index >> 12) & 0xF))
+        wh_week = cost_week = 0;
 }
 
 void Settings::preSave()
 {
     devices::DS3231 &rtc = devices::DS3231::get();
-    rtc.read();
-    kwh_index = (rtc.weekday << 12) | (rtc.month << 8) | rtc.year;
+    devices::TM t;
+
+    rtc.read(t);
+    kwh_index = (t.weekday << 12) | (t.month << 8) | t.year;
 }
 
 void EepromSettings::load(Settings &settings)

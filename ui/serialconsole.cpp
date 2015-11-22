@@ -36,13 +36,14 @@ using evse::EepromSettings;
 using evse::Settings;
 using evse::State;
 using devices::DS3231;
+using devices::TM;
 using stream::PGM;
 
 namespace
 {
-    uint8_t bcd_enc(const char msb_ch, const char lsb_ch)
+    uint8_t asc_bin(const char *s)
     {
-        return ((msb_ch - '0') << 4) | ((lsb_ch - '0') & 0x0F);
+        return (s[0] - '0') * 10 + (s[1] - '0');
     }
 
     void write_help(stream::OutputStream &out, const char *cmd, const char *help)
@@ -54,16 +55,15 @@ namespace
         out << PGM << help << EOL;
     }
 
-    void write_energy_stat(stream::OutputStream &out, const char *label, const uint8_t currency, const uint32_t cents, const uint32_t kwh)
+    void write_energy_stat(stream::OutputStream &out, const char *label, const uint8_t currency, const uint32_t wh, uint32_t cost)
     {
         char buffer[10] = {0};
-        ltoa(kwh, buffer, 10);
+        ltoa(wh / 1000, buffer, 10);
         out << ' ' << PGM << label << ": " << buffer << " kWh";
 
-        if (cents != 0)
+        if (cost != 0)
         {
             const char currencies[3] = {'$', 'E', 'Y'};
-            uint32_t cost = kwh * cents;
 
             char buffer[10] = {0};
             ltoa(cost / 100, buffer, 10);
@@ -255,20 +255,23 @@ void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
         return;
     }
 
-    const char *pp = buffer + cmd_len;
-    uint8_t time_buffer[8] = {
-        0 // <-- Register
-      , bcd_enc(pp[4], pp[5])
-      , bcd_enc(pp[2], pp[3])
-      , bcd_enc(pp[0], pp[1])
-      , 0
-      , bcd_enc(pp[7], pp[8])
-      , bcd_enc(pp[9], pp[10])
-      , bcd_enc(pp[11], pp[12])
-    };
-
     DS3231 &rtc = DS3231::get();
-    rtc.writeRaw(time_buffer, 8);
+    const char *pp = buffer + cmd_len;
+    TM t;
+
+    rtc.read(t);
+
+    t.hour = asc_bin(pp);
+    t.minute = asc_bin(pp + 2);
+    t.second = asc_bin(pp + 4);
+
+    t.day = asc_bin(pp + 7);
+    t.month = asc_bin(pp + 9);
+    t.year = asc_bin(pp + 11);
+
+    t.setWeekday();
+
+    rtc.write(t);
 }
 
 void SerialConsole::commandEnergy(const char*, const uint8_t)
@@ -277,10 +280,10 @@ void SerialConsole::commandEnergy(const char*, const uint8_t)
     EepromSettings::load(settings);
 
     uart << PGM << STR_STATS_KWH << EOL;
-    write_energy_stat(uart, STR_STATS_WEEK, settings.kwh_currency, settings.kwh_cost, settings.kwh_week);
-    write_energy_stat(uart, STR_STATS_MONTH, settings.kwh_currency, settings.kwh_cost, settings.kwh_month);
-    write_energy_stat(uart, STR_STATS_YEAR, settings.kwh_currency, settings.kwh_cost, settings.kwh_year);
-    write_energy_stat(uart, STR_STATS_TOTAL, settings.kwh_currency, settings.kwh_cost, settings.kwh_total);
+    write_energy_stat(uart, STR_STATS_WEEK, settings.kwh_currency, settings.wh_week, settings.cost_week);
+    write_energy_stat(uart, STR_STATS_MONTH, settings.kwh_currency, settings.wh_month, settings.cost_month);
+    write_energy_stat(uart, STR_STATS_YEAR, settings.kwh_currency, settings.wh_year, settings.cost_year);
+    write_energy_stat(uart, STR_STATS_TOTAL, settings.kwh_currency, settings.wh_total, settings.cost_total);
     uart << EOL;
 }
 
@@ -308,12 +311,13 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
     DS3231 &rtc = DS3231::get();
     if (rtc.isPresent())
     {
-        rtc.read();
+        TM t;
+        rtc.read(t);
 
         uart << PGM << STR_STATUS_TIME
-          << stream::Time(rtc.hour, rtc.minute) << ' '
-          << rtc.day << '.' << rtc.month << '.' << "20" << rtc.year
-          << EOL;
+          << stream::Time(t.hour, t.minute) << ' '
+          << t.day << '.' << t.month << '.' << "20" << stream::PAD_ZERO
+          << t.year << EOL;
 
         uart << PGM << STR_STATUS_TEMP
           << rtc.readTemp() << 'C' << EOL;

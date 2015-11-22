@@ -65,6 +65,14 @@ namespace
 namespace devices
 {
 
+void TM::setWeekday()
+{
+    static uint8_t wkd[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+    uint8_t y = year - (month < 3);
+
+    weekday = (y + y / 4 + wkd[month - 1] + day) % 7 + 1;
+}
+
 DS3231& DS3231::get()
 {
     static DS3231 rtc;
@@ -82,51 +90,41 @@ DS3231::~DS3231()
 {
 }
 
-void DS3231::readRaw(uint8_t *buffer, const uint8_t len)
-{
-    i2c.write(i2c_addr, buffer++, 1);
-    i2c.read(i2c_addr, buffer, len-1);
-}
-
 bool DS3231::isPresent() const
 {
     return present;
 }
 
-void DS3231::read()
+void DS3231::read(TM &t)
 {
     uint8_t buffer[8] = {0};
     buffer[0] = DS3231_REG_SECOND;
 
-    readRaw(buffer, 8);
+    i2c.write(i2c_addr, buffer, 1);
+    i2c.read(i2c_addr, buffer + 1, 7);
 
-    second  = utils::bcd2dec(buffer[1]);
-    minute  = utils::bcd2dec(buffer[2]);
-    hour    = utils::bcd2dec(buffer[3]);
-    weekday = utils::bcd2dec(buffer[4]);
-    day     = utils::bcd2dec(buffer[5]);
-    month   = utils::bcd2dec(buffer[6]);
-    year    = utils::bcd2dec(buffer[7]);
+    t.second  = utils::bcd2dec(buffer[1]);
+    t.minute  = utils::bcd2dec(buffer[2]);
+    t.hour    = utils::bcd2dec(buffer[3]);
+    t.weekday = utils::bcd2dec(buffer[4]);
+    t.day     = utils::bcd2dec(buffer[5]);
+    t.month   = utils::bcd2dec(buffer[6]);
+    t.year    = utils::bcd2dec(buffer[7]);
 }
 
-void DS3231::writeRaw(uint8_t *buffer, const uint8_t len)
-{
-    i2c.write(i2c_addr, buffer, len);
-}
-
-void DS3231::write()
+void DS3231::write(TM &t)
 {
     uint8_t buffer[8] = {
         DS3231_REG_SECOND
-      , utils::dec2bcd(second)
-      , utils::dec2bcd(minute)
-      , utils::dec2bcd(hour)
-      , utils::dec2bcd(weekday)
-      , utils::dec2bcd(day)
-      , utils::dec2bcd(month)
-      , utils::dec2bcd(year)
+      , utils::dec2bcd(t.second)
+      , utils::dec2bcd(t.minute)
+      , utils::dec2bcd(t.hour)
+      , utils::dec2bcd(t.weekday)
+      , utils::dec2bcd(t.day)
+      , utils::dec2bcd(t.month)
+      , utils::dec2bcd(t.year)
     };
-    writeRaw(buffer, 8);
+    i2c.write(i2c_addr, buffer, 8);
 }
 
 uint8_t DS3231::readTemp()

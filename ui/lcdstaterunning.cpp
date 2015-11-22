@@ -36,6 +36,7 @@
 
 using board::J1772Pilot;
 using devices::DS3231;
+using devices::TM;
 using devices::LCD16x2;
 using evse::ChargeMonitor;
 using evse::Settings;
@@ -66,13 +67,12 @@ namespace
         lcd << buffer << '.' << static_cast<char>('0' + ((wh / 100) % 10)) << " kWh";
     }
 
-    void write_cost(OutputStream &lcd, const uint8_t currency, const uint32_t cents, const uint32_t wh)
+    void write_cost(OutputStream &lcd, const uint8_t currency, uint32_t cost)
     {
-        if (cents == 0)
+        if (cost == 0)
             return;
 
         const char currencies[3] = {'$', ui::CustomCharacters::EURO, '\\'}; // Backslash = Yen
-        uint32_t cost = wh * cents / 1000;
 
         char buffer[10] = {0};
         ltoa(cost / 100, buffer, 10);
@@ -120,6 +120,9 @@ void LcdStateRunning::drawDefault()
 {
     const State &state = State::get();
     const ChargeMonitor &chargeMonitor = ChargeMonitor::get();
+    const uint32_t wh = chargeMonitor.wattHours();
+    const uint32_t cost = wh * settings.kwh_cost / 1000;
+    const uint32_t duration = chargeMonitor.chargeDuration();
 
     uint8_t amps = state.max_amps_limit;
     if (chargeMonitor.isCharging())
@@ -130,8 +133,9 @@ void LcdStateRunning::drawDefault()
     DS3231 &rtc = DS3231::get();
     if (rtc.isPresent())
     {
-        rtc.read();
-        lcd << stream::Time(rtc.hour, rtc.minute)
+        TM t;
+        rtc.read(t);
+        lcd << stream::Time(t.hour, t.minute)
           << ' ' << stream::PAD_SPACE << rtc.readTemp() << DEGREE_SYMBOL;
     } else {
         switch (state.j1772)
@@ -184,16 +188,18 @@ void LcdStateRunning::drawDefault()
 
         case J1772Pilot::STATE_A:
             lcd.setBacklight(LCD16x2::GREEN);
-            if (chargeMonitor.chargeDuration() == 0)
+            if ((duration / 60000 == 0) &&
+                (wh / 100 == 0) &&
+                (cost == 0))
             {
                 center_P(lcd, STR_NOT_CONNECTED);
             } else {
                 scrolling_text.setWidth(LCD_COLUMNS);
                 scrolling_text << stream::PGM << STR_CHARGED << " ";
-                write_duration(scrolling_text, chargeMonitor.chargeDuration());
+                write_duration(scrolling_text, duration);
                 scrolling_text << " / ";
-                write_kwh(scrolling_text, chargeMonitor.wattHours());
-                write_cost(scrolling_text, settings.kwh_currency, settings.kwh_cost, chargeMonitor.wattHours());
+                write_kwh(scrolling_text, wh);
+                write_cost(scrolling_text, settings.kwh_currency, cost);
                 scrolling_text >> lcd;
             }
             break;
@@ -210,12 +216,12 @@ void LcdStateRunning::drawDefault()
             scrolling_text.setWidth(10);
             if (rtc.isPresent())
                 scrolling_text << stream::PGM << STR_CHARGING << " ";
-            write_kwh(scrolling_text, chargeMonitor.wattHours());
-            write_cost(scrolling_text, settings.kwh_currency, settings.kwh_cost, chargeMonitor.wattHours());
+            write_kwh(scrolling_text, wh);
+            write_cost(scrolling_text, settings.kwh_currency, cost);
             scrolling_text >> lcd;
 
             lcd << static_cast<char>(CustomCharacters::SEPARATOR);
-            write_duration(lcd, chargeMonitor.chargeDuration());
+            write_duration(lcd, duration);
             break;
         }
 
@@ -246,38 +252,40 @@ void LcdStateRunning::drawKwhStats()
     scrolling_text.clear();
     scrolling_text.setWidth(16);
 
-    uint16_t *p = 0;
+    uint32_t p = 0, q = 0;
     switch (page)
     {
         case PAGE_KWH_WEEK:
             scrolling_text << stream::PGM << STR_STATS_WEEK;
-            p = &settings.kwh_week;
+            p = settings.wh_week;
+            q = settings.cost_week;
             break;
 
         case PAGE_KWH_MONTH:
             scrolling_text << stream::PGM << STR_STATS_MONTH;
-            p = &settings.kwh_month;
+            p = settings.wh_month;
+            q = settings.cost_month;
             break;
 
         case PAGE_KWH_YEAR:
             scrolling_text << stream::PGM << STR_STATS_YEAR;
-            p = &settings.kwh_year;
+            p = settings.wh_year;
+            q = settings.cost_year;
             break;
 
         case PAGE_KWH_TOTAL:
             scrolling_text << stream::PGM << STR_STATS_TOTAL;
-            p = &settings.kwh_total;
+            p = settings.wh_total;
+            q = settings.cost_total;
             break;
 
         default:
             break;
     }
 
-    char buffer[10] = {0};
-    ltoa(p ? *p : 0, buffer, 10);
-
-    scrolling_text << " " << buffer << " kWh";
-    write_cost(scrolling_text, settings.kwh_currency, settings.kwh_cost, *p * 1000l);
+    scrolling_text << " ";
+    write_kwh(scrolling_text, p);
+    write_cost(scrolling_text, settings.kwh_currency, q);
     scrolling_text >> lcd;
 }
 

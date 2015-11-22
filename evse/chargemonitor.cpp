@@ -30,15 +30,24 @@ using evse::State;
 
 namespace
 {
-    void saveChargeStats(const uint32_t kwh)
+    void saveChargeStats(const uint32_t wh)
     {
         Settings settings;
+        uint32_t cost;
+
         EepromSettings::load(settings);
 
-        settings.kwh_total += kwh;
-        settings.kwh_year += kwh;
-        settings.kwh_month += kwh;
-        settings.kwh_week += kwh;
+        cost = wh * settings.kwh_cost / 1000;
+
+        settings.wh_total += wh;
+        settings.wh_year += wh;
+        settings.wh_month += wh;
+        settings.wh_week += wh;
+
+        settings.cost_total += cost;
+        settings.cost_year += cost;
+        settings.cost_month += cost;
+        settings.cost_week += cost;
 
         EepromSettings::save(settings);
     }
@@ -143,7 +152,7 @@ void ChargeMonitor::chargeStateChanged(const bool charging)
         if (time_start_ms != 0 && time_stop_ms == 0)
         {
             time_stop_ms = system::Timer::millis();
-            saveChargeStats(wattHours() / 1000);
+            saveChargeStats(wattHours());
         }
     }
 

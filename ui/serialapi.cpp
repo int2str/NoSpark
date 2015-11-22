@@ -35,6 +35,7 @@ using evse::EepromSettings;
 using evse::Settings;
 using evse::State;
 using devices::DS3231;
+using devices::TM;
 using serial::Usart;
 
 namespace
@@ -121,10 +122,10 @@ namespace
     {
         Settings settings;
         EepromSettings::load(settings);
-        paramAdd(response, 'W', settings.kwh_week);
-        paramAdd(response, 'M', settings.kwh_month);
-        paramAdd(response, 'Y', settings.kwh_year);
-        paramAdd(response, 'T', settings.kwh_total);
+        paramAdd(response, 'W', settings.wh_week / 1000);
+        paramAdd(response, 'M', settings.wh_month / 1000);
+        paramAdd(response, 'Y', settings.wh_year / 1000);
+        paramAdd(response, 'T', settings.wh_total / 1000);
     }
 
     uint8_t cmdSetCurrent(const char *buffer)
@@ -156,64 +157,73 @@ namespace
     void cmdGetTime(char *response)
     {
         DS3231 &rtc = DS3231::get();
-        rtc.read();
 
-        paramAdd(response, 'H', rtc.hour);
-        paramAdd(response, 'M', rtc.minute);
-        paramAdd(response, 'S', rtc.second);
+        TM t;
+        rtc.read(t);
+
+        paramAdd(response, 'H', t.hour);
+        paramAdd(response, 'M', t.minute);
+        paramAdd(response, 'S', t.second);
     }
 
     void cmdSetTime(const char *buffer)
     {
+        uint8_t h = paramGet(buffer, 'H');
+        uint8_t m = paramGet(buffer, 'M');
+        uint8_t s = paramGet(buffer, 'S');
+
         DS3231 &rtc = DS3231::get();
-        rtc.read();
 
-        uint8_t p = paramGet(buffer, 'H');
-        if (p < 24)
-            rtc.hour = p;
+        TM t;
+        rtc.read(t);
 
-        p = paramGet(buffer, 'M');
-        if (p < 60)
-            rtc.minute = p;
+        if (h < 24)
+            t.hour = h;
 
-        p = paramGet(buffer, 'S');
-        if (p < 60)
-            rtc.second = p;
+        if (m < 60)
+            t.minute = m;
 
-        rtc.write();
+        if (s < 60)
+            t.second = s;
+
+        rtc.write(t);
     }
 
     void cmdGetDate(char *response)
     {
         DS3231 &rtc = DS3231::get();
-        rtc.read();
 
-        paramAdd(response, 'D', rtc.day);
-        paramAdd(response, 'M', rtc.month);
-        paramAdd(response, 'Y', rtc.year);
-        paramAdd(response, 'W', rtc.weekday);
+        TM t;
+        rtc.read(t);
+
+        paramAdd(response, 'D', t.day);
+        paramAdd(response, 'M', t.month);
+        paramAdd(response, 'Y', t.year);
+        paramAdd(response, 'W', t.weekday);
     }
 
     void cmdSetDate(const char *buffer)
     {
+        uint8_t d = paramGet(buffer, 'D');
+        uint8_t m = paramGet(buffer, 'M');
+        uint8_t y = paramGet(buffer, 'Y');
+
         DS3231 &rtc = DS3231::get();
-        rtc.read();
 
-        uint8_t p = paramGet(buffer, 'D');
-        if (p > 0 && p < 32)
-            rtc.day = p;
+        TM t;
+        rtc.read(t);
 
-        p = paramGet(buffer, 'M');
-        if (p > 0 && p < 13)
-            rtc.minute = p;
+        if (d > 0 && d < 32)
+            t.day = d;
 
-        p = paramGet(buffer, 'Y');
-        if (p < 100)
-            rtc.year = p;
+        if (m > 0 && m < 13)
+            t.month = m;
 
-        p = paramGet(buffer, 'W');
-        if (p > 0 && p < 8)
-            rtc.weekday = p;
+        if (y < 100)
+            t.year = y;
+
+        t.setWeekday();
+        rtc.write(t);
     }
 
     void cmdGetTimer(char *response)
