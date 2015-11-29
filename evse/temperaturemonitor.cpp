@@ -32,13 +32,13 @@ namespace
     using evse::State;
     using evse::TemperatureMonitor;
 
-    uint8_t readTemp()
+    int8_t readTemp()
     {
         DS3231 &rtc = DS3231::get();
         return rtc.readTemp();
     }
 
-    TemperatureMonitor::TemperatureState temp2State(const uint8_t temp)
+    TemperatureMonitor::TemperatureState temp2State(const int8_t temp)
     {
         if (temp >= TEMPERATURE_ALARM_LEVEL3)
             return TemperatureMonitor::CRITICAL;
@@ -114,7 +114,7 @@ void TemperatureMonitor::onEvent(const event::Event& event)
 
 void TemperatureMonitor::update(bool force_update)
 {
-    const uint8_t temp = readTemp();
+    const int8_t temp = readTemp();
     if (force_update || (temp != last_temp))
     {
         const TemperatureState new_state = temp2State(temp);

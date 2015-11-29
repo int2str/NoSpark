@@ -76,7 +76,7 @@ namespace
         return val;
     }
 
-    void paramAdd(char *buffer, const char param, uint32_t value)
+    void paramAdd(char *buffer, const char param, int32_t value)
     {
         // Find end of string
         while (*buffer)

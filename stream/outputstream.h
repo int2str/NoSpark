@@ -45,6 +45,7 @@ public:
     OutputStream& operator<< (const char ch);
     OutputStream& operator<< (const char *str);
     OutputStream& operator<< (const uint8_t val);
+    OutputStream& operator<< (const int8_t val);
     OutputStream& operator<< (const uint32_t val);
 
 protected:

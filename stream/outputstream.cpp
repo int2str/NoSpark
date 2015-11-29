@@ -85,6 +85,23 @@ OutputStream& OutputStream::operator<< (const uint8_t val)
     return *this;
 }
 
+OutputStream& OutputStream::operator<< (const int8_t val)
+{
+    char buffer[6] = {0};
+    itoa(val, buffer, 10);
+
+    if (flags & (1 << Flags::PAD_SPACE))
+        if (val > -10 && val < 100)
+        {
+            *this << ' ';
+            if (val > -1 && val < 10)
+                *this << ' ';
+        }
+
+    flags = 0;
+    return *this << buffer;
+}
+
 OutputStream& OutputStream::operator<< (const uint32_t val)
 {
     char buffer[6] = {0};

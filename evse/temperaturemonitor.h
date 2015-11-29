@@ -47,7 +47,7 @@ private:
     void onEvent(const event::Event &event) override;
     void update(bool force_update = false);
 
-    uint8_t last_temp;
+    int8_t last_temp;
 
     DISALLOW_COPY_AND_ASSIGN(TemperatureMonitor);
 };

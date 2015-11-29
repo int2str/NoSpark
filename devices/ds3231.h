@@ -54,7 +54,7 @@ public:
     void write(TM &t);
 
     // Returns temperature in deg. C (whole deg. only)
-    uint8_t readTemp();
+    int8_t readTemp();
 
 private:
     const uint8_t i2c_addr;

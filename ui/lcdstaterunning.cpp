@@ -136,7 +136,7 @@ void LcdStateRunning::drawDefault()
         TM t;
         rtc.read(t);
         lcd << stream::Time(t.hour, t.minute)
-          << ' ' << stream::PAD_SPACE << rtc.readTemp() << DEGREE_SYMBOL;
+          << stream::PAD_SPACE << rtc.readTemp() << DEGREE_SYMBOL;
     } else {
         switch (state.j1772)
         {

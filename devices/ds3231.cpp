@@ -127,13 +127,13 @@ void DS3231::write(TM &t)
     i2c.write(i2c_addr, buffer, 8);
 }
 
-uint8_t DS3231::readTemp()
+int8_t DS3231::readTemp()
 {
     uint8_t buffer[2] = {DS3231_REG_TEMP_MSB, 0};
     i2c.write(i2c_addr, buffer, 1);
     buffer[0] = 0;
     i2c.read(i2c_addr, buffer, 2);
-    return buffer[0];
+    return (int8_t)(buffer[0]);
 }
 
 }
