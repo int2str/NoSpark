@@ -65,24 +65,19 @@ OutputStream& OutputStream::operator<< (const char* str)
 
 OutputStream& OutputStream::operator<< (const uint8_t val)
 {
-    if (flags == 0)
-    {
-        char buffer[6] = {0};
-        utoa(val, buffer, 10);
-        return *this << buffer;
-    }
+    char buffer[6] = {0};
+    utoa(val, buffer, 10);
 
-    else if (flags & ((1 << Flags::PAD_ZERO) | (1 << Flags::PAD_SPACE)))
+    if (val < 10)
     {
-        if (val < 10)
-            *this << static_cast<char>(flags & (1 << Flags::PAD_ZERO) ? '0' : ' ');
-        else
-            *this << static_cast<char>('0' + val / 10);
-        *this << static_cast<char>('0' + val % 10);
+        if (flags & (1 << Flags::PAD_ZERO))
+            *this << '0';
+        else if (flags & (1 << Flags::PAD_SPACE))
+            *this << ' ';
     }
 
     flags = 0;
-    return *this;
+    return *this << buffer;
 }
 
 OutputStream& OutputStream::operator<< (const int8_t val)
