@@ -31,6 +31,8 @@ public:
 
 private:
     bool intro_shown;
+
+    void screen(const char *line1, const char *line2);
 };
 
 }

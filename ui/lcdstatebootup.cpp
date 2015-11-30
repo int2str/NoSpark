@@ -46,6 +46,20 @@ LcdStateBootup::LcdStateBootup(stream::LcdStream &lcd)
 {
 }
 
+void LcdStateBootup::screen(const char *line1, const char *line2)
+{
+    lcd.move(0,0);
+    lcd << stream::PGM << line1;
+    lcd.move(0,1);
+    lcd << stream::PGM << line2;
+
+    _delay_ms(1000);
+    system::Watchdog::reset();
+
+    introFade(lcd, static_cast<char>(0xFF));
+    introFade(lcd, ' ');
+}
+
 bool LcdStateBootup::draw()
 {
     if (intro_shown)
@@ -53,27 +67,8 @@ bool LcdStateBootup::draw()
 
     lcd.setBacklight(devices::LCD16x2::WHITE);
 
-    lcd.move(0,0);
-    lcd << stream::PGM << STR_OPENEVSE;
-    lcd.move(0,1);
-    lcd << stream::PGM << STR_OPENEVSE_BY;
-
-    _delay_ms(800);
-    system::Watchdog::reset();
-
-    introFade(lcd, static_cast<char>(0xFF));
-    introFade(lcd, ' ');
-
-    lcd.move(0,0);
-    lcd << stream::PGM << STR_NOSPARK;
-    lcd.move(0,1);
-    lcd << stream::PGM << STR_NOSPARK_BY;
-
-    _delay_ms(1200);
-    system::Watchdog::reset();
-
-    introFade(lcd, static_cast<char>(0xFF));
-    introFade(lcd, ' ');
+    screen(STR_OPENEVSE, STR_OPENEVSE_BY);
+    screen(STR_NOSPARK, STR_NOSPARK_BY);
 
     intro_shown = true;
     return true;
