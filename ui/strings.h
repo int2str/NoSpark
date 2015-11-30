@@ -25,8 +25,11 @@
 #define STR_OPENEVSE        PSTR("OpenEVSE")
 #define STR_OPENEVSE_BY     PSTR("by Chris Howell")
 
-#define STR_NOSPARK         PSTR("NoSpark v1.00")
+#define STR_NOSPARK         PSTR("NoSpark v1.0wjm3")
 #define STR_NOSPARK_BY      PSTR("by A. Eisenbach")
+
+#define STR_EXTRA           PSTR("Hacked by")
+#define STR_EXTRA_BY        PSTR("William McBrine")
 
 // Language specific
 #include "strings_en.h"

@@ -69,6 +69,7 @@ bool LcdStateBootup::draw()
 
     screen(STR_OPENEVSE, STR_OPENEVSE_BY);
     screen(STR_NOSPARK, STR_NOSPARK_BY);
+    screen(STR_EXTRA, STR_EXTRA_BY);
 
     intro_shown = true;
     return true;
