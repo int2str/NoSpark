@@ -30,10 +30,10 @@ public:
     uint8_t max_current;
 
     // Rev 2
-    uint16_t kwh_total;   // Deprecated -- these are replaced by
-    uint16_t kwh_year;    // wh_year, etc., as of revision 7, and
-    uint16_t kwh_month;   // are referenced only when upgrading.
-    uint16_t kwh_week;    // ...
+    uint16_t deprectaed_kwh_total;   // Deprecated -- these are replaced by
+    uint16_t deprecated_kwh_year;    // wh_year, etc., as of revision 7, and
+    uint16_t deprecated_kwh_month;   // are referenced only when upgrading.
+    uint16_t deprecated_kwh_week;    // ...
 
     uint16_t kwh_index;
 

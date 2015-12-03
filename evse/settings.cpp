@@ -52,10 +52,10 @@ void Settings::upgrade()
     // Rev 2
     if (revision < 2)
     {
-        kwh_total = 0;
-        kwh_year = 0;
-        kwh_month = 0;
-        kwh_week = 0;
+        deprecated_kwh_total = 0;
+        deprecated_kwh_year = 0;
+        deprecated_kwh_month = 0;
+        deprecated_kwh_week = 0;
         kwh_index = 0;
     }
 
@@ -92,15 +92,15 @@ void Settings::upgrade()
     // Rev 7
     if (revision < 7)
     {
-        wh_total = kwh_total * 1000;
-        wh_year = kwh_year * 1000;
-        wh_month = kwh_month * 1000;
-        wh_week = kwh_week * 1000;
+        wh_total = deprecated_kwh_total * 1000;
+        wh_year = deprecated_kwh_year * 1000;
+        wh_month = deprecated_kwh_month * 1000;
+        wh_week = deprecated_kwh_week * 1000;
 
-        cost_total = kwh_total * kwh_cost;
-        cost_year = kwh_year * kwh_cost;
-        cost_month = kwh_month * kwh_cost;
-        cost_week = kwh_week * kwh_cost;
+        cost_total = deprecated_kwh_total * kwh_cost;
+        cost_year = deprecated_kwh_year * kwh_cost;
+        cost_month = deprecated_kwh_month * kwh_cost;
+        cost_week = deprecated_kwh_week * kwh_cost;
     }
 
     revision = SETTINGS_REVISION;

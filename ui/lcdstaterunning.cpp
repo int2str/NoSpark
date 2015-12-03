@@ -252,31 +252,32 @@ void LcdStateRunning::drawKwhStats()
     scrolling_text.clear();
     scrolling_text.setWidth(16);
 
-    uint32_t p = 0, q = 0;
+    uint32_t power = 0;
+    uint32_t cost = 0;
     switch (page)
     {
         case PAGE_KWH_WEEK:
             scrolling_text << stream::PGM << STR_STATS_WEEK;
-            p = settings.wh_week;
-            q = settings.cost_week;
+            power = settings.wh_week;
+            cost = settings.cost_week;
             break;
 
         case PAGE_KWH_MONTH:
             scrolling_text << stream::PGM << STR_STATS_MONTH;
-            p = settings.wh_month;
-            q = settings.cost_month;
+            power = settings.wh_month;
+            cost = settings.cost_month;
             break;
 
         case PAGE_KWH_YEAR:
             scrolling_text << stream::PGM << STR_STATS_YEAR;
-            p = settings.wh_year;
-            q = settings.cost_year;
+            power = settings.wh_year;
+            cost = settings.cost_year;
             break;
 
         case PAGE_KWH_TOTAL:
             scrolling_text << stream::PGM << STR_STATS_TOTAL;
-            p = settings.wh_total;
-            q = settings.cost_total;
+            power = settings.wh_total;
+            cost = settings.cost_total;
             break;
 
         default:
@@ -284,8 +285,8 @@ void LcdStateRunning::drawKwhStats()
     }
 
     scrolling_text << " ";
-    write_kwh(scrolling_text, p);
-    write_cost(scrolling_text, settings.kwh_currency, q);
+    write_kwh(scrolling_text, power);
+    write_cost(scrolling_text, settings.kwh_currency, cost);
     scrolling_text >> lcd;
 }
 
