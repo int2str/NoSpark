@@ -53,7 +53,7 @@ void LcdStateBootup::screen(const char *line1, const char *line2)
     lcd.move(0,1);
     lcd << stream::PGM << line2;
 
-    _delay_ms(1000);
+    _delay_ms(1200);
     system::Watchdog::reset();
 
     introFade(lcd, static_cast<char>(0xFF));
