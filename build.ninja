@@ -96,11 +96,13 @@ build $builddir/serialapi.o: cxx ui/serialapi.cpp
 build $builddir/serialconsole.o: cxx ui/serialconsole.cpp
 build $builddir/serialmonitor.o: cxx ui/serialmonitor.cpp
 build $builddir/timedflipflop.o: cxx ui/timedflipflop.cpp
+build $builddir/strings.o: cxx ui/strings.cpp
+build $builddir/strings_console.o: cxx ui/strings_console.cpp
 build $builddir/libui.a: ar $builddir/customcharacters.o $builddir/keyboard.o $
     $builddir/lcdconsole.o $builddir/lcdstatebootup.o $builddir/lcdstateerror.o $
     $builddir/lcdstaterunning.o $builddir/lcdstatesettings.o $builddir/lcdstatesleeping.o $
     $builddir/serialapi.o $builddir/serialconsole.o $builddir/serialmonitor.o $
-    $builddir/timedflipflop.o
+    $builddir/timedflipflop.o $builddir/strings.o $builddir/strings_console.o
 
 build $builddir/bcd.o: cxx utils/bcd.cpp
 build $builddir/cpp.o: cxx utils/cpp.cpp

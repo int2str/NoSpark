@@ -15,19 +15,56 @@
 
 #pragma once
 
-#include "avr/pgmspace.h"
-
 #define EOL                 "\r\n"
 #define CR                  '\r'
 #define LF                  '\n'
 
-// Credit where credit is due...
-#define STR_OPENEVSE        PSTR("OpenEVSE")
-#define STR_OPENEVSE_BY     PSTR("by Chris Howell")
+extern char const STR_OPENEVSE[];
+extern char const STR_OPENEVSE_BY[];
+extern char const STR_NOSPARK[];
+extern char const STR_NOSPARK_BY[];
 
-#define STR_NOSPARK         PSTR("NoSpark v1.00")
-#define STR_NOSPARK_BY      PSTR("by A. Eisenbach")
+// General UI
+extern char const STR_STATE_READY[];
+extern char const STR_STATE_CONNECTED[];
+extern char const STR_STATE_CHARGING[];
+extern char const STR_STATE_ERROR[];
+extern char const STR_NOT_CONNECTED[];
+extern char const STR_CONNECTED[];
+extern char const STR_CHARGING[];
+extern char const STR_CHARGED[];
+extern char const STR_VENT_REQUIRED[];
+extern char const STR_DIODE_CHECK_FAILED[];
+extern char const STR_ON[];
+extern char const STR_OFF[];
 
-// Language specific
-#include "strings_en.h"
-//#include "strings_de.h"
+// Settings
+extern char const STR_SET_CLOCK[];
+extern char const STR_SET_DATE[];
+extern char const STR_SET_CURRENT[];
+extern char const STR_SET_CHARGETIMER[];
+extern char const STR_SET_KWH_LIMIT[];
+extern char const STR_SET_KWH_COST[];
+extern char const STR_SET_SLEEPMODE[];
+extern char const STR_SET_SLEEPMODE_TIME[];
+extern char const STR_SET_SLEEPMODE_OFF[];
+extern char const STR_SET_SLEEPMODE_DISABLED[];
+extern char const STR_SET_LCD_TYPE[];
+extern char const STR_SET_TYPE_RGB[];
+extern char const STR_SET_TYPE_MONO[];
+extern char const STR_SET_RESET[];
+extern char const STR_SET_EXIT[];
+
+// Faults
+extern char const STR_FAULT_POST_GFCI[];
+extern char const STR_FAULT_STUCK_RELAY[];
+extern char const STR_FAULT_GROUND_FAULT[];
+extern char const STR_FAULT_GFCI_TRIPPED[];
+extern char const STR_FAULT_TEMPERATURE[];
+
+// Stats
+extern char const STR_STATS_KWH[];
+extern char const STR_STATS_WEEK[];
+extern char const STR_STATS_MONTH[];
+extern char const STR_STATS_YEAR[];
+extern char const STR_STATS_TOTAL[];
