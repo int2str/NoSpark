@@ -61,6 +61,7 @@ void __cxa_pure_virtual()
 
 int __attribute__((weak)) atexit(void (*)(void))
 {
+    return 0;
 }
 
 }
