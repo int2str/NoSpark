@@ -17,6 +17,8 @@
 
 #include "utils/cpp.h"
 
+namespace nospark
+{
 namespace system
 {
 
@@ -33,4 +35,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(Watchdog);
 };
 
+}
 }

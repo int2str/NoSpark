@@ -23,6 +23,8 @@
 
 #include <avr/interrupt.h>
 
+namespace nospark
+{
 namespace utils
 {
 
@@ -40,4 +42,5 @@ public:
     }
 };
 
+}
 }

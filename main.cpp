@@ -28,6 +28,8 @@
 
 #include "events.h"
 
+using namespace nospark;
+
 int main()
 {
     sei();

@@ -24,7 +24,7 @@
 
 namespace
 {
-    void introFade(stream::LcdStream &lcd, const char ch)
+    void introFade(nospark::stream::LcdStream &lcd, const char ch)
     {
         for (uint8_t x = 0; x != LCD_COLUMNS; ++x)
         {
@@ -37,6 +37,8 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -79,4 +81,5 @@ bool LcdStateBootup::draw()
     return true;
 }
 
+}
 }

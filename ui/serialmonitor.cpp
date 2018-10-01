@@ -21,8 +21,10 @@
 #define BS  0x08
 #define DEL 0x7F
 
-using serial::Usart;
+using nospark::serial::Usart;
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -120,4 +122,5 @@ void SerialMonitor::onEvent(const event::Event& event)
     }
 }
 
+}
 }

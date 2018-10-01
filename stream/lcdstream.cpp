@@ -15,8 +15,10 @@
 
 #include "stream/lcdstream.h"
 
-using devices::LCD16x2;
+using nospark::devices::LCD16x2;
 
+namespace nospark
+{
 namespace stream
 {
 
@@ -50,4 +52,5 @@ void LcdStream::write(const char ch)
     lcd.write(ch);
 }
 
+}
 }

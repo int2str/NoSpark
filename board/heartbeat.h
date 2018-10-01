@@ -18,6 +18,8 @@
 #include "board/pin.h"
 #include "utils/cpp.h"
 
+namespace nospark
+{
 namespace board
 {
 
@@ -34,4 +36,5 @@ private:
     Pin pin;
 };
 
+}
 }

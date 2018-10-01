@@ -18,6 +18,8 @@
 #include "utils/cpp.h"
 #include "i2c_master.h"
 
+namespace nospark
+{
 namespace devices
 {
 
@@ -51,4 +53,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(MCP23017);
 };
 
+}
 }

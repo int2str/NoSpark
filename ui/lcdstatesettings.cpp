@@ -57,14 +57,14 @@
 #define ADJUST_TENTH        0x03
 #define ADJUST_HUNDREDTH    0x04
 
-using devices::DS3231;
-using devices::LCD16x2;
-using evse::EepromSettings;
-using evse::State;
-using stream::LcdStream;
-using stream::PGM;
-using system::Timer;
-using system::Watchdog;
+using nospark::devices::DS3231;
+using nospark::devices::LCD16x2;
+using nospark::evse::EepromSettings;
+using nospark::evse::State;
+using nospark::stream::LcdStream;
+using nospark::stream::PGM;
+using nospark::system::Timer;
+using nospark::system::Watchdog;
 
 namespace
 {
@@ -72,6 +72,8 @@ namespace
     uint8_t temp_buffer[8] = {0};
 }
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -599,4 +601,5 @@ void LcdStateSettings::resetTimeout()
     last_action = Timer::millis();
 }
 
+}
 }

@@ -18,6 +18,8 @@
 #include "devices/lcd1602.h"
 #include "stream/outputstream.h"
 
+namespace nospark
+{
 namespace stream
 {
 
@@ -39,4 +41,5 @@ private:
     devices::LCD16x2 &lcd;
 };
 
+}
 }

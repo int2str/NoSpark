@@ -29,6 +29,8 @@
 // changes the divisor to 8....
 #define USART_BAUD_PRESCALE (((F_CPU  / USART_BAUD_RATE) / 8) - 1)
 
+namespace nospark
+{
 namespace
 {
     volatile uint8_t usart_buffer[USART_BUFFER_SIZE] = {0};
@@ -106,4 +108,4 @@ bool Usart::avail() const
 }
 
 }
-
+}

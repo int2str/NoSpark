@@ -15,6 +15,8 @@
 
 #include "stream/uartstream.h"
 
+namespace nospark
+{
 namespace stream
 {
 
@@ -39,4 +41,5 @@ void UartStream::write(const char ch)
     uart.write(ch);
 }
 
+}
 }

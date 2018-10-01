@@ -28,9 +28,9 @@
 
 namespace
 {
-    using devices::DS3231;
-    using evse::State;
-    using evse::TemperatureMonitor;
+    using nospark::devices::DS3231;
+    using nospark::evse::State;
+    using nospark::evse::TemperatureMonitor;
 
     uint8_t readTemp()
     {
@@ -59,7 +59,7 @@ namespace
         switch (temp_state)
         {
             case TemperatureMonitor::ELEVATED:
-                amps = utils::max(amps/2, MINIMUM_CHARGE_CURRENT);
+                amps = nospark::utils::max(amps/2, MINIMUM_CHARGE_CURRENT);
                 break;
 
             case TemperatureMonitor::HIGH:
@@ -78,6 +78,8 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace evse
 {
 
@@ -132,4 +134,5 @@ void TemperatureMonitor::update(bool force_update)
     }
 }
 
+}
 }

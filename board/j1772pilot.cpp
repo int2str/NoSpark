@@ -30,7 +30,7 @@
 
 namespace
 {
-    using board::J1772Pilot;
+    using nospark::board::J1772Pilot;
 
     const J1772Pilot::State ADC_TO_STATE_MAP[] = {
         J1772Pilot::STATE_E,
@@ -62,7 +62,7 @@ namespace
 
     void pwmEnable(const uint8_t duty_cycle)
     {
-        utils::Atomic _atomic;
+        nospark::utils::Atomic _atomic;
 
         DDRB |= (1 << PB2);
 
@@ -75,7 +75,7 @@ namespace
 
     void pwmDisable()
     {
-        utils::Atomic _atomic;
+        nospark::utils::Atomic _atomic;
         TCCR1A = 0;
     }
 
@@ -88,6 +88,8 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace board
 {
 
@@ -143,4 +145,5 @@ J1772Pilot::State J1772Pilot::getState(const bool force_update)
     return last_state;
 }
 
+}
 }

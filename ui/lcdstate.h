@@ -19,6 +19,8 @@
 
 #include "stream/lcdstream.h"
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -38,4 +40,5 @@ protected:
     stream::LcdStream &lcd;
 };
 
+}
 }

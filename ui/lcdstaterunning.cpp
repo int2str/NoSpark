@@ -34,15 +34,17 @@
 
 #define PAGE_TIMEOUT 5000
 
-using board::J1772Pilot;
-using devices::DS3231;
-using devices::LCD16x2;
-using evse::ChargeMonitor;
-using evse::Settings;
-using evse::EepromSettings;
-using evse::State;
-using stream::LcdStream;
-using stream::OutputStream;
+using nospark::board::J1772Pilot;
+using nospark::devices::DS3231;
+using nospark::devices::LCD16x2;
+using nospark::evse::ChargeMonitor;
+using nospark::evse::Settings;
+using nospark::evse::EepromSettings;
+using nospark::evse::State;
+using nospark::stream::OutputStream;
+using nospark::stream::Spaces;
+using nospark::stream::Time;
+using nospark::ui::CustomCharacters;
 
 namespace
 {
@@ -55,7 +57,7 @@ namespace
         }
 
         const uint32_t mins = ms / 1000 / 60;
-        lcd << stream::Time(mins / 60, mins % 60);
+        lcd << Time(mins / 60, mins % 60);
     }
 
     void write_kwh(OutputStream &lcd, const uint32_t wh)
@@ -71,7 +73,7 @@ namespace
         if (cents == 0)
             return;
 
-        const char currencies[3] = {'$', ui::CustomCharacters::EURO, '\\'}; // Backslash = Yen
+        const char currencies[3] = {'$', CustomCharacters::EURO, '\\'}; // Backslash = Yen
         uint32_t cost = wh * cents / 1000;
 
         char buffer[10] = {0};
@@ -88,11 +90,13 @@ namespace
     {
         const uint8_t len = strlen_P(str) + offset;
         const uint8_t padding = (LCD_COLUMNS - len) / 2;
-        lcd << stream::Spaces(padding) << stream::PGM << str << stream::Spaces(padding + 1);
+        lcd << Spaces(padding) << nospark::stream::PGM << str << Spaces(padding + 1);
         return padding;
     }
 }
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -292,4 +296,5 @@ void LcdStateRunning::select()
         EepromSettings::load(settings);
 }
 
+}
 }

@@ -26,7 +26,7 @@
 #define GFCI_TEST_DELAY_US  8333 // ~60Hz
 #define GFCI_RESET_DELAY_MS  500
 
-static board::GFCI *gfci = 0;
+static nospark::board::GFCI *gfci = 0;
 
 ISR(INT0_vect)
 {
@@ -34,6 +34,8 @@ ISR(INT0_vect)
         gfci->trip();
 }
 
+namespace nospark
+{
 namespace board
 {
 
@@ -101,4 +103,5 @@ void GFCI::trip()
         event::Loop::post(event::Event(EVENT_GFCI_TRIPPED));
 }
 
+}
 }

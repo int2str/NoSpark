@@ -28,6 +28,8 @@
 #define KEY_DOWN                0x01
 #define KEY_HOLD                0x02
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -88,4 +90,5 @@ void Keyboard::onEvent(const event::Event &event)
         update();
 }
 
+}
 }

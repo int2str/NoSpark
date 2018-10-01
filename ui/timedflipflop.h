@@ -18,6 +18,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -34,4 +36,5 @@ private:
     uint32_t last_change;
 };
 
+}
 }

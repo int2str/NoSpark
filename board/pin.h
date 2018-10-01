@@ -21,6 +21,8 @@
 // This us usually how one would create a "Pin"...
 #define MAKEPIN(a,n,d) board::Pin(&(PIN ## a), (1 << n), board::Pin::PIN_ ## d)
 
+namespace nospark
+{
 namespace board
 {
 
@@ -46,4 +48,5 @@ private:
     const uint8_t b;
 };
 
+}
 }

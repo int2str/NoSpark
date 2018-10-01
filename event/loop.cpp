@@ -16,6 +16,8 @@
 #include "event/loop.h"
 #include "system/timer.h"
 
+namespace nospark
+{
 namespace event
 {
 
@@ -96,4 +98,5 @@ void Loop::dispatch_impl()
     }
 }
 
+}
 }

@@ -36,6 +36,8 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace board
 {
 
@@ -76,4 +78,5 @@ bool Pin::operator! () const
     return (_PIN & b) ? false : true;
 }
 
+}
 }

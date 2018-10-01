@@ -17,6 +17,8 @@
 
 #include "system/watchdog.h"
 
+namespace nospark
+{
 namespace system
 {
 
@@ -36,4 +38,5 @@ void Watchdog::forceRestart()
     while(1) {}
 }
 
+}
 }

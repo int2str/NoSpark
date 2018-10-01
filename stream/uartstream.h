@@ -18,6 +18,8 @@
 #include "serial/usart.h"
 #include "stream/outputstream.h"
 
+namespace nospark
+{
 namespace stream
 {
 
@@ -35,4 +37,5 @@ private:
     serial::Usart &uart;
 };
 
+}
 }

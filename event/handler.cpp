@@ -16,6 +16,8 @@
 #include "event/handler.h"
 #include "event/loop.h"
 
+namespace nospark
+{
 namespace event
 {
 
@@ -28,4 +30,5 @@ Handler::~Handler()
 {
 }
 
+}
 }

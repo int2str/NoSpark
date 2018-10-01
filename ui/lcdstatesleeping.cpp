@@ -21,11 +21,13 @@
 
 #define BLINK_TIMEOUT 800
 
-using devices::DS3231;
-using evse::EepromSettings;
-using evse::Settings;
-using stream::LcdStream;
+using nospark::devices::DS3231;
+using nospark::evse::EepromSettings;
+using nospark::evse::Settings;
+using nospark::stream::LcdStream;
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -72,4 +74,5 @@ bool LcdStateSleeping::draw()
     return true;
 }
 
+}
 }

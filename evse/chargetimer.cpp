@@ -24,11 +24,12 @@
 
 #define CHARGE_TIMER_UPDATE_DELAY_MS 60000
 
-using devices::DS3231;
-using event::Event;
-using evse::Settings;
-using evse::EepromSettings;
-using evse::State;
+using nospark::devices::DS3231;
+using nospark::event::Event;
+using nospark::event::Loop;
+using nospark::evse::Settings;
+using nospark::evse::EepromSettings;
+using nospark::evse::State;
 
 namespace
 {
@@ -38,15 +39,17 @@ namespace
         if (!limited && state.ready == State::SCHEDULED)
         {
             state.ready = State::READY;
-            event::Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
+            Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
 
         } else if (limited && state.ready == State::READY) {
             state.ready = State::SCHEDULED;
-            event::Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
+            Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
         }
     }
 }
 
+namespace nospark
+{
 namespace evse
 {
 
@@ -105,4 +108,5 @@ void ChargeTimer::onEvent(const event::Event& event)
         checkTime();
 }
 
+}
 }

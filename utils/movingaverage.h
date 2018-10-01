@@ -17,6 +17,8 @@
 
 #include <stdlib.h>
 
+namespace nospark
+{
 namespace utils
 {
 
@@ -70,4 +72,5 @@ private:
     T sum;
 };
 
+}
 }

@@ -54,6 +54,8 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace system
 {
 
@@ -83,4 +85,5 @@ uint32_t Timer::millis_impl() const
     return timer0_millis;
 }
 
+}
 }

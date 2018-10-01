@@ -15,6 +15,8 @@
 
 #include "stream/time.h"
 
+namespace nospark
+{
 namespace stream
 {
 
@@ -29,4 +31,5 @@ OutputStream& operator<< (OutputStream& out, const Time &time)
     return out << stream::PAD_ZERO << time.hh << ':' << stream::PAD_ZERO << time.mm;
 }
 
+}
 }

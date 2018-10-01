@@ -19,6 +19,8 @@
 
 #include "stream/outputstream.h"
 
+namespace nospark
+{
 namespace stream
 {
 
@@ -35,4 +37,5 @@ private:
 
 OutputStream& operator<< (OutputStream& out, const Time &time);
 
+}
 }

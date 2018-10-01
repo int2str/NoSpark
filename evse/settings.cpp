@@ -24,6 +24,8 @@
 #define SETTINGS_MARKER     0xAEAE
 #define SETTINGS_REVISION   0x06
 
+namespace nospark
+{
 namespace evse
 {
 
@@ -137,4 +139,5 @@ void EepromSettings::save(Settings &settings)
     event::Loop::post(event::Event(EVENT_SETTINGS_CHANGED));
 }
 
+}
 }

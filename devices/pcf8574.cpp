@@ -15,6 +15,8 @@
 
 #include "pcf8574.h"
 
+namespace nospark
+{
 namespace devices
 {
 
@@ -43,4 +45,5 @@ void PCF8574::write(const uint8_t b)
     i2c.write(i2c_addr, &b2, 1);
 }
 
+}
 }

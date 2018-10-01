@@ -16,6 +16,8 @@
 #include "board/heartbeat.h"
 #include "board/pins.h"
 
+namespace nospark
+{
 namespace board
 {
 
@@ -30,4 +32,5 @@ Heartbeat::Heartbeat()
 {
 }
 
+}
 }

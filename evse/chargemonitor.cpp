@@ -23,10 +23,11 @@
 
 #define VOLTAGE 240
 
-using event::Event;
-using evse::Settings;
-using evse::EepromSettings;
-using evse::State;
+using nospark::event::Event;
+using nospark::event::Loop;
+using nospark::evse::Settings;
+using nospark::evse::EepromSettings;
+using nospark::evse::State;
 
 namespace
 {
@@ -56,15 +57,17 @@ namespace
         if (!limited && state.ready == State::KWH_LIMIT)
         {
             state.ready = State::READY;
-            event::Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
+            Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
 
         } else if (limited && state.ready == State::READY) {
             state.ready = State::KWH_LIMIT;
-            event::Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
+            Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
         }
     }
 }
 
+namespace nospark
+{
 namespace evse
 {
 
@@ -164,4 +167,5 @@ void ChargeMonitor::onEvent(const event::Event& event)
     }
 }
 
+}
 }

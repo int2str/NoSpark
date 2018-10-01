@@ -24,6 +24,8 @@
 
 #define MOVING_AVERAGE_WINDOW   64
 
+namespace nospark
+{
 namespace evse
 {
 
@@ -57,4 +59,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(ChargeMonitor);
 };
 
+}
 }

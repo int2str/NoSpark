@@ -23,7 +23,7 @@
 
 #define RELAY_TOGGLE_DELAY_MS   1000
 
-static board::Relays *relays = 0;
+static nospark::board::Relays *relays = 0;
 
 ISR(TIMER2_OVF_vect)
 {
@@ -31,6 +31,8 @@ ISR(TIMER2_OVF_vect)
         relays->updateState();
 }
 
+namespace nospark
+{
 namespace board
 {
 
@@ -102,4 +104,5 @@ void Relays::updateState()
     sample_history = (sample_history << 1) | active;
 }
 
+}
 }

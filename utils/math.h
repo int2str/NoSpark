@@ -15,6 +15,8 @@
 
 #pragma once
 
+namespace nospark
+{
 namespace utils
 {
 
@@ -59,4 +61,5 @@ T square_root(const T &val)
     return min;
 }
 
+}
 }

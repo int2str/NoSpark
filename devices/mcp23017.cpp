@@ -38,6 +38,8 @@
 #define MCP23017_OLATA      0x14
 #define MCP23017_OLATB      0x15
 
+namespace nospark
+{
 namespace devices
 {
 
@@ -101,4 +103,5 @@ void MCP23017::writeB(const uint8_t b)
     i2c.write(i2c_addr, buffer, 2);
 }
 
+}
 }

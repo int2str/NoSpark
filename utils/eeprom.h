@@ -17,6 +17,8 @@
 
 #include <avr/eeprom.h>
 
+namespace nospark
+{
 namespace utils
 {
 
@@ -37,4 +39,5 @@ public:
     }
 };
 
+}
 }

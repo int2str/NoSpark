@@ -20,6 +20,8 @@
 
 #define SCROLL_DELAY_MS 300
 
+namespace nospark
+{
 namespace stream
 {
 
@@ -91,4 +93,5 @@ void ScrollingText::write(const char ch)
         buffer[length++] = ch;
 }
 
+}
 }

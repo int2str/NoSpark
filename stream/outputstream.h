@@ -18,6 +18,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+namespace nospark
+{
 namespace stream
 {
 
@@ -54,4 +56,5 @@ private:
     uint8_t flags;
 };
 
+}
 }

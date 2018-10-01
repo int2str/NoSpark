@@ -26,6 +26,8 @@
 
 #define CONSOLE_BUFFER 50
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -61,4 +63,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(SerialMonitor);
 };
 
+}
 }

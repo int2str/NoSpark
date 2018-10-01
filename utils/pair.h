@@ -15,6 +15,8 @@
 
 #pragma once
 
+namespace nospark
+{
 namespace utils
 {
 
@@ -32,4 +34,5 @@ public:
     }
 };
 
+}
 }

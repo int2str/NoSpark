@@ -20,6 +20,8 @@
 #include "board/pin.h"
 #include "utils/cpp.h"
 
+namespace nospark
+{
 namespace board
 {
 
@@ -64,4 +66,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(J1772Pilot);
 };
 
+}
 }

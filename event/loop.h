@@ -20,6 +20,8 @@
 #include "utils/cpp.h"
 #include "utils/queue.h"
 
+namespace nospark
+{
 namespace event
 {
 
@@ -64,4 +66,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(Loop);
 };
 
+}
 }

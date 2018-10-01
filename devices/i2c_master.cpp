@@ -111,6 +111,8 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace devices
 {
 
@@ -142,4 +144,5 @@ void I2CMaster::read(const uint8_t addr, uint8_t* data, const uint8_t len)
     i2c_rw(TW_READ | (addr << 1), data, len);
 }
 
+}
 }

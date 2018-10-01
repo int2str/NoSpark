@@ -31,12 +31,16 @@
 #define AMPS_MIN  6
 #define AMPS_MAX 80
 
-using evse::ChargeMonitor;
-using evse::EepromSettings;
-using evse::Settings;
-using evse::State;
-using devices::DS3231;
-using stream::PGM;
+using nospark::evse::ChargeMonitor;
+using nospark::evse::EepromSettings;
+using nospark::evse::Settings;
+using nospark::evse::State;
+using nospark::devices::DS3231;
+using nospark::event::Loop;
+using nospark::stream::OutputStream;
+using nospark::stream::UartStream;
+using nospark::stream::Time;
+using nospark::stream::PGM;
 
 namespace
 {
@@ -48,7 +52,7 @@ namespace
         return (s[0] - '0') * 10 + (s[1] - '0');
     }
 
-    void write_help(stream::OutputStream &out, const char *cmd, const char *help)
+    void write_help(OutputStream &out, const char *cmd, const char *help)
     {
         out << ' ' << PGM << cmd;
         uint8_t len = strlen_P(cmd);
@@ -57,7 +61,7 @@ namespace
         out << PGM << help << EOL;
     }
 
-    void write_energy_stat(stream::OutputStream &out, const char *label, const uint8_t currency, const uint32_t cents, const uint32_t kwh)
+    void write_energy_stat(OutputStream &out, const char *label, const uint8_t currency, const uint32_t cents, const uint32_t kwh)
     {
         char buffer[10] = {0};
         ltoa(kwh, buffer, 10);
@@ -90,10 +94,12 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace ui
 {
 
-SerialConsole::SerialConsole(stream::UartStream &uart)
+SerialConsole::SerialConsole(UartStream &uart)
     : uart(uart)
     , event_debug(false) // TODO: Read from EEPROM?
     , commands({
@@ -218,7 +224,7 @@ void SerialConsole::commandSetCurrent(const char *buffer, const uint8_t len)
     {
         State::get().max_amps_target = amps;
         saveMaxAmps(amps);
-        event::Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, amps));
+        Loop::post(event::Event(EVENT_MAX_AMPS_CHANGED, amps));
 
     } else {
         uart << PGM << STR_ERR_PARAM << EOL;
@@ -314,7 +320,7 @@ void SerialConsole::commandStatus(const char *, const uint8_t)
         rtc.read();
 
         uart << PGM << STR_STATUS_TIME
-          << stream::Time(rtc.hour, rtc.minute) << ' '
+          << Time(rtc.hour, rtc.minute) << ' '
           << rtc.day << '.' << rtc.month << '.' << "20" << rtc.year
           << EOL;
 
@@ -354,4 +360,5 @@ void SerialConsole::commandVersion(const char *, const uint8_t)
       << EOL;
 }
 
+}
 }

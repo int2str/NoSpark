@@ -17,6 +17,8 @@
 #include "utils/eeprom.h"
 #include "state.h"
 
+namespace nospark
+{
 namespace evse
 {
 
@@ -38,4 +40,5 @@ State::State()
     max_amps_limit = max_amps_target;
 }
 
+}
 }

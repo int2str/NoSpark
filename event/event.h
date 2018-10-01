@@ -18,6 +18,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+namespace nospark
+{
 namespace event
 {
 
@@ -34,4 +36,5 @@ public:
     uint32_t posted;
 };
 
+}
 }

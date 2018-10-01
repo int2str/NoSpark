@@ -17,6 +17,8 @@
 
 #include <stdint.h>
 
+namespace nospark
+{
 namespace evse
 {
 
@@ -70,4 +72,5 @@ public:
     static void save(Settings &settings);
 };
 
+}
 }

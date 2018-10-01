@@ -15,6 +15,8 @@
 
 #include "event/event.h"
 
+namespace nospark
+{
 namespace event
 {
 
@@ -31,4 +33,5 @@ bool Event::operator== (const Event &rhs) const
     return this->id == rhs.id;
 }
 
+}
 }

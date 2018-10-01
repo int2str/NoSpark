@@ -22,6 +22,8 @@
 #include "ui/lcdstate.h"
 #include "ui/timedflipflop.h"
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -36,4 +38,5 @@ private:
     uint8_t sleep_mode;
 };
 
+}
 }

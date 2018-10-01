@@ -30,17 +30,15 @@
 
 #define SLEEP_DELAY_MS (900l * 1000l)
 
-using board::J1772Pilot;
-using devices::LCD16x2;
-using evse::EepromSettings;
-using evse::Settings;
-using evse::State;
-using system::Timer;
+using nospark::board::J1772Pilot;
+using nospark::devices::LCD16x2;
+using nospark::evse::EepromSettings;
+using nospark::evse::Settings;
+using nospark::evse::State;
+using nospark::system::Timer;
 
 namespace
 {
-    using devices::LCD16x2;
-
     bool isWakeEvent(const uint8_t event_id)
     {
         return event_id != EVENT_UPDATE_CHARGE_TIMER
@@ -50,12 +48,14 @@ namespace
 
     void updateBacklightType(LCD16x2 &lcd)
     {
-        evse::Settings settings;
-        evse::EepromSettings::load(settings);
+        Settings settings;
+        EepromSettings::load(settings);
         lcd.setBacklightType(settings.lcd_type == 0 ? LCD16x2::RGB : LCD16x2::MONOCHROME);
     }
 }
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -177,4 +177,5 @@ void LcdConsole::updateSleepState(const event::Event &event)
     }
 }
 
+}
 }

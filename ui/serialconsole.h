@@ -23,6 +23,8 @@
 
 #define MAX_COMMANDS 9
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -63,4 +65,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(SerialConsole);
 };
 
+}
 }

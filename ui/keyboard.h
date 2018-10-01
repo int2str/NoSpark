@@ -19,6 +19,8 @@
 #include "event/handler.h"
 #include "utils/cpp.h"
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -46,4 +48,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(Keyboard);
 };
 
+}
 }

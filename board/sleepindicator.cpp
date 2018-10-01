@@ -16,6 +16,8 @@
 #include "board/sleepindicator.h"
 #include "board/pins.h"
 
+namespace nospark
+{
 namespace board
 {
 
@@ -29,4 +31,5 @@ void SleepIndicator::set(const bool enable)
     pin = enable;
 }
 
+}
 }

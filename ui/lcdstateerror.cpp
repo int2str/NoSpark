@@ -17,8 +17,10 @@
 #include "lcdstateerror.h"
 #include "strings.h"
 
-using evse::State;
+using nospark::evse::State;
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -65,4 +67,5 @@ bool LcdStateError::draw()
     return true;
 }
 
+}
 }

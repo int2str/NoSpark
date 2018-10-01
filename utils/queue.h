@@ -15,6 +15,8 @@
 
 #pragma once
 
+namespace nospark
+{
 namespace utils
 {
 
@@ -145,4 +147,5 @@ private:
     Node *head;
 };
 
+}
 }

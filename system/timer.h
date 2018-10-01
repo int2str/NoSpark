@@ -17,6 +17,8 @@
 
 #include <stdint.h>
 
+namespace nospark
+{
 namespace system
 {
 
@@ -36,4 +38,5 @@ private:
     uint32_t millis_impl() const;
 };
 
+}
 }

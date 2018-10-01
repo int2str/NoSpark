@@ -24,6 +24,8 @@
 
 #define SETTINGS_PAGES 10
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -71,4 +73,5 @@ private:
     PageHandler pageHandlers[SETTINGS_PAGES];
 };
 
+}
 }

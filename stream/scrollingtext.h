@@ -17,6 +17,8 @@
 
 #include "stream/outputstream.h"
 
+namespace nospark
+{
 namespace stream
 {
 
@@ -45,4 +47,5 @@ private:
     char *buffer;
 };
 
+}
 }

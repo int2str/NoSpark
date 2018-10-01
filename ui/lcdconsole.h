@@ -24,6 +24,8 @@
 #include "utils/cpp.h"
 #include "lcdstate.h"
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -55,4 +57,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(LcdConsole);
 };
 
+}
 }

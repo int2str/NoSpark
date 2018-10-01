@@ -29,13 +29,14 @@
 
 #define PARAM_NOT_FOUND 0xFFFF
 
-using event::Event;
-using evse::ChargeMonitor;
-using evse::EepromSettings;
-using evse::Settings;
-using evse::State;
-using devices::DS3231;
-using serial::Usart;
+using nospark::event::Event;
+using nospark::event::Loop;
+using nospark::evse::ChargeMonitor;
+using nospark::evse::EepromSettings;
+using nospark::evse::Settings;
+using nospark::evse::State;
+using nospark::devices::DS3231;
+using nospark::serial::Usart;
 
 namespace
 {
@@ -135,7 +136,7 @@ namespace
 
         State::get().max_amps_target = amps;
         saveMaxAmps(amps);
-        event::Loop::post(Event(EVENT_MAX_AMPS_CHANGED, amps));
+        Loop::post(Event(EVENT_MAX_AMPS_CHANGED, amps));
 
         return OK;
     }
@@ -149,7 +150,7 @@ namespace
             return INVALID_PARAMETER;
 
         state.ready = ready == 0 ? State::READY : State::MANUAL_OVERRIDE;
-        event::Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
+        Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
         return OK;
     }
 
@@ -307,6 +308,8 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -381,7 +384,7 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t)
             break;
 
         case CMD_SET_SLEEP:
-            event::Loop::post(Event(EVENT_REQUEST_SLEEP, paramGet(buffer, 'S')));
+            Loop::post(Event(EVENT_REQUEST_SLEEP, paramGet(buffer, 'S')));
             break;
 
         case CMD_SET_READY_STATE:
@@ -421,4 +424,5 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t)
     return true;
 }
 
+}
 }

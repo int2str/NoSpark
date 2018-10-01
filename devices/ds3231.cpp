@@ -52,7 +52,7 @@
 
 namespace
 {
-    bool checkPresent(devices::I2CMaster &i2c, const uint8_t i2c_addr)
+    bool checkPresent(nospark::devices::I2CMaster &i2c, const uint8_t i2c_addr)
     {
         uint8_t temp = DS3231_REG_STATUS;
         i2c.write(i2c_addr, &temp, 1);
@@ -62,6 +62,8 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace devices
 {
 
@@ -128,4 +130,5 @@ uint8_t DS3231::readTemp()
     return buffer[0];
 }
 
+}
 }

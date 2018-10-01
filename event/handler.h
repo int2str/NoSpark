@@ -18,6 +18,8 @@
 #include "event/event.h"
 #include "utils/cpp.h"
 
+namespace nospark
+{
 namespace event
 {
 
@@ -34,4 +36,5 @@ public:
     DISALLOW_COPY_AND_ASSIGN(Handler);
 };
 
+}
 }

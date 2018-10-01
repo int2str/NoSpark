@@ -18,6 +18,8 @@
 
 #include "stream/outputstream.h"
 
+namespace nospark
+{
 namespace stream
 {
 
@@ -92,4 +94,5 @@ OutputStream& OutputStream::operator<< (const uint32_t val)
     return *this << buffer;
 }
 
+}
 }

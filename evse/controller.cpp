@@ -22,16 +22,16 @@
 
 #define SUSPEND_RELAY_DELAY 3000
 
-using board::GFCI;
-using board::J1772Pilot;
-using board::Pin;
-using board::Relays;
-using event::Event;
-using event::Loop;
+using nospark::board::GFCI;
+using nospark::board::J1772Pilot;
+using nospark::board::Pin;
+using nospark::board::Relays;
+using nospark::event::Event;
+using nospark::event::Loop;
 
 namespace
 {
-    using evse::State;
+    using nospark::evse::State;
 
     void setControllerState(const State::ControllerState state)
     {
@@ -46,6 +46,8 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace evse
 {
 
@@ -237,4 +239,5 @@ void Controller::setFault(const State::ControllerFault fault)
     setControllerState(State::FAULT);
 }
 
+}
 }

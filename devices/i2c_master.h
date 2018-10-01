@@ -18,6 +18,8 @@
 #include <stdint.h>
 #include "utils/cpp.h"
 
+namespace nospark
+{
 namespace devices
 {
 
@@ -36,4 +38,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(I2CMaster);
 };
 
+}
 }

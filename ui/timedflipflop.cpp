@@ -16,6 +16,8 @@
 #include "system/timer.h"
 #include "ui/timedflipflop.h"
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -37,4 +39,5 @@ bool TimedFlipFlop::get()
     return last_state;
 }
 
+}
 }

@@ -21,6 +21,8 @@
 #include "devices/mcp23017.h"
 #include "utils/pair.h"
 
+namespace nospark
+{
 namespace devices
 {
 
@@ -70,4 +72,5 @@ private:
     void pulse(const uint8_t b);
 };
 
+}
 }

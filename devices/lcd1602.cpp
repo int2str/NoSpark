@@ -60,11 +60,11 @@
 //  15 14 13 12 11 10 9  8  7  6  5  4  3  2  1  0
 //  RS RW EN D4 D5 D6 D7 B  G  R     B4 B3 B2 B1 B0
 
-using utils::Pair;
+using nospark::utils::Pair;
 
 namespace
 {
-    using devices::LCD16x2;
+    using nospark::devices::LCD16x2;
 
     // This is a map of tuples, bit reversed and left shifted over
     // by one to map the D4-D7 bits onto the I/O expanders "B"
@@ -104,6 +104,8 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace devices
 {
 
@@ -206,4 +208,5 @@ void LCD16x2::pulse(const uint8_t b)
     io.writeB(b | backlight_bits.second);
 }
 
+}
 }

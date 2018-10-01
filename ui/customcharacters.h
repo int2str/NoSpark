@@ -18,6 +18,8 @@
 #include <avr/pgmspace.h>
 #include "devices/lcd1602.h"
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -41,4 +43,5 @@ public:
     static void largeDigit(devices::LCD16x2 &lcd, const uint8_t digit, const uint8_t offset);
 };
 
+}
 }

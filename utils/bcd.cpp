@@ -15,6 +15,8 @@
 
 #include "bcd.h"
 
+namespace nospark
+{
 namespace utils
 {
 
@@ -34,4 +36,5 @@ uint8_t bcd2dec(const uint8_t bcd)
     return ((bcd >> 4) * 10) + (bcd & 0x0F);
 }
 
+}
 }

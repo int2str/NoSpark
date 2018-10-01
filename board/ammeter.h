@@ -17,6 +17,8 @@
 
 #include <stdint.h>
 
+namespace nospark
+{
 namespace board
 {
 
@@ -32,4 +34,5 @@ private:
     uint32_t last_sample;
 };
 
+}
 }

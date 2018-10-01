@@ -20,6 +20,8 @@
 #include "stream/lcdstream.h"
 #include "lcdstate.h"
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -30,4 +32,5 @@ public:
     bool draw() override;
 };
 
+}
 }

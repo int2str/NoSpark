@@ -22,6 +22,8 @@
 
 extern "C" void INT0_vect(void) __attribute__((signal));
 
+namespace nospark
+{
 namespace board
 {
 
@@ -48,4 +50,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(GFCI);
 };
 
+}
 }

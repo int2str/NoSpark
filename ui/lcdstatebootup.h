@@ -20,6 +20,8 @@
 #include "stream/lcdstream.h"
 #include "lcdstate.h"
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -33,4 +35,5 @@ private:
     bool intro_shown;
 };
 
+}
 }

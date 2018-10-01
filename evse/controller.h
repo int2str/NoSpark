@@ -27,6 +27,8 @@
 #include "event/handler.h"
 #include "utils/cpp.h"
 
+namespace nospark
+{
 namespace evse
 {
 
@@ -61,4 +63,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(Controller);
 };
 
+}
 }

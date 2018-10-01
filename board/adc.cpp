@@ -30,7 +30,7 @@
 // ISR lives in global namespace to be "friend-able" by the Adc class...
 ISR(ADC_vect)
 {
-    board::Adc::get().update(ADCW);
+  nospark::board::Adc::get().update(ADCW);
 }
 
 namespace
@@ -76,6 +76,8 @@ namespace
     }
 }
 
+namespace nospark
+{
 namespace board
 {
 
@@ -181,4 +183,5 @@ uint32_t Adc::readAmmeter()
     return ret;
 }
 
+}
 }

@@ -19,6 +19,8 @@
 #include "utils/cpp.h"
 #include "settings.h"
 
+namespace nospark
+{
 namespace evse
 {
 
@@ -72,4 +74,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(State);
 };
 
+}
 }

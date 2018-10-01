@@ -22,6 +22,8 @@
 #include "stream/uartstream.h"
 #include "ui/serialapi.h"
 
+namespace nospark
+{
 namespace ui
 {
 
@@ -40,4 +42,5 @@ private:
     DISALLOW_COPY_AND_ASSIGN(SerialApi);
 };
 
+}
 }
