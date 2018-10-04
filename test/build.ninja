@@ -8,28 +8,30 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # See LICENSE for a copy of the GNU General Public License or see
 # it online at <http://www.gnu.org/licenses/>.
 ###############################################################################
 
-OBJS = test.o
+cxx = g++
+cxxflags = -Os -g -std=c++11 -W -Wall -pedantic
 
-CXX = g++
-CXXFLAGS = -std=c++11 -W -Wall -pedantic
+rule cxx
+    command = $cxx -MMD -MF $out.d $cflags -c $in -o $out
+    description = C++ $out
+    depfile = $out.d
 
-all: test
+rule link
+    command = $cxx $cflags $ldflags -o $out $in $libs
+    description = LNK $out
 
-test: $(OBJS)
-	@echo [LNK] $(notdir $@)
-	@$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) -o $@
+builddir = build
+ldflags = $ldflags -L$builddir
 
-clean:
-	-@rm $(OBJS)
-	-@rm test
+build test: link $builddir/test.o | $builddir/test.o
+default test
 
-%.o: %.cpp
-	@echo [C++] $(notdir $<)
-	@$(CXX) -c $(CXXFLAGS) $< -o $@
+build $builddir/test.o: cxx test.cpp
+
