@@ -10,6 +10,8 @@
 using std::cout;
 using std::endl;
 
+using namespace nospark;
+
 void test_utils_min()
 {
     cout << "Testing utils::min()" << endl;
