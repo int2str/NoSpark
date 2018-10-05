@@ -19,12 +19,12 @@ cxx = g++
 cxxflags = -Os -g -std=c++11 -W -Wall -pedantic
 
 rule cxx
-    command = $cxx -MMD -MF $out.d $cflags -c $in -o $out
+    command = $cxx -MMD -MF $out.d $cxxflags -c $in -o $out
     description = C++ $out
     depfile = $out.d
 
 rule link
-    command = $cxx $cflags $ldflags -o $out $in $libs
+    command = $cxx $cxxflags $ldflags -o $out $in $libs
     description = LNK $out
 
 builddir = build
