@@ -109,6 +109,7 @@ SerialConsole::SerialConsole(UartStream &uart)
       , { STR_CMD_VERSION,    &SerialConsole::commandVersion }
       , { STR_CMD_RESET,      &SerialConsole::commandReset }
       , { STR_CMD_SETCURRENT, &SerialConsole::commandSetCurrent }
+      , { STR_CMD_SETDATE,    &SerialConsole::commandSetDate }
       , { STR_CMD_SETLIMIT  , &SerialConsole::commandSetLimit }
       , { STR_CMD_SETTIME,    &SerialConsole::commandSetTime }
       , { STR_CMD_DEBUG,      &SerialConsole::commandDebug }
@@ -176,10 +177,13 @@ bool SerialConsole::handleCommand(const char *buffer, const uint8_t len)
         const uint8_t cmd_len = strlen_P(commands[i].command);
         if (strncmp_P(buffer, commands[i].command, cmd_len) == 0)
         {
-            if (len > cmd_len && buffer[cmd_len] != ' ')
-                continue;
-
-            (this->*commands[i].handler) (buffer, len);
+            if (len > cmd_len)
+            {
+                if (buffer[cmd_len] != ' ') continue;
+                (this->*commands[i].handler) (buffer + cmd_len + 1, len - cmd_len - 1);
+            } else {
+                (this->*commands[i].handler) (nullptr, 0);
+            }
             return true;
         }
     }
@@ -197,6 +201,7 @@ void SerialConsole::commandHelp(const char *, const uint8_t)
     write_help(uart, STR_CMD_RESET, STR_HELP_RESET);
     write_help(uart, STR_CMD_SETCURRENT, STR_HELP_SETCURRENT);
     write_help(uart, STR_CMD_SETLIMIT, STR_HELP_SETLIMIT);
+    write_help(uart, STR_CMD_SETDATE, STR_HELP_SETDATE);
     write_help(uart, STR_CMD_SETTIME, STR_HELP_SETTIME);
     write_help(uart, STR_CMD_STATUS, STR_HELP_STATUS);
     write_help(uart, STR_CMD_VERSION, STR_HELP_VERSION);
@@ -209,17 +214,15 @@ void SerialConsole::commandReset(const char *, const uint8_t)
     system::Watchdog::forceRestart();
 }
 
-void SerialConsole::commandSetCurrent(const char *buffer, const uint8_t len)
+void SerialConsole::commandSetCurrent(const char *param, const uint8_t param_len)
 {
-    const uint8_t cmd_len = strlen_P(STR_CMD_SETCURRENT);
-
-    if (len < cmd_len + 2 || len > cmd_len + 3)
+    if (param_len < 1 || param_len > 2)
     {
         uart << PGM << STR_ERR_PARAM << EOL;
         return;
     }
 
-    const int amps = atoi(buffer + cmd_len);
+    const int amps = atoi(param);
     if (amps >= AMPS_MIN && amps <= AMPS_MAX)
     {
         State::get().max_amps_target = amps;
@@ -231,17 +234,15 @@ void SerialConsole::commandSetCurrent(const char *buffer, const uint8_t len)
     }
 }
 
-void SerialConsole::commandSetLimit(const char *buffer, const uint8_t len)
+void SerialConsole::commandSetLimit(const char *param, const uint8_t param_len)
 {
-    const uint8_t cmd_len = strlen_P(STR_CMD_SETLIMIT);
-
-    if (len < cmd_len + 2 || len > cmd_len + 3)
+    if (param_len < 1 || param_len > 2)
     {
         uart << PGM << STR_ERR_PARAM << EOL;
         return;
     }
 
-    const int kwh = atoi(buffer + cmd_len);
+    const int kwh = atoi(param);
     if (kwh >= 0)
     {
         Settings settings;
@@ -254,28 +255,38 @@ void SerialConsole::commandSetLimit(const char *buffer, const uint8_t len)
     }
 }
 
-void SerialConsole::commandSetTime(const char *buffer, const uint8_t len)
+void SerialConsole::commandSetTime(const char *param, const uint8_t param_len)
 {
-    const uint8_t cmd_len = strlen_P(STR_CMD_SETTIME);
-
-    if (len != cmd_len + 14 || buffer[cmd_len + 6] != ' ')
+    if (param_len != 4 && param_len != 6) // Allow <hhmm> and <hhmmss>
     {
         uart << PGM << STR_ERR_SETTIME_PARAM << EOL;
         return;
     }
 
     DS3231 &rtc = DS3231::get();
-    const char *pp = buffer + cmd_len;
-
     rtc.read();
 
-    rtc.hour = dec_from_charpair(pp);
-    rtc.minute = dec_from_charpair(pp + 2);
-    rtc.second = dec_from_charpair(pp + 4);
+    rtc.hour = dec_from_charpair(param);
+    rtc.minute = dec_from_charpair(param + 2);
+    if (param_len == 6) rtc.second = dec_from_charpair(param + 4);
 
-    rtc.day = dec_from_charpair(pp + 7);
-    rtc.month = dec_from_charpair(pp + 9);
-    rtc.year = dec_from_charpair(pp + 11);
+    rtc.write();
+}
+
+void SerialConsole::commandSetDate(const char *param, const uint8_t param_len)
+{
+    if (param_len != 6)
+    {
+        uart << PGM << STR_ERR_SETTIME_PARAM << EOL;
+        return;
+    }
+
+    DS3231 &rtc = DS3231::get();
+    rtc.read();
+
+    rtc.day = dec_from_charpair(param);
+    rtc.month = dec_from_charpair(param + 2);
+    rtc.year = dec_from_charpair(param + 4);
 
     rtc.write();
 }
@@ -293,17 +304,15 @@ void SerialConsole::commandEnergy(const char*, const uint8_t)
     uart << EOL;
 }
 
-void SerialConsole::commandDebug(const char *buffer, const uint8_t len)
+void SerialConsole::commandDebug(const char *param, const uint8_t param_len)
 {
-    const uint8_t cmd_len = strlen_P(STR_CMD_DEBUG);
-
-    if (len != cmd_len + 2)
+    if (param_len != 1)
     {
         uart << PGM << STR_ERR_PARAM << EOL;
         return;
     }
 
-    event_debug = buffer[cmd_len] != '0';
+    event_debug = param[0] == '1';
 }
 
 void SerialConsole::commandStatus(const char *, const uint8_t)

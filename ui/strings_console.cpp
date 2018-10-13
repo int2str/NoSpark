@@ -36,13 +36,14 @@ char const STR_STATUS_LIMIT[] PROGMEM = "Charge limit: ";
 char const STR_CMD_HELP[] PROGMEM = "help";
 char const STR_CMD_RESET[] PROGMEM = "reset";
 char const STR_CMD_SETCURRENT[] PROGMEM = "setcurrent";
+char const STR_CMD_SETDATE[] PROGMEM = "setdate";
 char const STR_CMD_SETLIMIT[] PROGMEM = "setlimit";
 char const STR_CMD_SETTIME[] PROGMEM = "settime";
 char const STR_CMD_STATUS[] PROGMEM = "status";
 char const STR_CMD_ENERGY[] PROGMEM = "energy";
 char const STR_CMD_VERSION[] PROGMEM = "version";
 char const STR_CMD_DEBUG[] PROGMEM = "debug";
-char const STR_ERR_SETTIME_PARAM[] PROGMEM = "Invalid time format";
+char const STR_ERR_SETTIME_PARAM[] PROGMEM = "Invalid time/date format";
 char const STR_ERR_PARAM[] PROGMEM = "Invalid parameter. Try 'help'.";
 
 // Console help strings
@@ -53,7 +54,8 @@ char const STR_HELP_DEBUG[] PROGMEM = "enable (1) or disable (0) debug events";
 char const STR_HELP_ENERGY[] PROGMEM = "show charge statistics";
 char const STR_HELP_RESET[] PROGMEM = "force watchdog timeout to reset device";
 char const STR_HELP_SETCURRENT[] PROGMEM = "set maximum charge current (A)";
+char const STR_HELP_SETDATE[] PROGMEM = "set the date <ddmmyy>";
 char const STR_HELP_SETLIMIT[] PROGMEM = "set maximum kWh per charge";
-char const STR_HELP_SETTIME[] PROGMEM = "set the clock <hhmmss ddmmyy>";
+char const STR_HELP_SETTIME[] PROGMEM = "set the clock <hhmm>";
 char const STR_HELP_STATUS[] PROGMEM = "shows the device/charging status";
 char const STR_HELP_VERSION[] PROGMEM = "displays version information";

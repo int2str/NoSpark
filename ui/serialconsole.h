@@ -21,7 +21,7 @@
 #include "utils/cpp.h"
 #include "stream/uartstream.h"
 
-#define MAX_COMMANDS 9
+#define MAX_COMMANDS 10
 
 namespace nospark
 {
@@ -29,7 +29,7 @@ namespace ui
 {
 
 class SerialConsole;
-typedef void (SerialConsole::*SerialCommandHandler) (const char *buffer, const uint8_t len);
+typedef void (SerialConsole::*SerialCommandHandler) (const char *param, const uint8_t param_len);
 
 struct SerialCommand
 {
@@ -48,15 +48,16 @@ public:
     bool handleCommand(const char *buffer, const uint8_t len);
 
 private:
-    void commandHelp(const char *buffer, const uint8_t len);
-    void commandReset(const char *buffer, const uint8_t len);
-    void commandSetCurrent(const char *buffer, const uint8_t len);
-    void commandSetLimit(const char *buffer, const uint8_t len);
-    void commandSetTime(const char *buffer, const uint8_t len);
-    void commandStatus(const char *buffer, const uint8_t len);
-    void commandVersion(const char *buffer, const uint8_t len);
-    void commandDebug(const char *buffer, const uint8_t len);
-    void commandEnergy(const char *buffer, const uint8_t len);
+    void commandHelp(const char *param, const uint8_t param_len);
+    void commandReset(const char *param, const uint8_t param_len);
+    void commandSetCurrent(const char *param, const uint8_t param_len);
+    void commandSetLimit(const char *param, const uint8_t param_len);
+    void commandSetTime(const char *param, const uint8_t param_len);
+    void commandSetDate(const char *param, const uint8_t param_len);
+    void commandStatus(const char *param, const uint8_t param_len);
+    void commandVersion(const char *param, const uint8_t param_len);
+    void commandDebug(const char *param, const uint8_t param_len);
+    void commandEnergy(const char *param, const uint8_t param_len);
 
     stream::UartStream &uart;
     bool event_debug;
