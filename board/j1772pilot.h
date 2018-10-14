@@ -31,19 +31,13 @@ public:
 
   enum State {
     UNKNOWN,
-    STATE_A // 12V; Not connected
-    ,
-    STATE_B //  9V; Connected, ready
-    ,
-    STATE_C //  6V; Charging
-    ,
-    STATE_D //  3V; Charging, vent required
-    ,
-    STATE_E //  0V; Error
-    ,
+    STATE_A, // 12V; Not connected
+    STATE_B, //  9V; Connected, ready
+    STATE_C, //  6V; Charging
+    STATE_D, //  3V; Charging, vent required
+    STATE_E, //  0V; Error
     DIODE_CHECK_FAILED,
-    NOT_READY // Pilot held low
-    ,
+    NOT_READY,  // Pilot held low
     IMPLAUSIBLE // Reading doesn't make sense
   };
 
@@ -62,5 +56,6 @@ private:
 
   DISALLOW_COPY_AND_ASSIGN(J1772Pilot);
 };
-}
-}
+
+} // namespace board
+} // namespace nospark

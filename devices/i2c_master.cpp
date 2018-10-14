@@ -23,17 +23,19 @@
 
 #define I2C_FREQ 400000UL
 
-//                        TWINT        TWEA        TWSTA        TWSTO
-//                        TWEN        TWIE
-#define I2C_START                                                              \
-  (1 << TWINT) | (1 << TWEA) | (1 << TWSTA) | (1 << TWEN) | (1 << TWIE)
-#define I2C_STOP (1 << TWINT) | (1 << TWSTO) | (1 << TWEN)
-#define I2C_SEND (1 << TWINT) | (1 << TWEA) | (1 << TWEN) | (1 << TWIE)
-#define I2C_ACK (1 << TWINT) | (1 << TWEA) | (1 << TWEN) | (1 << TWIE)
-#define I2C_NACK (1 << TWINT) | (1 << TWEN) | (1 << TWIE)
-#define I2C_RESET (1 << TWEN)
+// clang-format off
+//                      TWINT          TWEA          TWSTA          TWSTO          TWEN          TWIE
+#define I2C_START (1 << TWINT) | (1 << TWEA) | (1 << TWSTA) |                (1 << TWEN) | (1 << TWIE)
+#define I2C_STOP  (1 << TWINT) |                              (1 << TWSTO) | (1 << TWEN)
+#define I2C_SEND  (1 << TWINT) | (1 << TWEA) |                               (1 << TWEN) | (1 << TWIE)
+#define I2C_ACK   (1 << TWINT) | (1 << TWEA) |                               (1 << TWEN) | (1 << TWIE)
+#define I2C_NACK  (1 << TWINT) |                                             (1 << TWEN) | (1 << TWIE)
+#define I2C_RESET                                                            (1 << TWEN)
+//
+// clang-format on
 
 namespace {
+
 volatile uint8_t *i2c_data = 0;
 volatile uint8_t i2c_len = 0;
 uint8_t i2c_addr = 0;
@@ -109,7 +111,8 @@ void i2c_rw(const uint8_t addr, uint8_t *data, const uint8_t len) {
   while (TWCR & (1 << TWIE)) {
   };
 }
-}
+
+} // namespace
 
 namespace nospark {
 namespace devices {
@@ -137,5 +140,6 @@ void I2CMaster::write(const uint8_t addr, uint8_t *data, const uint8_t len) {
 void I2CMaster::read(const uint8_t addr, uint8_t *data, const uint8_t len) {
   i2c_rw(TW_READ | (addr << 1), data, len);
 }
-}
-}
+
+} // namespace devices
+} // namespace nospark
