@@ -212,7 +212,7 @@ void Controller::enableCharge(const bool enable)
             relays.set(true);
         } else {
             relays.set(false);
-            setFault(State::FAULT_GFCI_TRIPPED);
+            setFault(State::FAULT_POST_GFCI);
         }
     } else {
         relays.set(false);
