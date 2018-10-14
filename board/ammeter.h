@@ -17,22 +17,18 @@
 
 #include <stdint.h>
 
-namespace nospark
-{
-namespace board
-{
+namespace nospark {
+namespace board {
 
-class Ammeter
-{
+class Ammeter {
 public:
-    Ammeter();
+  Ammeter();
 
-    // Returns mA
-    uint32_t sample();
+  // Returns mA
+  uint32_t sample();
 
 private:
-    uint32_t last_sample;
+  uint32_t last_sample;
 };
-
 }
 }

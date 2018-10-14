@@ -15,94 +15,79 @@
 
 #include <avr/interrupt.h>
 
-#include "event/loop.h"
 #include "board/pins.h"
 #include "board/relays.h"
-#include "system/timer.h"
+#include "event/loop.h"
 #include "events.h"
+#include "system/timer.h"
 
-#define RELAY_TOGGLE_DELAY_MS   1000
+#define RELAY_TOGGLE_DELAY_MS 1000
 
 static nospark::board::Relays *relays = 0;
 
-ISR(TIMER2_OVF_vect)
-{
-    if (relays)
-        relays->updateState();
+ISR(TIMER2_OVF_vect) {
+  if (relays)
+    relays->updateState();
 }
 
-namespace nospark
-{
-namespace board
-{
+namespace nospark {
+namespace board {
 
 Relays::Relays()
-    : state(UNKNOWN)
-    , enabled(false)
-    , sample_history(0)
-    , pinACRelay(PIN_AC_RELAY)
-    , pinDCRelay1(PIN_DC_RELAY1)
-    , pinDCRelay2(PIN_DC_RELAY2)
-    , pinSense1(PIN_AC_TEST1)
-    , pinSense2(PIN_AC_TEST2)
-{
-    relays = this;
+    : state(UNKNOWN), enabled(false), sample_history(0),
+      pinACRelay(PIN_AC_RELAY), pinDCRelay1(PIN_DC_RELAY1),
+      pinDCRelay2(PIN_DC_RELAY2), pinSense1(PIN_AC_TEST1),
+      pinSense2(PIN_AC_TEST2) {
+  relays = this;
 
-    // Start timer 2 to sample AC pins
-    TCCR2A |= _BV(WGM21) | _BV(WGM20);
-    TCCR2B |= _BV(CS22);
-    TIMSK2 |= _BV(TOIE2);
+  // Start timer 2 to sample AC pins
+  TCCR2A |= _BV(WGM21) | _BV(WGM20);
+  TCCR2B |= _BV(CS22);
+  TIMSK2 |= _BV(TOIE2);
 }
 
-void Relays::set(const bool enable)
-{
-    if (enabled == enable)
-        return;
+void Relays::set(const bool enable) {
+  if (enabled == enable)
+    return;
 
-    pinACRelay = enable;
-    pinDCRelay1 = enable;
-    pinDCRelay2 = enable;
+  pinACRelay = enable;
+  pinDCRelay1 = enable;
+  pinDCRelay2 = enable;
 
-    enabled = enable;
-    last_change = system::Timer::millis();
+  enabled = enable;
+  last_change = system::Timer::millis();
 
-    event::Loop::post(event::Event(EVENT_CHARGE_STATE, enable));
+  event::Loop::post(event::Event(EVENT_CHARGE_STATE, enable));
 }
 
-Relays::RelayState Relays::checkStatus()
-{
-    // Do NOT recover from an error
-    if (state != UNKNOWN && state != OK)
-        return state;
-
-    // Give relays time to settle
-    if ((system::Timer::millis() - last_change) < RELAY_TOGGLE_DELAY_MS)
-        return state;
-
-    // Now check appropriate state...
-    if (enabled)
-        state = isActive() ? OK : NO_GROUND;
-    else
-        state = isActive() ? STUCK : OK;
-
+Relays::RelayState Relays::checkStatus() {
+  // Do NOT recover from an error
+  if (state != UNKNOWN && state != OK)
     return state;
+
+  // Give relays time to settle
+  if ((system::Timer::millis() - last_change) < RELAY_TOGGLE_DELAY_MS)
+    return state;
+
+  // Now check appropriate state...
+  if (enabled)
+    state = isActive() ? OK : NO_GROUND;
+  else
+    state = isActive() ? STUCK : OK;
+
+  return state;
 }
 
-bool Relays::isActive() const
-{
-    return (sample_history != 0);
+bool Relays::isActive() const { return (sample_history != 0); }
+
+void Relays::updateState() {
+  // This function is called about every millisecond.
+  // We keep 16 bits of sample history, giving us 16ms
+  // of coverage, which more than covers half a sine
+  // wave at 50/60Hz.
+
+  const bool active = !pinSense1 || !pinSense2;
+  sample_history = (sample_history << 1) | active;
 }
-
-void Relays::updateState()
-{
-    // This function is called about every millisecond.
-    // We keep 16 bits of sample history, giving us 16ms
-    // of coverage, which more than covers half a sine
-    // wave at 50/60Hz.
-
-    const bool active = !pinSense1 || !pinSense2;
-    sample_history = (sample_history << 1) | active;
-}
-
 }
 }

@@ -23,54 +23,44 @@
 
 extern "C" void TIMER2_OVF_vect(void) __attribute__((signal));
 
-namespace nospark
-{
-namespace board
-{
+namespace nospark {
+namespace board {
 
 // Relay monitoring and control
-class Relays
-{
+class Relays {
 public:
-    enum RelayState
-    {
-        UNKNOWN
-      , OK
-      , STUCK
-      , NO_GROUND
-    };
+  enum RelayState { UNKNOWN, OK, STUCK, NO_GROUND };
 
-    Relays();
+  Relays();
 
-    void set(const bool enable);
+  void set(const bool enable);
 
-    // This will sample the relay sense pins and
-    // return an appropriate status depending on
-    // whether the relays are currently enabled or
-    // not and whether power is present or not.
-    RelayState checkStatus();
+  // This will sample the relay sense pins and
+  // return an appropriate status depending on
+  // whether the relays are currently enabled or
+  // not and whether power is present or not.
+  RelayState checkStatus();
 
 private:
-    RelayState state;
-    bool enabled;
-    uint32_t last_change;
-    uint16_t sample_history;
+  RelayState state;
+  bool enabled;
+  uint32_t last_change;
+  uint16_t sample_history;
 
-    board::Pin pinACRelay;
-    board::Pin pinDCRelay1;
-    board::Pin pinDCRelay2;
+  board::Pin pinACRelay;
+  board::Pin pinDCRelay1;
+  board::Pin pinDCRelay2;
 
-    // The two sense pins are hooked together, so they'll
-    // always read the same on the v3 units.
-    board::Pin pinSense1;
-    board::Pin pinSense2;
+  // The two sense pins are hooked together, so they'll
+  // always read the same on the v3 units.
+  board::Pin pinSense1;
+  board::Pin pinSense2;
 
-    bool isActive() const;
+  bool isActive() const;
 
-    void updateState();
-    friend void ::TIMER2_OVF_vect(void);
-    DISALLOW_COPY_AND_ASSIGN(Relays);
+  void updateState();
+  friend void ::TIMER2_OVF_vect(void);
+  DISALLOW_COPY_AND_ASSIGN(Relays);
 };
-
 }
 }

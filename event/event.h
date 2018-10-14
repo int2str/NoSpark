@@ -18,23 +18,19 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-namespace nospark
-{
-namespace event
-{
+namespace nospark {
+namespace event {
 
-class Event
-{
+class Event {
 public:
-    explicit Event(const uint8_t id, const uint8_t param = 0);
+  explicit Event(const uint8_t id, const uint8_t param = 0);
 
-    bool operator== (const Event &rhs) const;
+  bool operator==(const Event &rhs) const;
 
-    const uint8_t id;
-    const uint8_t param;
-    uint32_t delay;
-    uint32_t posted;
+  const uint8_t id;
+  const uint8_t param;
+  uint32_t delay;
+  uint32_t posted;
 };
-
 }
 }

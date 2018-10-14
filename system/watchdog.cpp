@@ -17,26 +17,17 @@
 
 #include "system/watchdog.h"
 
-namespace nospark
-{
-namespace system
-{
+namespace nospark {
+namespace system {
 
-void Watchdog::enable()
-{
-    wdt_enable(WDTO_8S);
+void Watchdog::enable() { wdt_enable(WDTO_8S); }
+
+void Watchdog::reset() { wdt_reset(); }
+
+void Watchdog::forceRestart() {
+  wdt_enable(WDTO_15MS);
+  while (1) {
+  }
 }
-
-void Watchdog::reset()
-{
-    wdt_reset();
-}
-
-void Watchdog::forceRestart()
-{
-    wdt_enable(WDTO_15MS);
-    while(1) {}
-}
-
 }
 }

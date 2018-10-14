@@ -13,10 +13,10 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "ui/lcdstatesleeping.h"
 #include "devices/ds3231.h"
 #include "evse/settings.h"
 #include "ui/customcharacters.h"
-#include "ui/lcdstatesleeping.h"
 #include "ui/strings.h"
 
 #define BLINK_TIMEOUT 800
@@ -26,53 +26,46 @@ using nospark::evse::EepromSettings;
 using nospark::evse::Settings;
 using nospark::stream::LcdStream;
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
 LcdStateSleeping::LcdStateSleeping(LcdStream &lcd)
-    : LcdState(lcd)
-    , blink_state(BLINK_TIMEOUT)
-{
-    Settings settings;
-    EepromSettings::load(settings);
-    sleep_mode = settings.sleep_mode;
+    : LcdState(lcd), blink_state(BLINK_TIMEOUT) {
+  Settings settings;
+  EepromSettings::load(settings);
+  sleep_mode = settings.sleep_mode;
 
-    CustomCharacters::loadLargeDigits(lcd.getLCD());
+  CustomCharacters::loadLargeDigits(lcd.getLCD());
 }
 
-bool LcdStateSleeping::draw()
-{
-    DS3231 &rtc = DS3231::get();
+bool LcdStateSleeping::draw() {
+  DS3231 &rtc = DS3231::get();
 
-    // Display off mode
-    if (sleep_mode == 1 || !rtc.isPresent())
-    {
-        lcd.setBacklight(devices::LCD16x2::OFF);
-        return true;
-    }
-
-    // Display time mode
-
-    lcd.setBacklight(devices::LCD16x2::GREEN);
-
-    rtc.read();
-
-    CustomCharacters::largeDigit(lcd.getLCD(), rtc.hour / 10,  1);
-    CustomCharacters::largeDigit(lcd.getLCD(), rtc.hour % 10,  4);
-    CustomCharacters::largeDigit(lcd.getLCD(), rtc.minute / 10,  8);
-    CustomCharacters::largeDigit(lcd.getLCD(), rtc.minute % 10, 11);
-
-    const char o = blink_state.get() ? ' ' : 7;
-
-    lcd.move(7, 1);
-    lcd << static_cast<char>(o);
-    lcd.move(7, 0);
-    lcd << static_cast<char>(o);
-
+  // Display off mode
+  if (sleep_mode == 1 || !rtc.isPresent()) {
+    lcd.setBacklight(devices::LCD16x2::OFF);
     return true;
-}
+  }
 
+  // Display time mode
+
+  lcd.setBacklight(devices::LCD16x2::GREEN);
+
+  rtc.read();
+
+  CustomCharacters::largeDigit(lcd.getLCD(), rtc.hour / 10, 1);
+  CustomCharacters::largeDigit(lcd.getLCD(), rtc.hour % 10, 4);
+  CustomCharacters::largeDigit(lcd.getLCD(), rtc.minute / 10, 8);
+  CustomCharacters::largeDigit(lcd.getLCD(), rtc.minute % 10, 11);
+
+  const char o = blink_state.get() ? ' ' : 7;
+
+  lcd.move(7, 1);
+  lcd << static_cast<char>(o);
+  lcd.move(7, 0);
+  lcd << static_cast<char>(o);
+
+  return true;
+}
 }
 }

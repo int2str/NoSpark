@@ -18,28 +18,24 @@
 #include "devices/lcd1602.h"
 #include "stream/outputstream.h"
 
-namespace nospark
-{
-namespace stream
-{
+namespace nospark {
+namespace stream {
 
-class LcdStream : public OutputStream
-{
+class LcdStream : public OutputStream {
 public:
-    LcdStream(devices::LCD16x2 &lcd);
+  LcdStream(devices::LCD16x2 &lcd);
 
-    void clear();
-    void move(const uint8_t x, const uint8_t y);
+  void clear();
+  void move(const uint8_t x, const uint8_t y);
 
-    void setBacklight(const devices::LCD16x2::Backlight color);
+  void setBacklight(const devices::LCD16x2::Backlight color);
 
-    devices::LCD16x2& getLCD() const;
+  devices::LCD16x2 &getLCD() const;
 
 private:
-    void write(const char ch) override;
+  void write(const char ch) override;
 
-    devices::LCD16x2 &lcd;
+  devices::LCD16x2 &lcd;
 };
-
 }
 }

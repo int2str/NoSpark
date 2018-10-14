@@ -19,23 +19,19 @@
 
 #include "stream/outputstream.h"
 
-namespace nospark
-{
-namespace stream
-{
+namespace nospark {
+namespace stream {
 
-class Time
-{
+class Time {
 public:
-    Time(const uint8_t hh, const uint8_t mm);
+  Time(const uint8_t hh, const uint8_t mm);
 
 private:
-    uint8_t hh;
-    uint8_t mm;
-    friend OutputStream& operator<< (OutputStream& out, const Time &time);
+  uint8_t hh;
+  uint8_t mm;
+  friend OutputStream &operator<<(OutputStream &out, const Time &time);
 };
 
-OutputStream& operator<< (OutputStream& out, const Time &time);
-
+OutputStream &operator<<(OutputStream &out, const Time &time);
 }
 }

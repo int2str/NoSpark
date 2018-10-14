@@ -20,51 +20,47 @@
 #include "board/pin.h"
 #include "utils/cpp.h"
 
-namespace nospark
-{
-namespace board
-{
+namespace nospark {
+namespace board {
 
 // Uses timer1 for PWM, thus PIN 10 is automatically used,
 // no need to abstract it.
-class J1772Pilot
-{
+class J1772Pilot {
 public:
-    enum Mode
-    {
-        HIGH
-      , LOW
-      , PWM
-    };
+  enum Mode { HIGH, LOW, PWM };
 
-    enum State
-    {
-        UNKNOWN
-      , STATE_A     // 12V; Not connected
-      , STATE_B     //  9V; Connected, ready
-      , STATE_C     //  6V; Charging
-      , STATE_D     //  3V; Charging, vent required
-      , STATE_E     //  0V; Error
-      , DIODE_CHECK_FAILED
-      , NOT_READY   // Pilot held low
-      , IMPLAUSIBLE // Reading doesn't make sense
-    };
+  enum State {
+    UNKNOWN,
+    STATE_A // 12V; Not connected
+    ,
+    STATE_B //  9V; Connected, ready
+    ,
+    STATE_C //  6V; Charging
+    ,
+    STATE_D //  3V; Charging, vent required
+    ,
+    STATE_E //  0V; Error
+    ,
+    DIODE_CHECK_FAILED,
+    NOT_READY // Pilot held low
+    ,
+    IMPLAUSIBLE // Reading doesn't make sense
+  };
 
-    J1772Pilot();
+  J1772Pilot();
 
-    // Set to HIGH or LOW only, use pwmAmps to enable PWM
-    void setMode(const Mode mode);
-    Mode getMode() const;
-    void pwmAmps(const uint8_t amps);
+  // Set to HIGH or LOW only, use pwmAmps to enable PWM
+  void setMode(const Mode mode);
+  Mode getMode() const;
+  void pwmAmps(const uint8_t amps);
 
-    State getState(const bool force_update = false);
+  State getState(const bool force_update = false);
 
 private:
-    State last_state;
-    Mode mode;
+  State last_state;
+  Mode mode;
 
-    DISALLOW_COPY_AND_ASSIGN(J1772Pilot);
+  DISALLOW_COPY_AND_ASSIGN(J1772Pilot);
 };
-
 }
 }

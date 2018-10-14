@@ -19,8 +19,9 @@
 
 using nospark::devices::LCD16x2;
 
-namespace
-{
+namespace {
+// clang-format off
+
     const PROGMEM uint8_t MAP[NUM_CUSTOM_CHARS][8] = {
         {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04} // SEPARATOR
       , {0x00, 0x0e, 0x15, 0x17, 0x11, 0x0e, 0x00, 0x00} // CLOCK
@@ -56,40 +57,38 @@ namespace
       , {0x01, 0x04, 0x00, 0x20, 0x20, 0x00}
     };
 
-    void loadCustomCharacters(LCD16x2 &lcd, const uint8_t p[][8])
-    {
-        for (uint8_t i=0; i != NUM_CUSTOM_CHARS; ++i)
-            lcd.createChar_P(i, &p[i][0], 8);
-    }
+// clang-format on
+
+void loadCustomCharacters(LCD16x2 &lcd, const uint8_t p[][8]) {
+  for (uint8_t i = 0; i != NUM_CUSTOM_CHARS; ++i)
+    lcd.createChar_P(i, &p[i][0], 8);
 }
 
-namespace nospark
-{
-namespace ui
-{
+} // namsepace
 
-void CustomCharacters::loadCustomChars(LCD16x2 &lcd)
-{
-    loadCustomCharacters(lcd, MAP);
+namespace nospark {
+namespace ui {
+
+void CustomCharacters::loadCustomChars(LCD16x2 &lcd) {
+  loadCustomCharacters(lcd, MAP);
 }
 
-void CustomCharacters::loadLargeDigits(LCD16x2 &lcd)
-{
-    loadCustomCharacters(lcd, CUSTOM_SEGMENTS);
+void CustomCharacters::loadLargeDigits(LCD16x2 &lcd) {
+  loadCustomCharacters(lcd, CUSTOM_SEGMENTS);
 }
 
-void CustomCharacters::largeDigit(LCD16x2 &lcd, const uint8_t digit, const uint8_t offset)
-{
-    const uint8_t *p = LARGE_DIGITS[digit];
+void CustomCharacters::largeDigit(LCD16x2 &lcd, const uint8_t digit,
+                                  const uint8_t offset) {
+  const uint8_t *p = LARGE_DIGITS[digit];
 
-    lcd.move(offset, 0);
-    for (uint8_t i = 0; i != 3; ++i)
-        lcd.write(pgm_read_byte(p+i));
+  lcd.move(offset, 0);
+  for (uint8_t i = 0; i != 3; ++i)
+    lcd.write(pgm_read_byte(p + i));
 
-    lcd.move(offset, 1);
-    for (uint8_t i = 0; i != 3; ++i)
-        lcd.write(pgm_read_byte(p+i+3));
+  lcd.move(offset, 1);
+  for (uint8_t i = 0; i != 3; ++i)
+    lcd.write(pgm_read_byte(p + i + 3));
 }
 
-}
-}
+} // namespace ui
+} // namespace nospark

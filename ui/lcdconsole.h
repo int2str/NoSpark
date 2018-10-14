@@ -20,42 +20,38 @@
 
 #include "devices/lcd1602.h"
 #include "event/handler.h"
+#include "lcdstate.h"
 #include "stream/lcdstream.h"
 #include "utils/cpp.h"
-#include "lcdstate.h"
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
 // LCD UI.
 // This is a singleton; there shall be only one.
-class LcdConsole : public event::Handler
-{
-    LcdConsole();
+class LcdConsole : public event::Handler {
+  LcdConsole();
 
 public:
-    static LcdConsole& init();
+  static LcdConsole &init();
 
 protected:
-    void onEvent(const event::Event &event) override;
+  void onEvent(const event::Event &event) override;
 
 private:
-    void update();
-    void updateSleepState(const event::Event &event);
-    void setState(LcdState *newState);
+  void update();
+  void updateSleepState(const event::Event &event);
+  void setState(LcdState *newState);
 
-    bool in_settings;
-    bool sleeping;
-    uint32_t last_event;
+  bool in_settings;
+  bool sleeping;
+  uint32_t last_event;
 
-    LcdState *lcdState;
-    stream::LcdStream lcd;
-    devices::LCD16x2 lcd_int;
+  LcdState *lcdState;
+  stream::LcdStream lcd;
+  devices::LCD16x2 lcd_int;
 
-    DISALLOW_COPY_AND_ASSIGN(LcdConsole);
+  DISALLOW_COPY_AND_ASSIGN(LcdConsole);
 };
-
 }
 }

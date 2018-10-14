@@ -18,43 +18,33 @@
 #include <stddef.h>
 #include <stdint.h>
 
-namespace nospark
-{
-namespace stream
-{
+namespace nospark {
+namespace stream {
 
-enum Flags
-{
-    PGM
-  , PAD_ZERO
-  , PAD_SPACE
+enum Flags { PGM, PAD_ZERO, PAD_SPACE };
+
+struct Spaces {
+  Spaces(const size_t num) : num(num) {}
+  const size_t num;
 };
 
-struct Spaces
-{
-    Spaces(const size_t num) : num(num) {}
-    const size_t num;
-};
-
-class OutputStream
-{
+class OutputStream {
 public:
-    OutputStream();
-    virtual ~OutputStream();
+  OutputStream();
+  virtual ~OutputStream();
 
-    OutputStream& operator<< (const Flags flags);
-    OutputStream& operator<< (const Spaces spaces);
-    OutputStream& operator<< (const char ch);
-    OutputStream& operator<< (const char *str);
-    OutputStream& operator<< (const uint8_t val);
-    OutputStream& operator<< (const uint32_t val);
+  OutputStream &operator<<(const Flags flags);
+  OutputStream &operator<<(const Spaces spaces);
+  OutputStream &operator<<(const char ch);
+  OutputStream &operator<<(const char *str);
+  OutputStream &operator<<(const uint8_t val);
+  OutputStream &operator<<(const uint32_t val);
 
 protected:
-    virtual void write(const char ch) = 0;
+  virtual void write(const char ch) = 0;
 
 private:
-    uint8_t flags;
+  uint8_t flags;
 };
-
 }
 }

@@ -21,38 +21,28 @@
 #include "event/handler.h"
 #include "utils/cpp.h"
 
-namespace nospark
-{
-namespace evse
-{
+namespace nospark {
+namespace evse {
 
 // Reads a temperature source (or more down the road?)
 // and fires over-temperature events (defined in events.h).
 // TODO: Use dependency injection to provide temperatue source
-class TemperatureMonitor : public event::Handler
-{
-    TemperatureMonitor();
+class TemperatureMonitor : public event::Handler {
+  TemperatureMonitor();
 
 public:
-    enum TemperatureState
-    {
-        NOMINAL
-      , ELEVATED
-      , HIGH
-      , CRITICAL
-    };
+  enum TemperatureState { NOMINAL, ELEVATED, HIGH, CRITICAL };
 
-    static TemperatureMonitor& init();
-    static TemperatureState getState();
+  static TemperatureMonitor &init();
+  static TemperatureState getState();
 
 private:
-    void onEvent(const event::Event &event) override;
-    void update(bool force_update = false);
+  void onEvent(const event::Event &event) override;
+  void update(bool force_update = false);
 
-    uint8_t last_temp;
+  uint8_t last_temp;
 
-    DISALLOW_COPY_AND_ASSIGN(TemperatureMonitor);
+  DISALLOW_COPY_AND_ASSIGN(TemperatureMonitor);
 };
-
 }
 }

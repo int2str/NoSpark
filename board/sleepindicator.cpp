@@ -16,20 +16,11 @@
 #include "board/sleepindicator.h"
 #include "board/pins.h"
 
-namespace nospark
-{
-namespace board
-{
+namespace nospark {
+namespace board {
 
-SleepIndicator::SleepIndicator()
-    : pin(PIN_MISO)
-{
-}
+SleepIndicator::SleepIndicator() : pin(PIN_MISO) {}
 
-void SleepIndicator::set(const bool enable)
-{
-    pin = enable;
-}
-
+void SleepIndicator::set(const bool enable) { pin = enable; }
 }
 }

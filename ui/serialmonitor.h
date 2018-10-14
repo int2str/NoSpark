@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "event/handler.h"
 #include "stream/uartstream.h"
@@ -26,42 +26,33 @@
 
 #define CONSOLE_BUFFER 50
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
-class SerialMonitor : public event::Handler
-{
-    SerialMonitor();
+class SerialMonitor : public event::Handler {
+  SerialMonitor();
 
 public:
-    static SerialMonitor& init();
+  static SerialMonitor &init();
 
 private:
-    enum SerialState
-    {
-        CONSOLE_STARTUP,
-        CONSOLE_ACCUMULATING,
-        CONSOLE_COMMAND
-    };
+  enum SerialState { CONSOLE_STARTUP, CONSOLE_ACCUMULATING, CONSOLE_COMMAND };
 
-    void onEvent(const event::Event &event) override;
+  void onEvent(const event::Event &event) override;
 
-    void update();
-    void handleCommand();
+  void update();
+  void handleCommand();
 
-    stream::UartStream uart;
-    ui::SerialApi api;
-    ui::SerialConsole console;
-    SerialState state;
-    bool echo;
+  stream::UartStream uart;
+  ui::SerialApi api;
+  ui::SerialConsole console;
+  SerialState state;
+  bool echo;
 
-    char buffer[CONSOLE_BUFFER];
-    uint8_t len;
+  char buffer[CONSOLE_BUFFER];
+  uint8_t len;
 
-    DISALLOW_COPY_AND_ASSIGN(SerialMonitor);
+  DISALLOW_COPY_AND_ASSIGN(SerialMonitor);
 };
-
 }
 }

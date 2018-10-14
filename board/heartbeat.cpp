@@ -16,21 +16,14 @@
 #include "board/heartbeat.h"
 #include "board/pins.h"
 
-namespace nospark
-{
-namespace board
-{
+namespace nospark {
+namespace board {
 
-void Heartbeat::toggle()
-{
-    static Heartbeat heartbeat;
-    heartbeat.pin = !heartbeat.pin;
+void Heartbeat::toggle() {
+  static Heartbeat heartbeat;
+  heartbeat.pin = !heartbeat.pin;
 }
 
-Heartbeat::Heartbeat()
-    : pin(PIN_SCK)
-{
-}
-
+Heartbeat::Heartbeat() : pin(PIN_SCK) {}
 }
 }

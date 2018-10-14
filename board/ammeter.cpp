@@ -13,8 +13,8 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include "board/adc.h"
 #include "board/ammeter.h"
+#include "board/adc.h"
 
 // Apparently this is calculated from the burden
 // resistor (22 Ohm in the OpenEVSE v3) and the
@@ -27,23 +27,16 @@
 // ADC sampling....
 #define CURRENT_SCALE_FACTOR 200l
 
-namespace nospark
-{
-namespace board
-{
+namespace nospark {
+namespace board {
 
-Ammeter::Ammeter()
-    : last_sample(0)
-{
+Ammeter::Ammeter() : last_sample(0) {}
+
+uint32_t Ammeter::sample() {
+  if (Adc::get().ammeterReady())
+    last_sample = Adc::get().readAmmeter() * CURRENT_SCALE_FACTOR;
+
+  return last_sample;
 }
-
-uint32_t Ammeter::sample()
-{
-    if (Adc::get().ammeterReady())
-        last_sample = Adc::get().readAmmeter() * CURRENT_SCALE_FACTOR;
-
-    return last_sample;
-}
-
 }
 }

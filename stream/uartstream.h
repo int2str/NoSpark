@@ -18,24 +18,20 @@
 #include "serial/usart.h"
 #include "stream/outputstream.h"
 
-namespace nospark
-{
-namespace stream
-{
+namespace nospark {
+namespace stream {
 
-class UartStream : public OutputStream
-{
+class UartStream : public OutputStream {
 public:
-    UartStream(serial::Usart &uart);
+  UartStream(serial::Usart &uart);
 
-    bool avail();
-    UartStream& operator>> (char &ch);
+  bool avail();
+  UartStream &operator>>(char &ch);
 
 private:
-    void write(const char ch) override;
+  void write(const char ch) override;
 
-    serial::Usart &uart;
+  serial::Usart &uart;
 };
-
 }
 }

@@ -16,87 +16,64 @@
 #include "event/loop.h"
 #include "system/timer.h"
 
-namespace nospark
-{
-namespace event
-{
+namespace nospark {
+namespace event {
 
-void Loop::post(const Event &event)
-{
-    get().events.push(event);
+void Loop::post(const Event &event) { get().events.push(event); }
+
+void Loop::postDelayed(const Event &event, const uint32_t ms) {
+  Event e = event;
+  e.delay = ms;
+  e.posted = system::Timer::millis();
+
+  get().events.push(e);
 }
 
-void Loop::postDelayed(const Event &event, const uint32_t ms)
-{
-    Event e = event;
-    e.delay = ms;
-    e.posted = system::Timer::millis();
-
-    get().events.push(e);
+void Loop::remove(const Event &event) {
+  auto &events = get().events;
+  for (auto it = events.begin(); it != events.end();) {
+    if (event == *it)
+      events.erase(it++);
+    else
+      ++it;
+  }
 }
 
-void Loop::remove(const Event &event)
-{
-    auto& events = get().events;
-    for (auto it = events.begin(); it != events.end();)
-    {
-        if (event == *it)
-            events.erase(it++);
-        else
-            ++it;
+void Loop::addHandler(Handler *ph) { get().handlers.push(ph); }
+
+void Loop::removeHandler(Handler *ph) {
+  auto &handlers = get().handlers;
+  for (auto it = handlers.begin(); it != handlers.end(); ++it) {
+    if (*it == ph) {
+      handlers.erase(it);
+      break;
     }
+  }
 }
 
-void Loop::addHandler(Handler *ph)
-{
-    get().handlers.push(ph);
+void Loop::dispatch() { get().dispatch_impl(); }
+
+Loop &Loop::get() {
+  static Loop loop;
+  return loop;
 }
 
-void Loop::removeHandler(Handler *ph)
-{
-    auto& handlers = get().handlers;
-    for (auto it = handlers.begin(); it != handlers.end(); ++it)
-    {
-        if (*it == ph)
-        {
-            handlers.erase(it);
-            break;
-        }
+Loop::Loop() {}
+
+void Loop::dispatch_impl() {
+  for (auto it = events.begin(); it != events.end();) {
+    const Event &event = *it;
+
+    // Process and erase events
+    if (event.delay == 0 ||
+        ((system::Timer::millis() - event.posted) >= event.delay)) {
+      for (auto handler : handlers)
+        handler->onEvent(event);
+      events.erase(it++);
+    } else {
+      ++it;
     }
+  }
 }
-
-void Loop::dispatch()
-{
-    get().dispatch_impl();
-}
-
-Loop& Loop::get()
-{
-    static Loop loop;
-    return loop;
-}
-
-Loop::Loop()
-{
-}
-
-void Loop::dispatch_impl()
-{
-    for (auto it = events.begin(); it != events.end();)
-    {
-        const Event &event = *it;
-
-        // Process and erase events
-        if (event.delay == 0 || ((system::Timer::millis() - event.posted) >= event.delay))
-        {
-            for (auto handler : handlers)
-                handler->onEvent(event);
-            events.erase(it++);
-        } else {
-            ++it;
-        }
-    }
-}
-
 }
 }

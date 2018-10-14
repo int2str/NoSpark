@@ -16,19 +16,11 @@
 #include "event/handler.h"
 #include "event/loop.h"
 
-namespace nospark
-{
-namespace event
-{
+namespace nospark {
+namespace event {
 
-Handler::Handler()
-{
-    Loop::get().addHandler(this);
-}
+Handler::Handler() { Loop::get().addHandler(this); }
 
-Handler::~Handler()
-{
-}
-
+Handler::~Handler() {}
 }
 }

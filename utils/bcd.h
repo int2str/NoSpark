@@ -17,13 +17,10 @@
 
 #include <stdint.h>
 
-namespace nospark
-{
-namespace utils
-{
+namespace nospark {
+namespace utils {
 
 uint8_t dec2bcd(uint8_t dec);
 uint8_t bcd2dec(const uint8_t bcd);
-
 }
 }

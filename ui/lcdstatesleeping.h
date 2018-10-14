@@ -22,21 +22,17 @@
 #include "ui/lcdstate.h"
 #include "ui/timedflipflop.h"
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
-class LcdStateSleeping : public LcdState
-{
+class LcdStateSleeping : public LcdState {
 public:
-    LcdStateSleeping(stream::LcdStream &lcd);
-    bool draw() override;
+  LcdStateSleeping(stream::LcdStream &lcd);
+  bool draw() override;
 
 private:
-    TimedFlipFlop blink_state;
-    uint8_t sleep_mode;
+  TimedFlipFlop blink_state;
+  uint8_t sleep_mode;
 };
-
 }
 }

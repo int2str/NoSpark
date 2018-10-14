@@ -16,63 +16,46 @@
 #pragma once
 
 #include "board/j1772pilot.h"
-#include "utils/cpp.h"
 #include "settings.h"
+#include "utils/cpp.h"
 
-namespace nospark
-{
-namespace evse
-{
+namespace nospark {
+namespace evse {
 
-class State
-{
-    State();
+class State {
+  State();
 
 public:
-    enum ControllerState
-    {
-        BOOTUP
-      , POST
-      , RUNNING
-      , FAULT
-    };
+  enum ControllerState { BOOTUP, POST, RUNNING, FAULT };
 
-    enum ControllerFault
-    {
-        NOTHING_WRONG
-      , FAULT_POST_GFCI
-      , FAULT_RELAY_STUCK
-      , FAULT_RELAY_NO_GROUND
-      , FAULT_GFCI_TRIPPED
-      , FAULT_TEMPERATURE_CRITICAL
-    };
+  enum ControllerFault {
+    NOTHING_WRONG,
+    FAULT_POST_GFCI,
+    FAULT_RELAY_STUCK,
+    FAULT_RELAY_NO_GROUND,
+    FAULT_GFCI_TRIPPED,
+    FAULT_TEMPERATURE_CRITICAL
+  };
 
-    enum ReadyState
-    {
-        READY
-      , SCHEDULED
-      , KWH_LIMIT
-      , MANUAL_OVERRIDE
-    };
+  enum ReadyState { READY, SCHEDULED, KWH_LIMIT, MANUAL_OVERRIDE };
 
-    static State& get();
+  static State &get();
 
-    ControllerState controller;
-    ControllerFault fault;
-    ReadyState ready;
-    board::J1772Pilot::State j1772;
+  ControllerState controller;
+  ControllerFault fault;
+  ReadyState ready;
+  board::J1772Pilot::State j1772;
 
-    // Desired maximum charge current
-    uint8_t max_amps_target;
+  // Desired maximum charge current
+  uint8_t max_amps_target;
 
-    // Current limit in effect
-    // This value will be <= max_amps_target and is
-    // affected by temperature monitoring etc.
-    uint8_t max_amps_limit;
+  // Current limit in effect
+  // This value will be <= max_amps_target and is
+  // affected by temperature monitoring etc.
+  uint8_t max_amps_limit;
 
 private:
-    DISALLOW_COPY_AND_ASSIGN(State);
+  DISALLOW_COPY_AND_ASSIGN(State);
 };
-
 }
 }

@@ -17,44 +17,39 @@
 
 #include <stdint.h>
 
-#include "stream/lcdstream.h"
-#include "stream/scrollingtext.h"
 #include "evse/settings.h"
 #include "evse/state.h"
+#include "stream/lcdstream.h"
+#include "stream/scrollingtext.h"
 #include "ui/lcdstate.h"
 #include "ui/timedflipflop.h"
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
-class LcdStateRunning : public LcdState
-{
+class LcdStateRunning : public LcdState {
 public:
-    LcdStateRunning(stream::LcdStream &lcd);
-    bool draw() override;
+  LcdStateRunning(stream::LcdStream &lcd);
+  bool draw() override;
 
 private:
-    enum RunningPages
-    {
-        PAGE_DEFAULT,
-        PAGE_KWH_WEEK,
-        PAGE_KWH_MONTH,
-        PAGE_KWH_YEAR,
-        PAGE_KWH_TOTAL,
-        PAGE_MAX
-    };
+  enum RunningPages {
+    PAGE_DEFAULT,
+    PAGE_KWH_WEEK,
+    PAGE_KWH_MONTH,
+    PAGE_KWH_YEAR,
+    PAGE_KWH_TOTAL,
+    PAGE_MAX
+  };
 
-    void drawDefault();
-    void drawKwhStats();
-    void select() override;
+  void drawDefault();
+  void drawKwhStats();
+  void select() override;
 
-    uint8_t page;
-    TimedFlipFlop display_state;
-    stream::ScrollingText scrolling_text;
-    evse::Settings settings;
+  uint8_t page;
+  TimedFlipFlop display_state;
+  stream::ScrollingText scrolling_text;
+  evse::Settings settings;
 };
-
 }
 }

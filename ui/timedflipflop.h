@@ -18,23 +18,19 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
 // Toggle the state of a simple boolean at a given |duration|.
-class TimedFlipFlop
-{
+class TimedFlipFlop {
 public:
-    TimedFlipFlop(const uint16_t duration);
-    bool get();
+  TimedFlipFlop(const uint16_t duration);
+  bool get();
 
 private:
-    const uint16_t duration;
-    bool last_state;
-    uint32_t last_change;
+  const uint16_t duration;
+  bool last_state;
+  uint32_t last_change;
 };
-
 }
 }

@@ -15,49 +15,45 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
-#include "utils/cpp.h"
 #include "i2c_master.h"
+#include "utils/cpp.h"
 
-namespace nospark
-{
-namespace devices
-{
+namespace nospark {
+namespace devices {
 
-class DS3231
-{
-    DS3231();
-    ~DS3231();
+class DS3231 {
+  DS3231();
+  ~DS3231();
 
 public:
-    static DS3231& get();
+  static DS3231 &get();
 
-    bool isPresent() const;
+  bool isPresent() const;
 
-    void read();
-    void write();
+  void read();
+  void write();
 
-    // Returns temperature in deg. C (whole deg. only)
-    uint8_t readTemp();
+  // Returns temperature in deg. C (whole deg. only)
+  uint8_t readTemp();
 
-    uint8_t hour;
-    uint8_t minute;
-    uint8_t second;
+  uint8_t hour;
+  uint8_t minute;
+  uint8_t second;
 
-    uint8_t day;
-    uint8_t month;
-    uint8_t year;
-    uint8_t weekday;
+  uint8_t day;
+  uint8_t month;
+  uint8_t year;
+  uint8_t weekday;
 
 private:
-    const uint8_t i2c_addr;
-    I2CMaster& i2c;
-    const bool present;
+  const uint8_t i2c_addr;
+  I2CMaster &i2c;
+  const bool present;
 
-    DISALLOW_COPY_AND_ASSIGN(DS3231);
+  DISALLOW_COPY_AND_ASSIGN(DS3231);
 };
-
 }
 }

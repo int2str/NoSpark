@@ -15,43 +15,39 @@
 
 #pragma once
 
-#include "utils/cpp.h"
 #include "i2c_master.h"
+#include "utils/cpp.h"
 
-namespace nospark
-{
-namespace devices
-{
+namespace nospark {
+namespace devices {
 
-class MCP23017
-{
+class MCP23017 {
 public:
-    MCP23017(const uint8_t i2c_addr);
+  MCP23017(const uint8_t i2c_addr);
 
-    // 1 = input, 0 = output
-    // Note that this is exactly opposite of the AVR
-    // DDR register bits.
-    void ioDir(const uint8_t a, const uint8_t b);
-    void pullUp(const uint8_t a, const uint8_t b);
+  // 1 = input, 0 = output
+  // Note that this is exactly opposite of the AVR
+  // DDR register bits.
+  void ioDir(const uint8_t a, const uint8_t b);
+  void pullUp(const uint8_t a, const uint8_t b);
 
-    // 16-bit value has GPB as MSB
-    // i.e. bbbbbbbb | aaaaaaaa
-    uint16_t read();
-    void write(const uint8_t a, const uint8_t b);
+  // 16-bit value has GPB as MSB
+  // i.e. bbbbbbbb | aaaaaaaa
+  uint16_t read();
+  void write(const uint8_t a, const uint8_t b);
 
-    uint8_t readA();
-    void writeA(const uint8_t a);
+  uint8_t readA();
+  void writeA(const uint8_t a);
 
-    uint8_t readB();
-    void writeB(const uint8_t b);
+  uint8_t readB();
+  void writeB(const uint8_t b);
 
 private:
-    const uint8_t i2c_addr;
+  const uint8_t i2c_addr;
 
-    I2CMaster& i2c;
+  I2CMaster &i2c;
 
-    DISALLOW_COPY_AND_ASSIGN(MCP23017);
+  DISALLOW_COPY_AND_ASSIGN(MCP23017);
 };
-
 }
 }

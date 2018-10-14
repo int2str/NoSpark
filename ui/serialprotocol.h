@@ -16,25 +16,22 @@
 #pragma once
 
 // Query version with $E254 (see below)
-#define SAPI_VERSION            1
+#define SAPI_VERSION 1
 
 // Notes about the protocol:
 //  - Lines must end in \r or \n
 //  - Parameter order does not matter
 //  - Optional parameters can be omitted
-//  - Commands are synchronous in nature; send $E command, wait for $OK/$ERR response
-
+//  - Commands are synchronous in nature; send an $E command, then
+//    wait for $OK/$ERR response
 
 // Status/error codes -------------------------------------------------
 
-
-#define OK                      0
-#define UNKNOWN_COMMAND         1
-#define INVALID_PARAMETER       2
-
+#define OK 0
+#define UNKNOWN_COMMAND 1
+#define INVALID_PARAMETER 2
 
 // 'E' commands -------------------------------------------------------
-
 
 // Returns the current state
 //
@@ -44,13 +41,17 @@
 //  Returns:
 //    J - J1772 state 1=A, 2=B...
 //    T - Temperature in C
-//    R - Ready state; one off 0 (READY), 1 (SCHEDULE), 2 (KWH LIMIT), 3 (MANUAL)
+//    R - Ready state; one off:
+//          0 (READY)
+//          1 (SCHEDULE)
+//          2 (KWH LIMIT)
+//          3 (MANUAL)
 //
 //  Example:
 //    -> $E1
 //    <- $OK J3 T30 R0
 //     = J1772 state C, temperature 30C, ready state "READY"
-#define CMD_GET_STATE           1
+#define CMD_GET_STATE 1
 
 // Return the current charge status
 //
@@ -68,7 +69,7 @@
 //   -> $E2
 //   <- $OK C1 A27511 D3632 W6034
 //    = Active charge, 27.511A, ~60min, ~6kWh total
-#define CMD_GET_CHARGE_STATE    2
+#define CMD_GET_CHARGE_STATE 2
 
 // Returns the charge totals in kWh
 //
@@ -84,7 +85,7 @@
 // Example:
 //   -> $E3
 //   <- $OK W10 M20 Y30 T40
-#define CMD_GET_KWH_STATS       3
+#define CMD_GET_KWH_STATS 3
 
 // Returns the maximum current supported by the EVSE
 //
@@ -98,7 +99,7 @@
 // Example:
 //   -> $E10
 //   <- $OK A40 L20
-#define CMD_GET_MAX_CURRENT     10
+#define CMD_GET_MAX_CURRENT 10
 
 // Set the maximum supported charge current
 //
@@ -111,7 +112,7 @@
 // Example:
 //   -> $E11 A40
 //   <- $OK
-#define CMD_SET_MAX_CURRENT     11
+#define CMD_SET_MAX_CURRENT 11
 
 // Get the current time from the EVSEs RTC
 //
@@ -126,7 +127,7 @@
 // Example:
 //   -> $E12
 //   <- $OK H12 M34 S56
-#define CMD_GET_TIME            12
+#define CMD_GET_TIME 12
 
 // Set the current time on the EVSEs RTC
 //
@@ -141,7 +142,7 @@
 // Example:
 //   -> $E13 H12 M34 S56
 //   <- $OK
-#define CMD_SET_TIME            13
+#define CMD_SET_TIME 13
 
 // Get the current date from the EVSEs RTC
 //
@@ -157,7 +158,7 @@
 // Example:
 //   -> $E14
 //   <- $OK D24 M12 Y15 W7
-#define CMD_GET_DATE            14
+#define CMD_GET_DATE 14
 
 // Set the current date on the EVSEs RTC
 //
@@ -173,7 +174,7 @@
 // Example:
 //   -> $E15 D24 M12 Y15 W7
 //   <- $OK
-#define CMD_SET_DATE            15
+#define CMD_SET_DATE 15
 
 // Gets the current charge timer setting
 //
@@ -189,7 +190,7 @@
 //   -> $E16
 //   <- $OK A1 S5632 F1822
 //    = Enabled, 22:00 -> 7:30
-#define CMD_GET_TIMER           16
+#define CMD_GET_TIMER 16
 
 // Sets the charge timer
 //
@@ -205,7 +206,7 @@
 //   -> $E17 A1 S5632 F1822
 //   <- $OK
 //    = Enabled, 22:00 -> 7:30
-#define CMD_SET_TIMER           17
+#define CMD_SET_TIMER 17
 
 // Get the current kWh limit
 //
@@ -218,7 +219,7 @@
 // Example:
 //   -> $E18
 //   <- $OK K10
-#define CMD_GET_CHARGE_LIMIT    18
+#define CMD_GET_CHARGE_LIMIT 18
 
 // Sets the charge limit
 //
@@ -231,7 +232,7 @@
 // Example:
 //   -> $E19 K10
 //   <- $OK
-#define CMD_SET_CHARGE_LIMIT    19
+#define CMD_SET_CHARGE_LIMIT 19
 
 // Set the LCD sleep state
 //
@@ -253,7 +254,7 @@
 //   -> $E20 S1
 //   <- $OK
 //    = Sets LCD into sleep mode
-#define CMD_SET_SLEEP           20
+#define CMD_SET_SLEEP 20
 
 // Set EVSE ready state
 //
@@ -267,7 +268,7 @@
 //   -> $E21 S1
 //   <- $OK
 //    = Sets EVSE into MANUAL ready state (interrupts charging)
-#define CMD_SET_READY_STATE     21
+#define CMD_SET_READY_STATE 21
 
 // Get the average price per kWh
 //
@@ -281,7 +282,7 @@
 // Example:
 //   -> $E22
 //   <- $OK C0 P20
-#define CMD_GET_KWH_COST        22
+#define CMD_GET_KWH_COST 22
 
 // Sets the average price per kWh
 //
@@ -295,7 +296,7 @@
 // Example:
 //   -> $E23 C0 P20
 //   <- $OK
-#define CMD_SET_KWH_COST        23
+#define CMD_SET_KWH_COST 23
 
 // Enable or disable debug events
 //
@@ -308,7 +309,7 @@
 // Example:
 //   -> $E30 S1
 //   <- $OK
-#define CMD_ENABLE_EVENTS       30
+#define CMD_ENABLE_EVENTS 30
 
 // Returns the NoSpark version string
 //
@@ -334,4 +335,4 @@
 // Example:
 //   -> $E254
 //   <- $OK V1
-#define CMD_GET_SAPI_VERSION    254
+#define CMD_GET_SAPI_VERSION 254

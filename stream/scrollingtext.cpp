@@ -20,78 +20,56 @@
 
 #define SCROLL_DELAY_MS 300
 
-namespace nospark
-{
-namespace stream
-{
+namespace nospark {
+namespace stream {
 
 ScrollingText::ScrollingText(const uint8_t size, const uint8_t width)
-    : size(size)
-    , width(width)
-    , length(0)
-    , offset(0)
-{
-    buffer = new char[size];
+    : size(size), width(width), length(0), offset(0) {
+  buffer = new char[size];
 }
 
-ScrollingText::~ScrollingText()
-{
-    delete [] buffer;
-}
+ScrollingText::~ScrollingText() { delete[] buffer; }
 
-void ScrollingText::clear()
-{
-    length = 0;
-}
+void ScrollingText::clear() { length = 0; }
 
-void ScrollingText::setWidth(const uint8_t width)
-{
-    this->width = width;
-}
+void ScrollingText::setWidth(const uint8_t width) { this->width = width; }
 
-ScrollingText& ScrollingText::operator>> (OutputStream &os)
-{
-    if (length > width)
-        *this << " ~ ";
+ScrollingText &ScrollingText::operator>>(OutputStream &os) {
+  if (length > width)
+    *this << " ~ ";
 
-    if (length <= width || offset >= length)
-        offset = 0;
+  if (length <= width || offset >= length)
+    offset = 0;
 
-    uint8_t chars = width;
-    uint8_t idx = offset;
-    buffer[length] = 0;
+  uint8_t chars = width;
+  uint8_t idx = offset;
+  buffer[length] = 0;
 
-    while (chars--)
-    {
-        if (length >= width || idx < length)
-        {
-            os << buffer[idx++];
-            if (length >= width && idx >= length)
-                idx = 0;
-        } else {
-            os << ' ';
-        }
+  while (chars--) {
+    if (length >= width || idx < length) {
+      os << buffer[idx++];
+      if (length >= width && idx >= length)
+        idx = 0;
+    } else {
+      os << ' ';
     }
+  }
 
-    update();
-    return *this;
+  update();
+  return *this;
 }
 
-void ScrollingText::update()
-{
-    const uint32_t now = system::Timer::millis();
-    if (now - last_update > SCROLL_DELAY_MS)
-    {
-        ++offset;
-        last_update = now;
-    }
+void ScrollingText::update() {
+  const uint32_t now = system::Timer::millis();
+  if (now - last_update > SCROLL_DELAY_MS) {
+    ++offset;
+    last_update = now;
+  }
 }
 
-void ScrollingText::write(const char ch)
-{
-    if (length < (size-1))
-        buffer[length++] = ch;
+void ScrollingText::write(const char ch) {
+  if (length < (size - 1))
+    buffer[length++] = ch;
 }
-
 }
 }

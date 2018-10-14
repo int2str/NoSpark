@@ -15,9 +15,9 @@
 
 #pragma once
 
-#define EOL                 "\r\n"
-#define CR                  '\r'
-#define LF                  '\n'
+#define EOL "\r\n"
+#define CR '\r'
+#define LF '\n'
 
 extern char const STR_OPENEVSE[];
 extern char const STR_OPENEVSE_BY[];

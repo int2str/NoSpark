@@ -17,23 +17,19 @@
 
 #include "utils/cpp.h"
 
-namespace nospark
-{
-namespace system
-{
+namespace nospark {
+namespace system {
 
-class Watchdog
-{
-    Watchdog();
+class Watchdog {
+  Watchdog();
 
 public:
-    static void enable();
-    static void reset();
-    static void forceRestart();
+  static void enable();
+  static void reset();
+  static void forceRestart();
 
 private:
-    DISALLOW_COPY_AND_ASSIGN(Watchdog);
+  DISALLOW_COPY_AND_ASSIGN(Watchdog);
 };
-
 }
 }

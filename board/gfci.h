@@ -22,33 +22,29 @@
 
 extern "C" void INT0_vect(void) __attribute__((signal));
 
-namespace nospark
-{
-namespace board
-{
+namespace nospark {
+namespace board {
 
 // Once instantiated will monitor GFCI pin an trigger
 // an event if tripped.
-class GFCI
-{
+class GFCI {
 public:
-    GFCI();
+  GFCI();
 
-    bool selfTest();
+  bool selfTest();
 
 private:
-    board::Pin pinSense;
-    board::Pin pinTest;
+  board::Pin pinSense;
+  board::Pin pinTest;
 
-    bool self_test;
-    bool tripped;
+  bool self_test;
+  bool tripped;
 
-    void sendPulses();
-    void trip();
-    friend void ::INT0_vect();
+  void sendPulses();
+  void trip();
+  friend void ::INT0_vect();
 
-    DISALLOW_COPY_AND_ASSIGN(GFCI);
+  DISALLOW_COPY_AND_ASSIGN(GFCI);
 };
-
 }
 }

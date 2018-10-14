@@ -15,35 +15,31 @@
 
 #pragma once
 
-#include "utils/cpp.h"
 #include "i2c_master.h"
+#include "utils/cpp.h"
 
-namespace nospark
-{
-namespace devices
-{
+namespace nospark {
+namespace devices {
 
-class MCP23008
-{
+class MCP23008 {
 public:
-    MCP23008(const uint8_t i2c_addr);
+  MCP23008(const uint8_t i2c_addr);
 
-    // 1 = input, 0 = output
-    // Note that this is exactly opposite of the AVR
-    // DDR register bits.
-    void ioDir(const uint8_t io);
-    void pullUp(const uint8_t pu);
+  // 1 = input, 0 = output
+  // Note that this is exactly opposite of the AVR
+  // DDR register bits.
+  void ioDir(const uint8_t io);
+  void pullUp(const uint8_t pu);
 
-    uint8_t read();
-    void write(const uint8_t b);
+  uint8_t read();
+  void write(const uint8_t b);
 
 private:
-    const uint8_t i2c_addr;
+  const uint8_t i2c_addr;
 
-    I2CMaster& i2c;
+  I2CMaster &i2c;
 
-    DISALLOW_COPY_AND_ASSIGN(MCP23008);
+  DISALLOW_COPY_AND_ASSIGN(MCP23008);
 };
-
 }
 }

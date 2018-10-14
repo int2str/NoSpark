@@ -15,7 +15,7 @@
 
 #pragma once
 
-// 16-char LCD ruler --->                |1234567890123456|
+// clang-format off
 
 // General UI                            |1234567890123456|
 #define STR_STATE_READY             PSTR("BEREIT   ")
@@ -62,3 +62,4 @@
 #define STR_STATS_YEAR              PSTR("Dieses Jahr")
 #define STR_STATS_TOTAL             PSTR("Gesamt")
 
+// clang-format on

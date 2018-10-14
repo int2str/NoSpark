@@ -18,23 +18,19 @@
 #include "board/pin.h"
 #include "utils/cpp.h"
 
-namespace nospark
-{
-namespace board
-{
+namespace nospark {
+namespace board {
 
 // Simple pulse generator used for debugging/benchmarking.
 // Toggles SCK pin.
-class Heartbeat
-{
-    Heartbeat();
+class Heartbeat {
+  Heartbeat();
 
 public:
-    static void toggle();
+  static void toggle();
 
 private:
-    Pin pin;
+  Pin pin;
 };
-
 }
 }

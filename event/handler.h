@@ -18,23 +18,19 @@
 #include "event/event.h"
 #include "utils/cpp.h"
 
-namespace nospark
-{
-namespace event
-{
+namespace nospark {
+namespace event {
 
 // Abstract base clas for an event receiver. Derived classes will
 // be automatically registered with the event looper.
-class Handler
-{
+class Handler {
 public:
-    Handler();
-    virtual ~Handler();
+  Handler();
+  virtual ~Handler();
 
-    virtual void onEvent(const Event &event) = 0;
+  virtual void onEvent(const Event &event) = 0;
 
-    DISALLOW_COPY_AND_ASSIGN(Handler);
+  DISALLOW_COPY_AND_ASSIGN(Handler);
 };
-
 }
 }

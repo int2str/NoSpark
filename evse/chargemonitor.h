@@ -22,43 +22,39 @@
 #include "utils/cpp.h"
 #include "utils/movingaverage.h"
 
-#define MOVING_AVERAGE_WINDOW   64
+#define MOVING_AVERAGE_WINDOW 64
 
-namespace nospark
-{
-namespace evse
-{
+namespace nospark {
+namespace evse {
 
-class ChargeMonitor : public event::Handler
-{
-    ChargeMonitor();
+class ChargeMonitor : public event::Handler {
+  ChargeMonitor();
 
 public:
-    static ChargeMonitor& get();
+  static ChargeMonitor &get();
 
-    bool isCharging() const;
-    uint32_t chargeDuration() const;
-    uint32_t chargeCurrent() const;
-    uint32_t wattHours() const;
+  bool isCharging() const;
+  uint32_t chargeDuration() const;
+  uint32_t chargeCurrent() const;
+  uint32_t wattHours() const;
 
 private:
-    void update();
-    void chargeStateChanged(const bool charging);
+  void update();
+  void chargeStateChanged(const bool charging);
 
-    void onEvent(const event::Event &event) override;
+  void onEvent(const event::Event &event) override;
 
-    board::Ammeter ammeter;
-    uint32_t time_start_ms;
-    uint32_t time_stop_ms;
-    uint32_t last_sample;
+  board::Ammeter ammeter;
+  uint32_t time_start_ms;
+  uint32_t time_stop_ms;
+  uint32_t last_sample;
 
-    uint32_t watt_seconds;
-    bool reset_stats_on_charge;
+  uint32_t watt_seconds;
+  bool reset_stats_on_charge;
 
-    utils::MovingAverage<uint32_t, MOVING_AVERAGE_WINDOW> current_samples;
+  utils::MovingAverage<uint32_t, MOVING_AVERAGE_WINDOW> current_samples;
 
-    DISALLOW_COPY_AND_ASSIGN(ChargeMonitor);
+  DISALLOW_COPY_AND_ASSIGN(ChargeMonitor);
 };
-
 }
 }

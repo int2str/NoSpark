@@ -17,40 +17,21 @@
 
 using nospark::devices::LCD16x2;
 
-namespace nospark
-{
-namespace stream
-{
+namespace nospark {
+namespace stream {
 
-LcdStream::LcdStream(LCD16x2 &lcd)
-  : lcd(lcd)
-{
+LcdStream::LcdStream(LCD16x2 &lcd) : lcd(lcd) {}
+
+LCD16x2 &LcdStream::getLCD() const { return lcd; }
+
+void LcdStream::clear() { lcd.clear(); }
+
+void LcdStream::move(const uint8_t x, const uint8_t y) { lcd.move(x, y); }
+
+void LcdStream::setBacklight(const LCD16x2::Backlight color) {
+  lcd.setBacklight(color);
 }
 
-LCD16x2& LcdStream::getLCD() const
-{
-    return lcd;
-}
-
-void LcdStream::clear()
-{
-    lcd.clear();
-}
-
-void LcdStream::move(const uint8_t x, const uint8_t y)
-{
-    lcd.move(x, y);
-}
-
-void LcdStream::setBacklight(const LCD16x2::Backlight color)
-{
-    lcd.setBacklight(color);
-}
-
-void LcdStream::write(const char ch)
-{
-    lcd.write(ch);
-}
-
+void LcdStream::write(const char ch) { lcd.write(ch); }
 }
 }

@@ -21,56 +21,38 @@
 #include "devices/mcp23017.h"
 #include "utils/pair.h"
 
-namespace nospark
-{
-namespace devices
-{
+namespace nospark {
+namespace devices {
 
-class LCD16x2
-{
+class LCD16x2 {
 public:
-    enum Backlight
-    {
-        OFF,
-        RED,
-        GREEN,
-        BLUE,
-        YELLOW,
-        CYAN,
-        MAGENTA,
-        WHITE
-    };
+  enum Backlight { OFF, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, WHITE };
 
-    enum BacklightType
-    {
-        RGB,
-        MONOCHROME
-    };
+  enum BacklightType { RGB, MONOCHROME };
 
-    LCD16x2();
+  LCD16x2();
 
-    void clear();
-    void home();
-    void move(const uint8_t x, const uint8_t y);
+  void clear();
+  void home();
+  void move(const uint8_t x, const uint8_t y);
 
-    void createChar(const uint8_t idx, const uint8_t* data, const uint8_t len);
-    void createChar_P(const uint8_t idx, const uint8_t* data, const uint8_t len);
+  void createChar(const uint8_t idx, const uint8_t *data, const uint8_t len);
+  void createChar_P(const uint8_t idx, const uint8_t *data, const uint8_t len);
 
-    void setBacklight(const Backlight color);
+  void setBacklight(const Backlight color);
 
-    // |setBacklight| must be called after changing the backlight type
-    void setBacklightType(const BacklightType type);
+  // |setBacklight| must be called after changing the backlight type
+  void setBacklightType(const BacklightType type);
 
-    void write(const uint8_t ch);
+  void write(const uint8_t ch);
 
 private:
-    devices::MCP23017 io;
-    utils::Pair<uint8_t,uint8_t> backlight_bits;
-    BacklightType backlight_type;
+  devices::MCP23017 io;
+  utils::Pair<uint8_t, uint8_t> backlight_bits;
+  BacklightType backlight_type;
 
-    void writeCommand(const uint8_t b);
-    void pulse(const uint8_t b);
+  void writeCommand(const uint8_t b);
+  void pulse(const uint8_t b);
 };
-
 }
 }

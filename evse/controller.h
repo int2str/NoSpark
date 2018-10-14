@@ -23,45 +23,41 @@
 #include "board/pin.h"
 #include "board/relays.h"
 #include "board/sleepindicator.h"
-#include "evse/state.h"
 #include "event/handler.h"
+#include "evse/state.h"
 #include "utils/cpp.h"
 
-namespace nospark
-{
-namespace evse
-{
+namespace nospark {
+namespace evse {
 
-class Controller : public event::Handler
-{
-    Controller();
-    ~Controller();
+class Controller : public event::Handler {
+  Controller();
+  ~Controller();
 
 public:
-    static Controller& init();
+  static Controller &init();
 
 private:
-    void onEvent(const event::Event &event) override;
+  void onEvent(const event::Event &event) override;
 
-    void update();
+  void update();
 
-    // The state is only updated when the J1772 state
-    // changes. |force_update| can be used to force
-    // a state updated regardless of the J1772 state.
-    void updateRunning(bool force_update = false);
+  // The state is only updated when the J1772 state
+  // changes. |force_update| can be used to force
+  // a state updated regardless of the J1772 state.
+  void updateRunning(bool force_update = false);
 
-    void enableCharge(const bool enable);
-    void updateChargeCurrent(const bool enablePwm = false);
+  void enableCharge(const bool enable);
+  void updateChargeCurrent(const bool enablePwm = false);
 
-    void setFault(const State::ControllerFault fault);
+  void setFault(const State::ControllerFault fault);
 
-    board::Relays relays;
-    board::GFCI gfci;
-    board::J1772Pilot j1772;
-    board::SleepIndicator sleep_status;
+  board::Relays relays;
+  board::GFCI gfci;
+  board::J1772Pilot j1772;
+  board::SleepIndicator sleep_status;
 
-    DISALLOW_COPY_AND_ASSIGN(Controller);
+  DISALLOW_COPY_AND_ASSIGN(Controller);
 };
-
 }
 }

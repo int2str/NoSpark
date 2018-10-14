@@ -24,54 +24,50 @@
 
 #define SETTINGS_PAGES 10
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
 class LcdStateSettings;
-typedef bool (LcdStateSettings::*PageHandler) ();
+typedef bool (LcdStateSettings::*PageHandler)();
 
-class LcdStateSettings : public LcdState
-{
+class LcdStateSettings : public LcdState {
 public:
-    LcdStateSettings(stream::LcdStream &lcd);
+  LcdStateSettings(stream::LcdStream &lcd);
 
-    bool draw() override;
+  bool draw() override;
 
-    bool pageSetTime();
-    bool pageSetDate();
-    bool pageSetCurrent();
-    bool pageChargeTimer();
-    bool pageKwhLimit();
-    bool pageKwhCost();
-    bool pageSleepmode();
-    bool pageLcdType();
-    bool pageReset();
-    bool pageExit();
+  bool pageSetTime();
+  bool pageSetDate();
+  bool pageSetCurrent();
+  bool pageChargeTimer();
+  bool pageKwhLimit();
+  bool pageKwhCost();
+  bool pageSleepmode();
+  bool pageLcdType();
+  bool pageReset();
+  bool pageExit();
 
-    // Forwarded keyboard events
-    virtual void select() override;
-    virtual void advance() override;
+  // Forwarded keyboard events
+  virtual void select() override;
+  virtual void advance() override;
 
 private:
-    bool timedOut();
-    void resetTimeout();
+  bool timedOut();
+  void resetTimeout();
 
-    void load();
-    void save();
+  void load();
+  void save();
 
-    evse::Settings settings;
+  evse::Settings settings;
 
-    uint8_t page;
-    uint8_t option;
-    uint8_t value;
+  uint8_t page;
+  uint8_t option;
+  uint8_t value;
 
-    uint32_t last_action;
-    TimedFlipFlop blink_state;
+  uint32_t last_action;
+  TimedFlipFlop blink_state;
 
-    PageHandler pageHandlers[SETTINGS_PAGES];
+  PageHandler pageHandlers[SETTINGS_PAGES];
 };
-
 }
 }

@@ -15,35 +15,23 @@
 
 #include "pcf8574.h"
 
-namespace nospark
-{
-namespace devices
-{
+namespace nospark {
+namespace devices {
 
 PCF8574::PCF8574(const uint8_t i2c_addr)
-    : i2c_addr(i2c_addr)
-    , i2c(I2CMaster::get())
-    , ddr(0xFF)
-{
+    : i2c_addr(i2c_addr), i2c(I2CMaster::get()), ddr(0xFF) {}
+
+void PCF8574::ioDir(const uint8_t io) { ddr = io; }
+
+uint8_t PCF8574::read() {
+  uint8_t b = 0;
+  i2c.read(i2c_addr, &b, 1);
+  return b & ddr;
 }
 
-void PCF8574::ioDir(const uint8_t io)
-{
-    ddr = io;
+void PCF8574::write(const uint8_t b) {
+  uint8_t b2 = b & ~ddr;
+  i2c.write(i2c_addr, &b2, 1);
 }
-
-uint8_t PCF8574::read()
-{
-    uint8_t b = 0;
-    i2c.read(i2c_addr, &b, 1);
-    return b & ddr;
-}
-
-void PCF8574::write(const uint8_t b)
-{
-    uint8_t b2 = b & ~ddr;
-    i2c.write(i2c_addr, &b2, 1);
-}
-
 }
 }

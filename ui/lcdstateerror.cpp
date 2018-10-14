@@ -13,59 +13,51 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include "evse/state.h"
 #include "lcdstateerror.h"
+#include "evse/state.h"
 #include "strings.h"
 
 using nospark::evse::State;
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
-LcdStateError::LcdStateError(stream::LcdStream &lcd)
-    : LcdState(lcd)
-{
+LcdStateError::LcdStateError(stream::LcdStream &lcd) : LcdState(lcd) {}
+
+bool LcdStateError::draw() {
+  lcd.setBacklight(devices::LCD16x2::RED);
+
+  lcd.move(0, 0);
+  lcd << stream::PGM << STR_STATE_ERROR;
+
+  lcd.move(0, 1);
+
+  switch (State::get().fault) {
+  case State::FAULT_POST_GFCI:
+    lcd << stream::PGM << STR_FAULT_POST_GFCI;
+    break;
+
+  case State::FAULT_RELAY_NO_GROUND:
+    lcd << stream::PGM << STR_FAULT_RELAY_NO_GROUND;
+    break;
+
+  case State::FAULT_RELAY_STUCK:
+    lcd << stream::PGM << STR_FAULT_RELAY_STUCK;
+    break;
+
+  case State::FAULT_GFCI_TRIPPED:
+    lcd << stream::PGM << STR_FAULT_GFCI_TRIPPED;
+    break;
+
+  case State::FAULT_TEMPERATURE_CRITICAL:
+    lcd << stream::PGM << STR_FAULT_TEMPERATURE;
+    break;
+
+  case State::NOTHING_WRONG:
+    // Then why are we here?!
+    break;
+  }
+  return true;
 }
-
-bool LcdStateError::draw()
-{
-    lcd.setBacklight(devices::LCD16x2::RED);
-
-    lcd.move(0, 0);
-    lcd << stream::PGM << STR_STATE_ERROR;
-
-    lcd.move(0, 1);
-
-    switch (State::get().fault)
-    {
-        case State::FAULT_POST_GFCI:
-            lcd << stream::PGM << STR_FAULT_POST_GFCI;
-            break;
-
-        case State::FAULT_RELAY_NO_GROUND:
-            lcd << stream::PGM << STR_FAULT_RELAY_NO_GROUND;
-            break;
-
-        case State::FAULT_RELAY_STUCK:
-            lcd << stream::PGM << STR_FAULT_RELAY_STUCK;
-            break;
-
-        case State::FAULT_GFCI_TRIPPED:
-            lcd << stream::PGM << STR_FAULT_GFCI_TRIPPED;
-            break;
-
-        case State::FAULT_TEMPERATURE_CRITICAL:
-            lcd << stream::PGM << STR_FAULT_TEMPERATURE;
-            break;
-
-        case State::NOTHING_WRONG:
-            // Then why are we here?!
-            break;
-    }
-    return true;
-}
-
 }
 }

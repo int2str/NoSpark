@@ -17,60 +17,45 @@
 
 #include <stdlib.h>
 
-namespace nospark
-{
-namespace utils
-{
+namespace nospark {
+namespace utils {
 
-template <class T, size_t WINDOW>
-class MovingAverage
-{
+template <class T, size_t WINDOW> class MovingAverage {
 public:
-    MovingAverage()
-        : buffer{0}
-        , size(WINDOW)
-        , index(0)
-        , items(0)
-        , sum(0)
-    {
-    }
+  MovingAverage() : buffer{0}, size(WINDOW), index(0), items(0), sum(0) {}
 
-    void push(const T val)
-    {
-        sum -= buffer[index];
-        sum += val;
-        buffer[index] = val;
-        if (++index == size)
-            index = 0;
-        if (items < size)
-            ++items;
-    }
+  void push(const T val) {
+    sum -= buffer[index];
+    sum += val;
+    buffer[index] = val;
+    if (++index == size)
+      index = 0;
+    if (items < size)
+      ++items;
+  }
 
-    T get() const
-    {
-        // Make sure we have sufficient data
-        // to avoid initial spikes
-        if (items < (size/2))
-            return 0;
-        return sum / items;
-    }
+  T get() const {
+    // Make sure we have sufficient data
+    // to avoid initial spikes
+    if (items < (size / 2))
+      return 0;
+    return sum / items;
+  }
 
-    void clear()
-    {
-        for(index = 0; index != size; ++index)
-            buffer[index] = 0;
-        sum = 0;
-        items = 0;
-        index = 0;
-    }
+  void clear() {
+    for (index = 0; index != size; ++index)
+      buffer[index] = 0;
+    sum = 0;
+    items = 0;
+    index = 0;
+  }
 
 private:
-    T buffer[WINDOW];
-    const size_t size;
-    size_t index;
-    size_t items;
-    T sum;
+  T buffer[WINDOW];
+  const size_t size;
+  size_t index;
+  size_t items;
+  T sum;
 };
-
 }
 }

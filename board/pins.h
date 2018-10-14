@@ -22,6 +22,8 @@
 
 #include "pin.h"
 
+// clang-format off
+
 // AC Relay pins
 #define PIN_AC_RELAY        MAKEPIN(B, 1, OUT)
 #define PIN_DC_RELAY1       MAKEPIN(B, 0, OUT)
@@ -43,3 +45,5 @@
 #define PIN_SCK             MAKEPIN(B, 5, OUT) // Heartbeat
 #define PIN_MISO            MAKEPIN(B, 4, OUT) // Sleep
 #define PIN_MOSI            MAKEPIN(B, 3, OUT) // Available (PWM)
+
+// clang-format on

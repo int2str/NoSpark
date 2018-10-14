@@ -15,32 +15,28 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
-#include "utils/cpp.h"
 #include "stream/uartstream.h"
 #include "ui/serialapi.h"
+#include "utils/cpp.h"
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
 // Simple command line interface for control and monitoring.
-class SerialApi
-{
+class SerialApi {
 public:
-    SerialApi(stream::UartStream &uart);
+  SerialApi(stream::UartStream &uart);
 
-    void onEvent(const event::Event &event);
-    bool handleCommand(const char *buffer, const uint8_t len);
+  void onEvent(const event::Event &event);
+  bool handleCommand(const char *buffer, const uint8_t len);
 
 private:
-    stream::UartStream &uart;
+  stream::UartStream &uart;
 
-    DISALLOW_COPY_AND_ASSIGN(SerialApi);
+  DISALLOW_COPY_AND_ASSIGN(SerialApi);
 };
-
 }
 }

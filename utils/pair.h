@@ -15,24 +15,15 @@
 
 #pragma once
 
-namespace nospark
-{
-namespace utils
-{
+namespace nospark {
+namespace utils {
 
-template <class T1, class T2>
-class Pair
-{
+template <class T1, class T2> class Pair {
 public:
-    T1 first;
-    T2 second;
+  T1 first;
+  T2 second;
 
-    Pair(const T1& first, const T2& second)
-        : first(first)
-        , second(second)
-    {
-    }
+  Pair(const T1 &first, const T2 &second) : first(first), second(second) {}
 };
-
 }
 }

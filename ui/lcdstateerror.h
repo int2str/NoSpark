@@ -17,20 +17,16 @@
 
 #include <stdbool.h>
 
-#include "stream/lcdstream.h"
 #include "lcdstate.h"
+#include "stream/lcdstream.h"
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
-class LcdStateError : public LcdState
-{
+class LcdStateError : public LcdState {
 public:
-    LcdStateError(stream::LcdStream &lcd);
-    bool draw() override;
+  LcdStateError(stream::LcdStream &lcd);
+  bool draw() override;
 };
-
 }
 }

@@ -19,34 +19,30 @@
 #include "event/handler.h"
 #include "utils/cpp.h"
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
 // Currently handling a single button :)
 // This is a singleton; there shall be only one.
-class Keyboard : public event::Handler
-{
-    Keyboard();
-    ~Keyboard();
+class Keyboard : public event::Handler {
+  Keyboard();
+  ~Keyboard();
 
 public:
-    static Keyboard& init();
+  static Keyboard &init();
 
 private:
-    void update();
-    void onEvent(const event::Event &event) override;
+  void update();
+  void onEvent(const event::Event &event) override;
 
-    // This is effectively re-defining the same IO expander twice.
-    // However, this leads to better abstraction since we don't have
-    // to hunt through LCD code to find our button handling.
-    devices::MCP23017 io;
-    uint8_t last_state;
-    uint32_t last_change;
+  // This is effectively re-defining the same IO expander twice.
+  // However, this leads to better abstraction since we don't have
+  // to hunt through LCD code to find our button handling.
+  devices::MCP23017 io;
+  uint8_t last_state;
+  uint32_t last_change;
 
-    DISALLOW_COPY_AND_ASSIGN(Keyboard);
+  DISALLOW_COPY_AND_ASSIGN(Keyboard);
 };
-
 }
 }

@@ -13,19 +13,19 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include "avr/pgmspace.h"
 #include "strings.h"
+#include "avr/pgmspace.h"
 
-#define EOL                 "\r\n"
-#define CR                  '\r'
-#define LF                  '\n'
+#define EOL "\r\n"
+#define CR '\r'
+#define LF '\n'
 
 // Credit where credit is due...
-char const STR_OPENEVSE[] PROGMEM =    "OpenEVSE";
+char const STR_OPENEVSE[] PROGMEM = "OpenEVSE";
 char const STR_OPENEVSE_BY[] PROGMEM = "by Chris Howell";
 
-char const STR_NOSPARK[] PROGMEM =     "NoSpark v1.00";
-char const STR_NOSPARK_BY[] PROGMEM =  "by A. Eisenbach";
+char const STR_NOSPARK[] PROGMEM = "NoSpark v1.00";
+char const STR_NOSPARK_BY[] PROGMEM = "by A. Eisenbach";
 
 // Language specific
 #include "strings_en.cpp"

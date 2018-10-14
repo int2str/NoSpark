@@ -15,31 +15,18 @@
 
 #include "stream/uartstream.h"
 
-namespace nospark
-{
-namespace stream
-{
+namespace nospark {
+namespace stream {
 
-UartStream::UartStream(serial::Usart &uart)
-  : uart(uart)
-{
+UartStream::UartStream(serial::Usart &uart) : uart(uart) {}
+
+bool UartStream::avail() { return uart.avail(); }
+
+UartStream &UartStream::operator>>(char &ch) {
+  ch = uart.read();
+  return *this;
 }
 
-bool UartStream::avail()
-{
-    return uart.avail();
-}
-
-UartStream& UartStream::operator>> (char &ch)
-{
-    ch = uart.read();
-    return *this;
-}
-
-void UartStream::write(const char ch)
-{
-    uart.write(ch);
-}
-
+void UartStream::write(const char ch) { uart.write(ch); }
 }
 }

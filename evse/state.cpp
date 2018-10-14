@@ -13,32 +13,25 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "state.h"
 #include "evse/settings.h"
 #include "utils/eeprom.h"
-#include "state.h"
 
-namespace nospark
-{
-namespace evse
-{
+namespace nospark {
+namespace evse {
 
-State& State::get()
-{
-    static State state;
-    return state;
+State &State::get() {
+  static State state;
+  return state;
 }
 
 State::State()
-    : controller(BOOTUP)
-    , fault(NOTHING_WRONG)
-    , ready(READY)
-    , j1772(board::J1772Pilot::UNKNOWN)
-{
-    Settings settings;
-    EepromSettings::load(settings);
-    max_amps_target = settings.max_current;
-    max_amps_limit = max_amps_target;
+    : controller(BOOTUP), fault(NOTHING_WRONG), ready(READY),
+      j1772(board::J1772Pilot::UNKNOWN) {
+  Settings settings;
+  EepromSettings::load(settings);
+  max_amps_target = settings.max_current;
+  max_amps_limit = max_amps_target;
 }
-
 }
 }

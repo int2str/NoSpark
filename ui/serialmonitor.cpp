@@ -14,113 +14,93 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "ui/serialmonitor.h"
+#include "events.h"
 #include "ui/strings.h"
 #include "ui/strings_console.h"
-#include "events.h"
 
-#define BS  0x08
+#define BS 0x08
 #define DEL 0x7F
 
 using nospark::serial::Usart;
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
-SerialMonitor& SerialMonitor::init()
-{
-    static SerialMonitor monitor;
-    return monitor;
+SerialMonitor &SerialMonitor::init() {
+  static SerialMonitor monitor;
+  return monitor;
 }
 
 SerialMonitor::SerialMonitor()
-    : uart(serial::Usart::get())
-    , api(uart)
-    , console(uart)
-    , state(CONSOLE_STARTUP)
-    , echo(true)
-    , len(0)
-{
-}
+    : uart(serial::Usart::get()), api(uart), console(uart),
+      state(CONSOLE_STARTUP), echo(true), len(0) {}
 
-void SerialMonitor::update()
-{
-    char ch;
+void SerialMonitor::update() {
+  char ch;
 
-    switch (state)
-    {
-        case CONSOLE_STARTUP:
-            // Good place to set BT name etc...
-            state = CONSOLE_ACCUMULATING;
-            break;
+  switch (state) {
+  case CONSOLE_STARTUP:
+    // Good place to set BT name etc...
+    state = CONSOLE_ACCUMULATING;
+    break;
 
-        case CONSOLE_ACCUMULATING:
-            while (uart.avail())
-            {
-                uart >> ch;
+  case CONSOLE_ACCUMULATING:
+    while (uart.avail()) {
+      uart >> ch;
 
-                if (len == 0 && ch == '$')
-                    echo = false;
+      if (len == 0 && ch == '$')
+        echo = false;
 
-                if (echo)
-                {
-                    uart << ch;
-                    if (ch == CR)
-                        uart << LF;
-                }
+      if (echo) {
+        uart << ch;
+        if (ch == CR)
+          uart << LF;
+      }
 
-                if (ch == BS || ch == DEL)
-                {
-                    if (len)
-                        buffer[--len] = 0;
-                } else {
-                    if (ch != LF)
-                        buffer[len++] = ch;
-                }
+      if (ch == BS || ch == DEL) {
+        if (len)
+          buffer[--len] = 0;
+      } else {
+        if (ch != LF)
+          buffer[len++] = ch;
+      }
 
-                if (len == CONSOLE_BUFFER || ch == CR)
-                {
-                    buffer[--len] = 0;
-                    state = CONSOLE_COMMAND;
-                    break;
-                }
-            }
-            break;
-
-        case CONSOLE_COMMAND:
-            handleCommand();
-            len = 0;
-            echo = true;
-            state = CONSOLE_ACCUMULATING;
-            break;
+      if (len == CONSOLE_BUFFER || ch == CR) {
+        buffer[--len] = 0;
+        state = CONSOLE_COMMAND;
+        break;
+      }
     }
+    break;
+
+  case CONSOLE_COMMAND:
+    handleCommand();
+    len = 0;
+    echo = true;
+    state = CONSOLE_ACCUMULATING;
+    break;
+  }
 }
 
-void SerialMonitor::handleCommand()
-{
-    if (len > 2 && buffer[0] == '$')
-    {
-        api.handleCommand(buffer+1, len-1);
-    } else {
-        console.handleCommand(buffer, len);
-        uart << stream::PGM << STR_PROMPT;
-    }
+void SerialMonitor::handleCommand() {
+  if (len > 2 && buffer[0] == '$') {
+    api.handleCommand(buffer + 1, len - 1);
+  } else {
+    console.handleCommand(buffer, len);
+    uart << stream::PGM << STR_PROMPT;
+  }
 }
 
-void SerialMonitor::onEvent(const event::Event& event)
-{
-    switch (event.id)
-    {
-        case EVENT_UPDATE:
-            update();
-            break;
+void SerialMonitor::onEvent(const event::Event &event) {
+  switch (event.id) {
+  case EVENT_UPDATE:
+    update();
+    break;
 
-        default:
-            console.onEvent(event);
-            break;
-    }
+  default:
+    console.onEvent(event);
+    break;
+  }
 }
-
 }
 }

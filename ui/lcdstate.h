@@ -19,26 +19,21 @@
 
 #include "stream/lcdstream.h"
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
-class LcdState
-{
+class LcdState {
 public:
-    LcdState(stream::LcdStream &lcd)
-        : lcd(lcd) {};
+  LcdState(stream::LcdStream &lcd) : lcd(lcd){};
 
-    virtual bool draw() = 0;
+  virtual bool draw() = 0;
 
-    virtual ~LcdState() {}
-    virtual void select() {};
-    virtual void advance() {}
+  virtual ~LcdState() {}
+  virtual void select(){};
+  virtual void advance() {}
 
 protected:
-    stream::LcdStream &lcd;
+  stream::LcdStream &lcd;
 };
-
 }
 }

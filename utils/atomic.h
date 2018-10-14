@@ -16,31 +16,21 @@
 #pragma once
 
 #ifdef __GNUC__
-    #define _INLINE_ __attribute__((always_inline)) inline
+#define _INLINE_ __attribute__((always_inline)) inline
 #else
-    #define _INLINE_ inline
+#define _INLINE_ inline
 #endif
 
 #include <avr/interrupt.h>
 
-namespace nospark
-{
-namespace utils
-{
+namespace nospark {
+namespace utils {
 
-class Atomic
-{
+class Atomic {
 public:
-    _INLINE_ Atomic()
-    {
-        cli();
-    }
+  _INLINE_ Atomic() { cli(); }
 
-    _INLINE_ ~Atomic()
-    {
-        sei();
-    }
+  _INLINE_ ~Atomic() { sei(); }
 };
-
 }
 }

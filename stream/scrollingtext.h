@@ -17,35 +17,31 @@
 
 #include "stream/outputstream.h"
 
-namespace nospark
-{
-namespace stream
-{
+namespace nospark {
+namespace stream {
 
-class ScrollingText : public OutputStream
-{
+class ScrollingText : public OutputStream {
 public:
-    ScrollingText(const uint8_t size, const uint8_t width);
-    ~ScrollingText();
+  ScrollingText(const uint8_t size, const uint8_t width);
+  ~ScrollingText();
 
-    void setWidth(const uint8_t width);
-    void clear();
+  void setWidth(const uint8_t width);
+  void clear();
 
-    ScrollingText &operator>> (OutputStream &os);
+  ScrollingText &operator>>(OutputStream &os);
 
 private:
-    void update();
+  void update();
 
-    void write(const char ch) override;
+  void write(const char ch) override;
 
-    uint32_t last_update;
+  uint32_t last_update;
 
-    const uint8_t size;
-    uint8_t width;
-    uint8_t length;
-    uint8_t offset;
-    char *buffer;
+  const uint8_t size;
+  uint8_t width;
+  uint8_t length;
+  uint8_t offset;
+  char *buffer;
 };
-
 }
 }

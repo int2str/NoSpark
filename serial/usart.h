@@ -15,33 +15,29 @@
 
 #pragma once
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "utils/cpp.h"
 
-namespace nospark
-{
-namespace serial
-{
+namespace nospark {
+namespace serial {
 
 // Non-interrupt, polling based implementation. Uses UART0.
 // This is a singleton; there shall be only one.
-class Usart
-{
+class Usart {
 public:
-    static Usart& get();
+  static Usart &get();
 
-    uint8_t read();
-    void write(const uint8_t b);
+  uint8_t read();
+  void write(const uint8_t b);
 
-    bool avail() const;
+  bool avail() const;
 
 private:
-    Usart();
+  Usart();
 
-    DISALLOW_COPY_AND_ASSIGN(Usart);
+  DISALLOW_COPY_AND_ASSIGN(Usart);
 };
-
 }
 }

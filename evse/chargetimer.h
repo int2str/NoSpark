@@ -20,27 +20,23 @@
 #include "event/handler.h"
 #include "utils/cpp.h"
 
-namespace nospark
-{
-namespace evse
-{
+namespace nospark {
+namespace evse {
 
-class ChargeTimer : public event::Handler
-{
-    ChargeTimer();
-    ~ChargeTimer();
+class ChargeTimer : public event::Handler {
+  ChargeTimer();
+  ~ChargeTimer();
 
 public:
-    static ChargeTimer& init();
+  static ChargeTimer &init();
 
 private:
-    void onEvent(const event::Event &event) override;
-    void checkTime();
+  void onEvent(const event::Event &event) override;
+  void checkTime();
 
-    bool can_charge;
+  bool can_charge;
 
-    DISALLOW_COPY_AND_ASSIGN(ChargeTimer);
+  DISALLOW_COPY_AND_ASSIGN(ChargeTimer);
 };
-
 }
 }

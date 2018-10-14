@@ -13,8 +13,8 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include "avr/pgmspace.h"
 #include "strings_console.h"
+#include "avr/pgmspace.h"
 
 // Console strings
 char const STR_PROMPT[] PROGMEM = "nospark> ";

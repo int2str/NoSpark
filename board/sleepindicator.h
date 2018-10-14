@@ -17,22 +17,18 @@
 
 #include "board/pin.h"
 
-namespace nospark
-{
-namespace board
-{
+namespace nospark {
+namespace board {
 
 // Toggles external PIN to show that the EVSE is currently
 // suspended (i.e. timer active etc.).
-class SleepIndicator
-{
+class SleepIndicator {
 public:
-    SleepIndicator();
-    void set(const bool enable);
+  SleepIndicator();
+  void set(const bool enable);
 
 private:
-    Pin pin;
+  Pin pin;
 };
-
 }
 }

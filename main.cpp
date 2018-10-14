@@ -28,30 +28,36 @@
 
 #include "events.h"
 
-using namespace nospark;
+namespace nospark {
 
-int main()
-{
-    sei();
+void run() {
+  // After enabling the watchdog timer, initializing event handlers and
+  // anything that handles the initial EVENT_UPDATE has to be done before
+  // the watchdog timer expires for the first time...
+  system::Watchdog::enable();
 
-    system::Watchdog::enable();
+  // Initialize event handlers
+  ui::LcdConsole::init();
+  ui::Keyboard::init();
+  ui::SerialMonitor::init();
+  evse::Controller::init();
+  evse::ChargeMonitor::get();
+  evse::ChargeTimer::init();
+  evse::TemperatureMonitor::init();
 
-    // Initialize event handlers
-    ui::LcdConsole::init();
-    ui::Keyboard::init();
-    ui::SerialMonitor::init();
-    evse::Controller::init();
-    evse::ChargeMonitor::get();
-    evse::ChargeTimer::init();
-    evse::TemperatureMonitor::init();
+  // Start event dispatch loop
+  while (1) {
+    event::Loop::post(event::Event(EVENT_UPDATE));
+    event::Loop::dispatch();
 
-    // Start event dispatch loop
-    while (1)
-    {
-        event::Loop::post(event::Event(EVENT_UPDATE));
-        event::Loop::dispatch();
+    system::Watchdog::reset();
+    board::Heartbeat::toggle();
+  }
+}
 
-        system::Watchdog::reset();
-        board::Heartbeat::toggle();
-    }
+} // namespace nospark
+
+int main() {
+  sei();
+  nospark::run();
 }

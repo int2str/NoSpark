@@ -13,6 +13,8 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+// clang-format off
+
 // General UI                                     |1234567890123456|
 char const STR_STATE_READY[] PROGMEM =            "READY    ";
 char const STR_STATE_CONNECTED[] PROGMEM =        "CONNECTED";
@@ -58,3 +60,4 @@ char const STR_STATS_MONTH[] PROGMEM =            "This month";
 char const STR_STATS_YEAR[] PROGMEM =             "This year";
 char const STR_STATS_TOTAL[] PROGMEM =            "Lifetime";
 
+// clang-format on

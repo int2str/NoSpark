@@ -15,33 +15,29 @@
 
 #pragma once
 
-#include <avr/pgmspace.h>
 #include "devices/lcd1602.h"
+#include <avr/pgmspace.h>
 
-namespace nospark
-{
-namespace ui
-{
+namespace nospark {
+namespace ui {
 
-class CustomCharacters
-{
+class CustomCharacters {
 public:
-    enum CUSTOM_CHARS_MAP
-    {
-        SEPARATOR
-      , CLOCK
-      , CALENDAR
-      , BOLT
-      , HOURGLASS
-      , ZZ
-      , BATTERY1
-      , EURO
-    };
+  enum CUSTOM_CHARS_MAP {
+    SEPARATOR,
+    CLOCK,
+    CALENDAR,
+    BOLT,
+    HOURGLASS,
+    ZZ,
+    BATTERY1,
+    EURO
+  };
 
-    static void loadCustomChars(devices::LCD16x2 &lcd);
-    static void loadLargeDigits(devices::LCD16x2 &lcd);
-    static void largeDigit(devices::LCD16x2 &lcd, const uint8_t digit, const uint8_t offset);
+  static void loadCustomChars(devices::LCD16x2 &lcd);
+  static void loadLargeDigits(devices::LCD16x2 &lcd);
+  static void largeDigit(devices::LCD16x2 &lcd, const uint8_t digit,
+                         const uint8_t offset);
 };
-
 }
 }
