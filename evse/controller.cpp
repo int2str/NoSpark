@@ -134,6 +134,7 @@ void Controller::updateRunning(bool force_update)
             break;
 
         case J1772Pilot::STATE_B: // <-- EV Connected
+        case J1772Pilot::STATE_D: // <-- Vent required :(
         case J1772Pilot::DIODE_CHECK_FAILED:
             enableCharge(false);
             event::Loop::remove(Event(EVENT_SET_RELAY));
@@ -154,7 +155,6 @@ void Controller::updateRunning(bool force_update)
             }
             break;
 
-        case J1772Pilot::STATE_D: // <-- Vent required :(
         case J1772Pilot::UNKNOWN:
         case J1772Pilot::IMPLAUSIBLE:
             enableCharge(false);
