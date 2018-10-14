@@ -9,8 +9,8 @@ OUTDIR = ../obj
 
 CXXFLAGS = $(PRJCXXFLAGS) $(SHAREDINC)
 
-SOURCE = $(wildcard $(SRCDIR)/*.cpp)
-OBJS = $(patsubst $(SRCDIR)%, $(OBJDIR)%, $(SOURCE:.cpp=.o))
+SOURCE = $(wildcard $(SRCDIR)/*.cc)
+OBJS = $(patsubst $(SRCDIR)%, $(OBJDIR)%, $(SOURCE:.cc=.o))
 DEPS = $(patsubst $(OBJDIR)%, $(DEPDIR)%, $(OBJS:.o=.d))
 
 TARGET = $(OUTDIR)/lib$(notdir $(CURDIR)).a
@@ -29,12 +29,12 @@ $(TARGET): $(OBJS)
 	@echo [LIB] $(notdir $@)
 	@$(AR) rcs $@ $^
 
-$(DEPDIR)/%.d: %.cpp
+$(DEPDIR)/%.d: %.cc
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) -MM $< > $@
 	@sed -i -e "s,$*.o:,$(OBJDIR)/$*.o $@: ,g" $@
 
-$(OBJDIR)/%.o: %.cpp
+$(OBJDIR)/%.o: %.cc
 	@mkdir -p $(dir $@)
 	@echo [C++] $(notdir $<)
 	@$(CXX) -c $(CXXFLAGS) $< -o $@

@@ -25,8 +25,8 @@ SRCDIR = .
 DEPDIR = .dep
 OBJDIR = obj
 
-SOURCE = $(wildcard $(SRCDIR)/*.cpp)
-OBJS = $(patsubst $(SRCDIR)%, $(OBJDIR)%, $(SOURCE:.cpp=.o))
+SOURCE = $(wildcard $(SRCDIR)/*.cc)
+OBJS = $(patsubst $(SRCDIR)%, $(OBJDIR)%, $(SOURCE:.cc=.o))
 DEPS = $(patsubst $(OBJDIR)%, $(DEPDIR)%, $(OBJS:.o=.d))
 LIBA = $(patsubst %, $(OBJDIR)/lib%.a, $(LIBS))
 LIBL = -L$(OBJDIR) $(patsubst %, -l%, $(LIBS))
@@ -53,12 +53,12 @@ clean:
 test: force_look
 	@cd test ; $(MAKE) ; ./test
 
-$(DEPDIR)/%.d: %.cpp
+$(DEPDIR)/%.d: %.cc
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) -MM $< > $@
 	@sed -i -e "s,$*.o:,$(OBJDIR)/$*.o $@: ,g" $@
 
-$(OBJDIR)/%.o: %.cpp
+$(OBJDIR)/%.o: %.cc
 	@mkdir -p $(dir $@)
 	@echo [C++] $(notdir $<)
 	@$(CXX) -c $(CXXFLAGS) $< -o $@
