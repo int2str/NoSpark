@@ -13,8 +13,6 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#pragma once
-
 // clang-format off
 
 // General UI                            |1234567890123456|
