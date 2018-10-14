@@ -28,5 +28,5 @@ char const STR_NOSPARK[] PROGMEM = "NoSpark v1.00";
 char const STR_NOSPARK_BY[] PROGMEM = "by A. Eisenbach";
 
 // Language specific
-#include "strings_en.cpp"
-//#include "strings_de.h"
+#include "strings_en.inc"
+//#include "strings_de.inc"
