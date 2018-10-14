@@ -14,6 +14,7 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "board/ammeter.h"
+#include "board/j1772pilot.h"
 #include "event/loop.h"
 #include "evse/settings.h"
 #include "evse/state.h"
@@ -23,6 +24,7 @@
 
 #define VOLTAGE 240
 
+using nospark::board::J1772Pilot;
 using nospark::event::Event;
 using nospark::event::Loop;
 using nospark::evse::Settings;
@@ -82,6 +84,7 @@ ChargeMonitor::ChargeMonitor()
     , time_stop_ms(0)
     , last_sample(0)
     , watt_seconds(0)
+    , reset_stats_on_charge(true)
 {
 }
 
@@ -140,7 +143,11 @@ void ChargeMonitor::chargeStateChanged(const bool charging)
         // Record charge start time
         time_start_ms = system::Timer::millis();
         time_stop_ms = 0;
-        watt_seconds = 0;
+        if (reset_stats_on_charge)
+        {
+            watt_seconds = 0;
+            reset_stats_on_charge = false;
+        }
     } else {
         // Record end time
         if (time_start_ms != 0 && time_stop_ms == 0)
@@ -163,6 +170,10 @@ void ChargeMonitor::onEvent(const event::Event& event)
 
         case EVENT_CHARGE_STATE:
             chargeStateChanged(event.param);
+            break;
+
+        case EVENT_J1772_STATE:
+            if (event.param == J1772Pilot::STATE_A) reset_stats_on_charge = true;
             break;
     }
 }

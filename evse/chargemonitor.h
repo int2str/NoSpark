@@ -53,6 +53,7 @@ private:
     uint32_t last_sample;
 
     uint32_t watt_seconds;
+    bool reset_stats_on_charge;
 
     utils::MovingAverage<uint32_t, MOVING_AVERAGE_WINDOW> current_samples;
 
