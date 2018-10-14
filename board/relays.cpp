@@ -81,9 +81,9 @@ Relays::RelayState Relays::checkStatus()
 
     // Now check appropriate state...
     if (enabled)
-        state = isActive() ? OK : GROUND_FAULT;
+        state = isActive() ? OK : NO_GROUND;
     else
-        state = isActive() ? STUCK_RELAY : OK;
+        state = isActive() ? STUCK : OK;
 
     return state;
 }

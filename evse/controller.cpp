@@ -104,12 +104,12 @@ void Controller::updateRunning(bool force_update)
         case Relays::UNKNOWN:
             break;
 
-        case Relays::GROUND_FAULT:
-            setFault(State::FAULT_GROUND_FAULT);
+        case Relays::NO_GROUND:
+            setFault(State::FAULT_RELAY_NO_GROUND);
             break;
 
-        case Relays::STUCK_RELAY:
-            setFault(State::FAULT_STUCK_RELAY);
+        case Relays::STUCK:
+            setFault(State::FAULT_RELAY_STUCK);
             break;
     }
 

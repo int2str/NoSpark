@@ -45,9 +45,9 @@ char const STR_SET_RESET[] PROGMEM =              " Force restart";
 char const STR_SET_EXIT[] PROGMEM =               " Exit settings";
 
 // Faults                                         |1234567890123456|
-char const STR_FAULT_POST_GFCI[] PROGMEM =        "GFI test failed";
-char const STR_FAULT_STUCK_RELAY[] PROGMEM =      "Relay stuck";
-char const STR_FAULT_GROUND_FAULT[] PROGMEM =     "Ground fault";
+char const STR_FAULT_POST_GFCI[] PROGMEM =        "Self test failed";
+char const STR_FAULT_RELAY_STUCK[] PROGMEM =      "Relay stuck";
+char const STR_FAULT_RELAY_NO_GROUND[] PROGMEM =  "Missing Ground";
 char const STR_FAULT_GFCI_TRIPPED[] PROGMEM =     "GFI tripped";
 char const STR_FAULT_TEMPERATURE[] PROGMEM =      "High temperature";
 

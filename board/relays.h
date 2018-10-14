@@ -36,8 +36,8 @@ public:
     {
         UNKNOWN
       , OK
-      , STUCK_RELAY
-      , GROUND_FAULT
+      , STUCK
+      , NO_GROUND
     };
 
     Relays();

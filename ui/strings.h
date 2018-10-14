@@ -57,8 +57,8 @@ extern char const STR_SET_EXIT[];
 
 // Faults
 extern char const STR_FAULT_POST_GFCI[];
-extern char const STR_FAULT_STUCK_RELAY[];
-extern char const STR_FAULT_GROUND_FAULT[];
+extern char const STR_FAULT_RELAY_STUCK[];
+extern char const STR_FAULT_RELAY_NO_GROUND[];
 extern char const STR_FAULT_GFCI_TRIPPED[];
 extern char const STR_FAULT_TEMPERATURE[];
 
