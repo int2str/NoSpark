@@ -28,11 +28,11 @@ namespace nospark {
 namespace ui {
 
 class LcdStateRunning : public LcdState {
-public:
+ public:
   LcdStateRunning(stream::LcdStream &lcd);
   bool draw() override;
 
-private:
+ private:
   enum RunningPages {
     PAGE_DEFAULT,
     PAGE_KWH_WEEK,

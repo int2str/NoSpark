@@ -26,11 +26,11 @@ namespace nospark {
 namespace ui {
 
 class LcdStateSleeping : public LcdState {
-public:
+ public:
   LcdStateSleeping(stream::LcdStream &lcd);
   bool draw() override;
 
-private:
+ private:
   TimedFlipFlop blink_state;
   uint8_t sleep_mode;
 };

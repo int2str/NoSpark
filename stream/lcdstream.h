@@ -22,7 +22,7 @@ namespace nospark {
 namespace stream {
 
 class LcdStream : public OutputStream {
-public:
+ public:
   LcdStream(devices::LCD16x2 &lcd);
 
   void clear();
@@ -32,7 +32,7 @@ public:
 
   devices::LCD16x2 &getLCD() const;
 
-private:
+ private:
   void write(const char ch) override;
 
   devices::LCD16x2 &lcd;

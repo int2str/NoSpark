@@ -15,8 +15,8 @@
 
 #pragma once
 
-#include "utils/cpp.h"
 #include <stdint.h>
+#include "utils/cpp.h"
 
 namespace nospark {
 namespace devices {
@@ -24,13 +24,13 @@ namespace devices {
 class I2CMaster {
   I2CMaster();
 
-public:
+ public:
   static I2CMaster &get();
 
   void write(const uint8_t addr, uint8_t *data, const uint8_t len);
   void read(const uint8_t addr, uint8_t *data, const uint8_t len);
 
-private:
+ private:
   DISALLOW_COPY_AND_ASSIGN(I2CMaster);
 };
 }

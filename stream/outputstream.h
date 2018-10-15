@@ -29,7 +29,7 @@ struct Spaces {
 };
 
 class OutputStream {
-public:
+ public:
   OutputStream();
   virtual ~OutputStream();
 
@@ -40,10 +40,10 @@ public:
   OutputStream &operator<<(const uint8_t val);
   OutputStream &operator<<(const uint32_t val);
 
-protected:
+ protected:
   virtual void write(const char ch) = 0;
 
-private:
+ private:
   uint8_t flags;
 };
 }

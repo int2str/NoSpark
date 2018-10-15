@@ -27,7 +27,7 @@ namespace nospark {
 namespace utils {
 
 class Atomic {
-public:
+ public:
   _INLINE_ Atomic() { cli(); }
 
   _INLINE_ ~Atomic() { sei(); }

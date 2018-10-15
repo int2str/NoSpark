@@ -26,10 +26,10 @@ namespace board {
 class Heartbeat {
   Heartbeat();
 
-public:
+ public:
   static void toggle();
 
-private:
+ private:
   Pin pin;
 };
 }

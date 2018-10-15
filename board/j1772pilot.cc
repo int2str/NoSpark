@@ -24,9 +24,9 @@
 
 #define J1772_SAMPLES 100
 
-#define J1772_DIODE_THRESHOLD 256  // 1024 ADC_STEPS / 24V = ~43 STEPS/V
-#define J1772_THRESHOLD_OFFSET 512 // Assuming this is half range (+12 <-> -12)
-#define J1772_THRESHOLD_STEP 100   // 1023 / 10 ~= 100 :D
+#define J1772_DIODE_THRESHOLD 256   // 1024 ADC_STEPS / 24V = ~43 STEPS/V
+#define J1772_THRESHOLD_OFFSET 512  // Assuming this is half range (+12 <-> -12)
+#define J1772_THRESHOLD_STEP 100    // 1023 / 10 ~= 100 :D
 
 namespace {
 using nospark::board::J1772Pilot;
@@ -34,7 +34,7 @@ using nospark::board::J1772Pilot;
 const J1772Pilot::State ADC_TO_STATE_MAP[] = {
     J1772Pilot::STATE_E, J1772Pilot::STATE_D, J1772Pilot::STATE_C,
     J1772Pilot::STATE_B, J1772Pilot::STATE_A,
-    J1772Pilot::STATE_A // Rounding up buffer
+    J1772Pilot::STATE_A  // Rounding up buffer
 };
 
 uint8_t amp2duty(const uint8_t amp) {
@@ -72,8 +72,7 @@ void pwmDisable() {
 }
 
 J1772Pilot::State stateFromSample(const uint16_t sample) {
-  if (sample < J1772_THRESHOLD_OFFSET)
-    return J1772Pilot::IMPLAUSIBLE;
+  if (sample < J1772_THRESHOLD_OFFSET) return J1772Pilot::IMPLAUSIBLE;
 
   return ADC_TO_STATE_MAP[(sample - J1772_THRESHOLD_OFFSET) /
                           J1772_THRESHOLD_STEP];
@@ -86,8 +85,7 @@ namespace board {
 J1772Pilot::J1772Pilot() : last_state(NOT_READY), mode(LOW) {}
 
 void J1772Pilot::setMode(const Mode mode) {
-  if (mode == PWM)
-    return;
+  if (mode == PWM) return;
   this->mode = mode;
   pwmDisable();
   setPinActive(mode == HIGH);

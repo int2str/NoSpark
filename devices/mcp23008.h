@@ -22,7 +22,7 @@ namespace nospark {
 namespace devices {
 
 class MCP23008 {
-public:
+ public:
   MCP23008(const uint8_t i2c_addr);
 
   // 1 = input, 0 = output
@@ -34,7 +34,7 @@ public:
   uint8_t read();
   void write(const uint8_t b);
 
-private:
+ private:
   const uint8_t i2c_addr;
 
   I2CMaster &i2c;

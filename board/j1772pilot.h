@@ -26,19 +26,19 @@ namespace board {
 // Uses timer1 for PWM, thus PIN 10 is automatically used,
 // no need to abstract it.
 class J1772Pilot {
-public:
+ public:
   enum Mode { HIGH, LOW, PWM };
 
   enum State {
     UNKNOWN,
-    STATE_A, // 12V; Not connected
-    STATE_B, //  9V; Connected, ready
-    STATE_C, //  6V; Charging
-    STATE_D, //  3V; Charging, vent required
-    STATE_E, //  0V; Error
+    STATE_A,  // 12V; Not connected
+    STATE_B,  //  9V; Connected, ready
+    STATE_C,  //  6V; Charging
+    STATE_D,  //  3V; Charging, vent required
+    STATE_E,  //  0V; Error
     DIODE_CHECK_FAILED,
-    NOT_READY,  // Pilot held low
-    IMPLAUSIBLE // Reading doesn't make sense
+    NOT_READY,   // Pilot held low
+    IMPLAUSIBLE  // Reading doesn't make sense
   };
 
   J1772Pilot();
@@ -50,12 +50,12 @@ public:
 
   State getState(const bool force_update = false);
 
-private:
+ private:
   State last_state;
   Mode mode;
 
   DISALLOW_COPY_AND_ASSIGN(J1772Pilot);
 };
 
-} // namespace board
-} // namespace nospark
+}  // namespace board
+}  // namespace nospark

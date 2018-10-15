@@ -19,13 +19,13 @@
 #define DS3231_I2C_ADDRESS 0x68
 
 // Registers
-#define DS3231_REG_SECOND 0x00      // 00-59
-#define DS3231_REG_MINUTE 0x01      // 00-59
-#define DS3231_REG_HOUR 0x02        // 00-23 / 01-12 + AM/PM (Bit 6 enables)
-#define DS3231_REG_DAY_OF_WEEK 0x03 // 01-07
-#define DS3231_REG_DAY 0x04         // 01-31
-#define DS3231_REG_MONTH 0x05       // 01-12 + Bit 7 century
-#define DS3231_REG_YEAR 0x06        // 00-99
+#define DS3231_REG_SECOND 0x00       // 00-59
+#define DS3231_REG_MINUTE 0x01       // 00-59
+#define DS3231_REG_HOUR 0x02         // 00-23 / 01-12 + AM/PM (Bit 6 enables)
+#define DS3231_REG_DAY_OF_WEEK 0x03  // 01-07
+#define DS3231_REG_DAY 0x04          // 01-31
+#define DS3231_REG_MONTH 0x05        // 01-12 + Bit 7 century
+#define DS3231_REG_YEAR 0x06         // 00-99
 // ... skipping alarm registers
 #define DS3231_REG_CONTROL 0x0E
 #define DS3231_REG_STATUS 0x0F
@@ -69,7 +69,8 @@ DS3231 &DS3231::get() {
 }
 
 DS3231::DS3231()
-    : i2c_addr(DS3231_I2C_ADDRESS), i2c(I2CMaster::get()),
+    : i2c_addr(DS3231_I2C_ADDRESS),
+      i2c(I2CMaster::get()),
       present(checkPresent(i2c, i2c_addr)) {}
 
 DS3231::~DS3231() {}

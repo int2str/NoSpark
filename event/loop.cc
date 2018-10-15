@@ -67,8 +67,7 @@ void Loop::dispatch_impl() {
     // Process and erase events
     if (event.delay == 0 ||
         ((system::Timer::millis() - event.posted) >= event.delay)) {
-      for (auto handler : handlers)
-        handler->onEvent(event);
+      for (auto handler : handlers) handler->onEvent(event);
       events.erase(it++);
     } else {
       ++it;

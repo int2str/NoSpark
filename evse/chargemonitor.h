@@ -30,7 +30,7 @@ namespace evse {
 class ChargeMonitor : public event::Handler {
   ChargeMonitor();
 
-public:
+ public:
   static ChargeMonitor &get();
 
   bool isCharging() const;
@@ -38,7 +38,7 @@ public:
   uint32_t chargeCurrent() const;
   uint32_t wattHours() const;
 
-private:
+ private:
   void update();
   void chargeStateChanged(const bool charging);
 

@@ -36,7 +36,7 @@ namespace board {
 class Adc {
   Adc();
 
-public:
+ public:
   static Adc &get();
 
   // Returns true if enough samples have been collected
@@ -56,7 +56,7 @@ public:
   // Returns a stale value until |ammeterReady|.
   uint32_t readAmmeter();
 
-private:
+ private:
   void update(const uint16_t val);
 
   volatile utils::Pair<uint16_t, uint16_t> j1772;

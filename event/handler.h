@@ -24,7 +24,7 @@ namespace event {
 // Abstract base clas for an event receiver. Derived classes will
 // be automatically registered with the event looper.
 class Handler {
-public:
+ public:
   Handler();
   virtual ~Handler();
 

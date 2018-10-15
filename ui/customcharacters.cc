@@ -64,7 +64,7 @@ void loadCustomCharacters(LCD16x2 &lcd, const uint8_t p[][8]) {
     lcd.createChar_P(i, &p[i][0], 8);
 }
 
-} // namsepace
+}  // namsepace
 
 namespace nospark {
 namespace ui {
@@ -82,13 +82,11 @@ void CustomCharacters::largeDigit(LCD16x2 &lcd, const uint8_t digit,
   const uint8_t *p = LARGE_DIGITS[digit];
 
   lcd.move(offset, 0);
-  for (uint8_t i = 0; i != 3; ++i)
-    lcd.write(pgm_read_byte(p + i));
+  for (uint8_t i = 0; i != 3; ++i) lcd.write(pgm_read_byte(p + i));
 
   lcd.move(offset, 1);
-  for (uint8_t i = 0; i != 3; ++i)
-    lcd.write(pgm_read_byte(p + i + 3));
+  for (uint8_t i = 0; i != 3; ++i) lcd.write(pgm_read_byte(p + i + 3));
 }
 
-} // namespace ui
-} // namespace nospark
+}  // namespace ui
+}  // namespace nospark

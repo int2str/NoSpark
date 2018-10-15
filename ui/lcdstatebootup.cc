@@ -41,8 +41,7 @@ LcdStateBootup::LcdStateBootup(stream::LcdStream &lcd)
     : LcdState(lcd), intro_shown(false) {}
 
 bool LcdStateBootup::draw() {
-  if (intro_shown)
-    return false;
+  if (intro_shown) return false;
 
   lcd.setBacklight(devices::LCD16x2::WHITE);
 

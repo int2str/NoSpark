@@ -25,7 +25,7 @@ namespace evse {
 class State {
   State();
 
-public:
+ public:
   enum ControllerState { BOOTUP, POST, RUNNING, FAULT };
 
   enum ControllerFault {
@@ -54,7 +54,7 @@ public:
   // affected by temperature monitoring etc.
   uint8_t max_amps_limit;
 
-private:
+ private:
   DISALLOW_COPY_AND_ASSIGN(State);
 };
 }

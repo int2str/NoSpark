@@ -55,8 +55,7 @@ uint16_t paramGet(const char *buffer, const char param) {
   while (*buffer) {
     const char ch = *buffer++;
     if (found) {
-      if (ch < '0' || ch > '9')
-        break;
+      if (ch < '0' || ch > '9') break;
       val *= 10;
       val += ch - '0';
     }
@@ -72,8 +71,7 @@ uint16_t paramGet(const char *buffer, const char param) {
 
 void paramAdd(char *buffer, const char param, uint32_t value) {
   // Find end of string
-  while (*buffer)
-    ++buffer;
+  while (*buffer) ++buffer;
 
   // Insert parameter
   *buffer++ = ' ';
@@ -90,8 +88,7 @@ void cmdGetStatus(char *response) {
   paramAdd(response, 'R', state.ready);
 
   DS3231 &rtc = DS3231::get();
-  if (rtc.isPresent())
-    paramAdd(response, 'T', rtc.readTemp());
+  if (rtc.isPresent()) paramAdd(response, 'T', rtc.readTemp());
 }
 
 void cmdGetChargeStatus(char *response) {
@@ -99,14 +96,12 @@ void cmdGetChargeStatus(char *response) {
 
   const uint8_t charging = !!cm.isCharging();
   paramAdd(response, 'C', charging);
-  if (charging)
-    paramAdd(response, 'A', cm.chargeCurrent());
+  if (charging) paramAdd(response, 'A', cm.chargeCurrent());
   paramAdd(response, 'D', cm.chargeDuration() / 1000);
   paramAdd(response, 'W', cm.wattHours());
 
   DS3231 &rtc = DS3231::get();
-  if (rtc.isPresent())
-    paramAdd(response, 'T', rtc.readTemp());
+  if (rtc.isPresent()) paramAdd(response, 'T', rtc.readTemp());
 }
 
 void cmdGetKwhStats(char *response) {
@@ -120,8 +115,7 @@ void cmdGetKwhStats(char *response) {
 
 uint8_t cmdSetCurrent(const char *buffer) {
   const uint8_t amps = paramGet(buffer, 'A');
-  if (amps == 0 || amps == 0xFF)
-    return INVALID_PARAMETER;
+  if (amps == 0 || amps == 0xFF) return INVALID_PARAMETER;
 
   State::get().max_amps_target = amps;
   saveMaxAmps(amps);
@@ -134,8 +128,7 @@ uint8_t cmdSetReadyState(const char *buffer) {
   const uint8_t ready = paramGet(buffer, 'S');
   State &state = State::get();
 
-  if (ready == State::KWH_LIMIT)
-    return INVALID_PARAMETER;
+  if (ready == State::KWH_LIMIT) return INVALID_PARAMETER;
 
   state.ready = ready == 0 ? State::READY : State::MANUAL_OVERRIDE;
   Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
@@ -159,14 +152,11 @@ void cmdSetTime(const char *buffer) {
   DS3231 &rtc = DS3231::get();
   rtc.read();
 
-  if (h < 24)
-    rtc.hour = h;
+  if (h < 24) rtc.hour = h;
 
-  if (m < 60)
-    rtc.minute = m;
+  if (m < 60) rtc.minute = m;
 
-  if (s < 60)
-    rtc.second = s;
+  if (s < 60) rtc.second = s;
 
   rtc.write();
 }
@@ -186,20 +176,16 @@ void cmdSetDate(const char *buffer) {
   rtc.read();
 
   uint8_t p = paramGet(buffer, 'D');
-  if (p > 0 && p < 32)
-    rtc.day = p;
+  if (p > 0 && p < 32) rtc.day = p;
 
   p = paramGet(buffer, 'M');
-  if (p > 0 && p < 13)
-    rtc.minute = p;
+  if (p > 0 && p < 13) rtc.minute = p;
 
   p = paramGet(buffer, 'Y');
-  if (p < 100)
-    rtc.year = p;
+  if (p < 100) rtc.year = p;
 
   p = paramGet(buffer, 'W');
-  if (p > 0 && p < 8)
-    rtc.weekday = p;
+  if (p > 0 && p < 8) rtc.weekday = p;
 }
 
 void cmdGetTimer(char *response) {
@@ -216,20 +202,17 @@ uint8_t cmdSetTimer(const char *buffer) {
   EepromSettings::load(settings);
 
   uint16_t p = paramGet(buffer, 'A');
-  if (p != PARAM_NOT_FOUND)
-    settings.charge_timer_enabled = p;
+  if (p != PARAM_NOT_FOUND) settings.charge_timer_enabled = p;
 
   p = paramGet(buffer, 'S');
   if (p != PARAM_NOT_FOUND) {
-    if ((p >> 8) > 23 || (p & 0xFF) > 59)
-      return INVALID_PARAMETER;
+    if ((p >> 8) > 23 || (p & 0xFF) > 59) return INVALID_PARAMETER;
     settings.charge_timer_t1 = p;
   }
 
   p = paramGet(buffer, 'F');
   if (p != PARAM_NOT_FOUND) {
-    if ((p >> 8) > 23 || (p & 0xFF) > 59)
-      return INVALID_PARAMETER;
+    if ((p >> 8) > 23 || (p & 0xFF) > 59) return INVALID_PARAMETER;
     settings.charge_timer_t2 = p;
   }
 
@@ -269,15 +252,12 @@ uint8_t cmdSetKwhCost(const char *buffer) {
   EepromSettings::load(settings);
 
   uint16_t c = paramGet(buffer, 'C');
-  if (c < 3)
-    settings.kwh_currency = c;
+  if (c < 3) settings.kwh_currency = c;
 
   uint16_t p = paramGet(buffer, 'P');
-  if (p != PARAM_NOT_FOUND)
-    settings.kwh_cost = p;
+  if (p != PARAM_NOT_FOUND) settings.kwh_cost = p;
 
-  if (c < 3 || p != PARAM_NOT_FOUND)
-    EepromSettings::save(settings);
+  if (c < 3 || p != PARAM_NOT_FOUND) EepromSettings::save(settings);
 
   return OK;
 }
@@ -296,86 +276,86 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t) {
   uint8_t err = OK;
 
   switch (e) {
-  case CMD_GET_STATE:
-    cmdGetStatus(response);
-    break;
+    case CMD_GET_STATE:
+      cmdGetStatus(response);
+      break;
 
-  case CMD_GET_CHARGE_STATE:
-    cmdGetChargeStatus(response);
-    break;
+    case CMD_GET_CHARGE_STATE:
+      cmdGetChargeStatus(response);
+      break;
 
-  case CMD_GET_KWH_STATS:
-    cmdGetKwhStats(response);
-    break;
+    case CMD_GET_KWH_STATS:
+      cmdGetKwhStats(response);
+      break;
 
-  case CMD_GET_MAX_CURRENT:
-    paramAdd(response, 'A', State::get().max_amps_target);
-    paramAdd(response, 'L', State::get().max_amps_limit);
-    break;
+    case CMD_GET_MAX_CURRENT:
+      paramAdd(response, 'A', State::get().max_amps_target);
+      paramAdd(response, 'L', State::get().max_amps_limit);
+      break;
 
-  case CMD_SET_MAX_CURRENT:
-    err = cmdSetCurrent(buffer);
-    break;
+    case CMD_SET_MAX_CURRENT:
+      err = cmdSetCurrent(buffer);
+      break;
 
-  case CMD_GET_TIME:
-    cmdGetTime(response);
-    break;
+    case CMD_GET_TIME:
+      cmdGetTime(response);
+      break;
 
-  case CMD_SET_TIME:
-    cmdSetTime(buffer);
-    break;
+    case CMD_SET_TIME:
+      cmdSetTime(buffer);
+      break;
 
-  case CMD_GET_DATE:
-    cmdGetDate(response);
-    break;
+    case CMD_GET_DATE:
+      cmdGetDate(response);
+      break;
 
-  case CMD_SET_DATE:
-    cmdSetDate(buffer);
-    break;
+    case CMD_SET_DATE:
+      cmdSetDate(buffer);
+      break;
 
-  case CMD_GET_TIMER:
-    cmdGetTimer(response);
-    break;
+    case CMD_GET_TIMER:
+      cmdGetTimer(response);
+      break;
 
-  case CMD_SET_TIMER:
-    err = cmdSetTimer(buffer);
-    break;
+    case CMD_SET_TIMER:
+      err = cmdSetTimer(buffer);
+      break;
 
-  case CMD_GET_CHARGE_LIMIT:
-    cmdGetChargeLimit(response);
-    break;
+    case CMD_GET_CHARGE_LIMIT:
+      cmdGetChargeLimit(response);
+      break;
 
-  case CMD_SET_CHARGE_LIMIT:
-    err = cmdSetChargeLimit(buffer);
-    break;
+    case CMD_SET_CHARGE_LIMIT:
+      err = cmdSetChargeLimit(buffer);
+      break;
 
-  case CMD_SET_SLEEP:
-    Loop::post(Event(EVENT_REQUEST_SLEEP, paramGet(buffer, 'S')));
-    break;
+    case CMD_SET_SLEEP:
+      Loop::post(Event(EVENT_REQUEST_SLEEP, paramGet(buffer, 'S')));
+      break;
 
-  case CMD_SET_READY_STATE:
-    err = cmdSetReadyState(buffer);
-    break;
+    case CMD_SET_READY_STATE:
+      err = cmdSetReadyState(buffer);
+      break;
 
-  case CMD_GET_KWH_COST:
-    cmdGetKwhCost(response);
-    break;
+    case CMD_GET_KWH_COST:
+      cmdGetKwhCost(response);
+      break;
 
-  case CMD_SET_KWH_COST:
-    err = cmdSetKwhCost(buffer);
-    break;
+    case CMD_SET_KWH_COST:
+      err = cmdSetKwhCost(buffer);
+      break;
 
-  case CMD_GET_SAPI_VERSION:
-    paramAdd(response, 'V', SAPI_VERSION);
-    break;
+    case CMD_GET_SAPI_VERSION:
+      paramAdd(response, 'V', SAPI_VERSION);
+      break;
 
-  case CMD_GET_NOSPARK_VERSION:
-    uart << "$OK " << stream::PGM << STR_NOSPARK << CR;
-    return true;
+    case CMD_GET_NOSPARK_VERSION:
+      uart << "$OK " << stream::PGM << STR_NOSPARK << CR;
+      return true;
 
-  default:
-    err = UNKNOWN_COMMAND;
-    break;
+    default:
+      err = UNKNOWN_COMMAND;
+      break;
   }
 
   if (err == OK) {

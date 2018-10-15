@@ -26,7 +26,9 @@ State &State::get() {
 }
 
 State::State()
-    : controller(BOOTUP), fault(NOTHING_WRONG), ready(READY),
+    : controller(BOOTUP),
+      fault(NOTHING_WRONG),
+      ready(READY),
       j1772(board::J1772Pilot::UNKNOWN) {
   Settings settings;
   EepromSettings::load(settings);

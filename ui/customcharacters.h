@@ -15,14 +15,14 @@
 
 #pragma once
 
-#include "devices/lcd1602.h"
 #include <avr/pgmspace.h>
+#include "devices/lcd1602.h"
 
 namespace nospark {
 namespace ui {
 
 class CustomCharacters {
-public:
+ public:
   enum CUSTOM_CHARS_MAP {
     SEPARATOR,
     CLOCK,

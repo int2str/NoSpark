@@ -23,10 +23,10 @@ namespace nospark {
 namespace stream {
 
 class Time {
-public:
+ public:
   Time(const uint8_t hh, const uint8_t mm);
 
-private:
+ private:
   uint8_t hh;
   uint8_t mm;
   friend OutputStream &operator<<(OutputStream &out, const Time &time);

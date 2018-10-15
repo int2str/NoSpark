@@ -26,7 +26,7 @@ namespace serial {
 // Non-interrupt, polling based implementation. Uses UART0.
 // This is a singleton; there shall be only one.
 class Usart {
-public:
+ public:
   static Usart &get();
 
   uint8_t read();
@@ -34,7 +34,7 @@ public:
 
   bool avail() const;
 
-private:
+ private:
   Usart();
 
   DISALLOW_COPY_AND_ASSIGN(Usart);

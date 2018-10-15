@@ -23,11 +23,11 @@ namespace ui {
 
 // Toggle the state of a simple boolean at a given |duration|.
 class TimedFlipFlop {
-public:
+ public:
   TimedFlipFlop(const uint16_t duration);
   bool get();
 
-private:
+ private:
   const uint16_t duration;
   bool last_state;
   uint32_t last_change;

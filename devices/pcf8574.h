@@ -22,7 +22,7 @@ namespace nospark {
 namespace devices {
 
 class PCF8574 {
-public:
+ public:
   PCF8574(const uint8_t i2c_addr);
 
   // 1 = input, 0 = output
@@ -33,7 +33,7 @@ public:
   uint8_t read();
   void write(const uint8_t b);
 
-private:
+ private:
   const uint8_t i2c_addr;
   I2CMaster &i2c;
   uint8_t ddr;

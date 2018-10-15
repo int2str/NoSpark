@@ -32,13 +32,13 @@ namespace ui {
 class LcdConsole : public event::Handler {
   LcdConsole();
 
-public:
+ public:
   static LcdConsole &init();
 
-protected:
+ protected:
   void onEvent(const event::Event &event) override;
 
-private:
+ private:
   void update();
   void updateSleepState(const event::Event &event);
   void setState(LcdState *newState);

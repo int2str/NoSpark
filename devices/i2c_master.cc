@@ -42,60 +42,60 @@ uint8_t i2c_addr = 0;
 
 ISR(TWI_vect) {
   switch (TW_STATUS) {
-  // Master read/write --------------------------------------
+    // Master read/write --------------------------------------
 
-  case TW_START:
-  case TW_REP_START:
-    TWDR = i2c_addr;
-    TWCR = I2C_SEND;
-    break;
-
-  case TW_MT_ARB_LOST: // Same as TW_MR_ARB_LOST
-    TWCR = I2C_START;
-    break;
-
-  // Master write -------------------------------------------
-
-  case TW_MT_SLA_ACK:
-  case TW_MT_DATA_ACK:
-    if (i2c_len) {
-      --i2c_len;
-      TWDR = *i2c_data++;
+    case TW_START:
+    case TW_REP_START:
+      TWDR = i2c_addr;
       TWCR = I2C_SEND;
-    } else {
+      break;
+
+    case TW_MT_ARB_LOST:  // Same as TW_MR_ARB_LOST
+      TWCR = I2C_START;
+      break;
+
+    // Master write -------------------------------------------
+
+    case TW_MT_SLA_ACK:
+    case TW_MT_DATA_ACK:
+      if (i2c_len) {
+        --i2c_len;
+        TWDR = *i2c_data++;
+        TWCR = I2C_SEND;
+      } else {
+        TWCR = I2C_STOP;
+        while (TWCR & (1 << TWSTO)) {
+        }
+      }
+      break;
+
+    case TW_MT_SLA_NACK:
+    case TW_MT_DATA_NACK:
       TWCR = I2C_STOP;
       while (TWCR & (1 << TWSTO)) {
       }
-    }
-    break;
+      break;
 
-  case TW_MT_SLA_NACK:
-  case TW_MT_DATA_NACK:
-    TWCR = I2C_STOP;
-    while (TWCR & (1 << TWSTO)) {
-    }
-    break;
+    // Master read --------------------------------------------
 
-  // Master read --------------------------------------------
+    case TW_MR_DATA_ACK:
+      *i2c_data++ = TWDR;
+      --i2c_len;
+    case TW_MR_SLA_ACK:
+      TWCR = (i2c_len > 1) ? I2C_ACK : I2C_NACK;
+      break;
 
-  case TW_MR_DATA_ACK:
-    *i2c_data++ = TWDR;
-    --i2c_len;
-  case TW_MR_SLA_ACK:
-    TWCR = (i2c_len > 1) ? I2C_ACK : I2C_NACK;
-    break;
+    case TW_MR_DATA_NACK:
+      *i2c_data = TWDR;
+      --i2c_len;
+    case TW_MR_SLA_NACK:
+      TWCR = I2C_STOP;
+      break;
 
-  case TW_MR_DATA_NACK:
-    *i2c_data = TWDR;
-    --i2c_len;
-  case TW_MR_SLA_NACK:
-    TWCR = I2C_STOP;
-    break;
-
-  // Anything else, just disable interrupts ...
-  default:
-    TWCR = I2C_RESET;
-    break;
+    // Anything else, just disable interrupts ...
+    default:
+      TWCR = I2C_RESET;
+      break;
   }
 }
 
@@ -112,7 +112,7 @@ void i2c_rw(const uint8_t addr, uint8_t *data, const uint8_t len) {
   };
 }
 
-} // namespace
+}  // namespace
 
 namespace nospark {
 namespace devices {
@@ -141,5 +141,5 @@ void I2CMaster::read(const uint8_t addr, uint8_t *data, const uint8_t len) {
   i2c_rw(TW_READ | (addr << 1), data, len);
 }
 
-} // namespace devices
-} // namespace nospark
+}  // namespace devices
+}  // namespace nospark

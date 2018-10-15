@@ -54,20 +54,20 @@ void updateCurrentLimit(
   uint8_t amps = State::get().max_amps_target;
 
   switch (temp_state) {
-  case TemperatureMonitor::ELEVATED:
-    amps = nospark::utils::max(amps / 2, MINIMUM_CHARGE_CURRENT);
-    break;
+    case TemperatureMonitor::ELEVATED:
+      amps = nospark::utils::max(amps / 2, MINIMUM_CHARGE_CURRENT);
+      break;
 
-  case TemperatureMonitor::HIGH:
-    amps = MINIMUM_CHARGE_CURRENT;
-    break;
+    case TemperatureMonitor::HIGH:
+      amps = MINIMUM_CHARGE_CURRENT;
+      break;
 
-  case TemperatureMonitor::CRITICAL:
-    amps = 0;
-    break;
+    case TemperatureMonitor::CRITICAL:
+      amps = 0;
+      break;
 
-  case TemperatureMonitor::NOMINAL:
-    break;
+    case TemperatureMonitor::NOMINAL:
+      break;
   }
 
   State::get().max_amps_limit = amps;
@@ -91,13 +91,13 @@ TemperatureMonitor::TemperatureMonitor() : last_temp(0) {}
 
 void TemperatureMonitor::onEvent(const event::Event &event) {
   switch (event.id) {
-  case EVENT_UPDATE:
-    update();
-    break;
+    case EVENT_UPDATE:
+      update();
+      break;
 
-  case EVENT_MAX_AMPS_CHANGED:
-    update(true);
-    break;
+    case EVENT_MAX_AMPS_CHANGED:
+      update(true);
+      break;
   }
 }
 

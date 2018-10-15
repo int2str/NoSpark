@@ -35,11 +35,9 @@ void ScrollingText::clear() { length = 0; }
 void ScrollingText::setWidth(const uint8_t width) { this->width = width; }
 
 ScrollingText &ScrollingText::operator>>(OutputStream &os) {
-  if (length > width)
-    *this << " ~ ";
+  if (length > width) *this << " ~ ";
 
-  if (length <= width || offset >= length)
-    offset = 0;
+  if (length <= width || offset >= length) offset = 0;
 
   uint8_t chars = width;
   uint8_t idx = offset;
@@ -48,8 +46,7 @@ ScrollingText &ScrollingText::operator>>(OutputStream &os) {
   while (chars--) {
     if (length >= width || idx < length) {
       os << buffer[idx++];
-      if (length >= width && idx >= length)
-        idx = 0;
+      if (length >= width && idx >= length) idx = 0;
     } else {
       os << ' ';
     }
@@ -68,8 +65,7 @@ void ScrollingText::update() {
 }
 
 void ScrollingText::write(const char ch) {
-  if (length < (size - 1))
-    buffer[length++] = ch;
+  if (length < (size - 1)) buffer[length++] = ch;
 }
 }
 }

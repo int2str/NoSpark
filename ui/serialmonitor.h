@@ -32,10 +32,10 @@ namespace ui {
 class SerialMonitor : public event::Handler {
   SerialMonitor();
 
-public:
+ public:
   static SerialMonitor &init();
 
-private:
+ private:
   enum SerialState { CONSOLE_STARTUP, CONSOLE_ACCUMULATING, CONSOLE_COMMAND };
 
   void onEvent(const event::Event &event) override;

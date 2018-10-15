@@ -21,7 +21,7 @@ namespace nospark {
 namespace stream {
 
 class ScrollingText : public OutputStream {
-public:
+ public:
   ScrollingText(const uint8_t size, const uint8_t width);
   ~ScrollingText();
 
@@ -30,7 +30,7 @@ public:
 
   ScrollingText &operator>>(OutputStream &os);
 
-private:
+ private:
   void update();
 
   void write(const char ch) override;

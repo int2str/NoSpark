@@ -29,7 +29,7 @@ namespace event {
 class Loop {
   Loop();
 
-public:
+ public:
   // Posts to all registered handlers on the next call to |dispatch|
   static void post(const Event &event);
 
@@ -50,10 +50,10 @@ public:
 
   static void removeHandler(Handler *ph);
 
-protected:
+ protected:
   friend class Handler;
 
-private:
+ private:
   static Loop &get();
   void dispatch_impl();
 

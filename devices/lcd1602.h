@@ -25,7 +25,7 @@ namespace nospark {
 namespace devices {
 
 class LCD16x2 {
-public:
+ public:
   enum Backlight { OFF, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, WHITE };
 
   enum BacklightType { RGB, MONOCHROME };
@@ -46,7 +46,7 @@ public:
 
   void write(const uint8_t ch);
 
-private:
+ private:
   devices::MCP23017 io;
   utils::Pair<uint8_t, uint8_t> backlight_bits;
   BacklightType backlight_type;

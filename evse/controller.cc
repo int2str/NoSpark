@@ -57,25 +57,25 @@ Controller::~Controller() {}
 
 void Controller::update() {
   switch (State::get().controller) {
-  case State::RUNNING:
-    updateRunning();
-    break;
+    case State::RUNNING:
+      updateRunning();
+      break;
 
-  case State::BOOTUP:
-    setControllerState(State::POST);
-    break;
+    case State::BOOTUP:
+      setControllerState(State::POST);
+      break;
 
-  case State::POST:
-    if (!gfci.selfTest()) {
-      setFault(State::FAULT_POST_GFCI);
-    } else {
-      j1772.setMode(J1772Pilot::HIGH);
-      setControllerState(State::RUNNING);
-    }
-    break;
+    case State::POST:
+      if (!gfci.selfTest()) {
+        setFault(State::FAULT_POST_GFCI);
+      } else {
+        j1772.setMode(J1772Pilot::HIGH);
+        setControllerState(State::RUNNING);
+      }
+      break;
 
-  case State::FAULT:
-    break;
+    case State::FAULT:
+      break;
   }
 }
 
@@ -85,65 +85,65 @@ void Controller::updateRunning(bool force_update) {
   // Check relay state for faults
   const Relays::RelayState relay_state = relays.checkStatus();
   switch (relay_state) {
-  case Relays::OK:
-  case Relays::UNKNOWN:
-    break;
+    case Relays::OK:
+    case Relays::UNKNOWN:
+      break;
 
-  case Relays::NO_GROUND:
-    setFault(State::FAULT_RELAY_NO_GROUND);
-    break;
+    case Relays::NO_GROUND:
+      setFault(State::FAULT_RELAY_NO_GROUND);
+      break;
 
-  case Relays::STUCK:
-    setFault(State::FAULT_RELAY_STUCK);
-    break;
+    case Relays::STUCK:
+      setFault(State::FAULT_RELAY_STUCK);
+      break;
   }
 
   // Check J1772 state
   const auto j1772_state = j1772.getState();
   if (state.j1772 == j1772_state && !force_update)
-    return; // State hasn't changed...
+    return;  // State hasn't changed...
 
   // J1772 state has changed...
   switch (j1772_state) {
-  case J1772Pilot::STATE_E: // <-- Error
-    enableCharge(false);
-    break;
+    case J1772Pilot::STATE_E:  // <-- Error
+      enableCharge(false);
+      break;
 
-  case J1772Pilot::STATE_A: // <-- EV not connected
-  case J1772Pilot::NOT_READY:
-    if (state.ready == State::KWH_LIMIT)
-      state.ready = State::READY;
-    enableCharge(false);
-    j1772.setMode(J1772Pilot::HIGH);
-    break;
-
-  case J1772Pilot::STATE_B: // <-- EV Connected
-  case J1772Pilot::STATE_D: // <-- Vent required :(
-  case J1772Pilot::DIODE_CHECK_FAILED:
-    enableCharge(false);
-    event::Loop::remove(Event(EVENT_SET_RELAY));
-    if (state.ready == State::READY)
-      updateChargeCurrent(true);
-    else
+    case J1772Pilot::STATE_A:  // <-- EV not connected
+    case J1772Pilot::NOT_READY:
+      if (state.ready == State::KWH_LIMIT) state.ready = State::READY;
+      enableCharge(false);
       j1772.setMode(J1772Pilot::HIGH);
-    break;
+      break;
 
-  case J1772Pilot::STATE_C: // <-- Charging
-    if (state.ready == State::READY) {
-      updateChargeCurrent(true);
-      enableCharge(true);
-    } else {
-      j1772.setMode(J1772Pilot::HIGH);
-      event::Loop::postDelayed(Event(EVENT_SET_RELAY, 0), SUSPEND_RELAY_DELAY);
-    }
-    break;
+    case J1772Pilot::STATE_B:  // <-- EV Connected
+    case J1772Pilot::STATE_D:  // <-- Vent required :(
+    case J1772Pilot::DIODE_CHECK_FAILED:
+      enableCharge(false);
+      event::Loop::remove(Event(EVENT_SET_RELAY));
+      if (state.ready == State::READY)
+        updateChargeCurrent(true);
+      else
+        j1772.setMode(J1772Pilot::HIGH);
+      break;
 
-  case J1772Pilot::UNKNOWN:
-  case J1772Pilot::IMPLAUSIBLE:
-    enableCharge(false);
-    j1772.setMode(J1772Pilot::LOW);
-    // TODO: Snap to error condition?
-    break;
+    case J1772Pilot::STATE_C:  // <-- Charging
+      if (state.ready == State::READY) {
+        updateChargeCurrent(true);
+        enableCharge(true);
+      } else {
+        j1772.setMode(J1772Pilot::HIGH);
+        event::Loop::postDelayed(Event(EVENT_SET_RELAY, 0),
+                                 SUSPEND_RELAY_DELAY);
+      }
+      break;
+
+    case J1772Pilot::UNKNOWN:
+    case J1772Pilot::IMPLAUSIBLE:
+      enableCharge(false);
+      j1772.setMode(J1772Pilot::LOW);
+      // TODO: Snap to error condition?
+      break;
   }
 
   setJ1772State(j1772_state);
@@ -151,35 +151,35 @@ void Controller::updateRunning(bool force_update) {
 
 void Controller::onEvent(const event::Event &event) {
   switch (event.id) {
-  case EVENT_UPDATE:
-    update();
-    break;
+    case EVENT_UPDATE:
+      update();
+      break;
 
-  case EVENT_SET_RELAY:
-    enableCharge(event.param);
-    break;
+    case EVENT_SET_RELAY:
+      enableCharge(event.param);
+      break;
 
-  case EVENT_GFCI_TRIPPED:
-    setFault(State::FAULT_GFCI_TRIPPED);
-    break;
+    case EVENT_GFCI_TRIPPED:
+      setFault(State::FAULT_GFCI_TRIPPED);
+      break;
 
-  case EVENT_MAX_AMPS_CHANGED:
-    updateChargeCurrent();
-    break;
-
-  case EVENT_READY_STATE_CHANGED:
-    if (State::get().controller == State::RUNNING) {
-      sleep_status.set(State::get().ready != State::READY);
-      updateRunning(true);
-    }
-    break;
-
-  case EVENT_TEMPERATURE_ALERT:
-    if (event.param)
-      setFault(State::FAULT_TEMPERATURE_CRITICAL);
-    else
+    case EVENT_MAX_AMPS_CHANGED:
       updateChargeCurrent();
-    break;
+      break;
+
+    case EVENT_READY_STATE_CHANGED:
+      if (State::get().controller == State::RUNNING) {
+        sleep_status.set(State::get().ready != State::READY);
+        updateRunning(true);
+      }
+      break;
+
+    case EVENT_TEMPERATURE_ALERT:
+      if (event.param)
+        setFault(State::FAULT_TEMPERATURE_CRITICAL);
+      else
+        updateChargeCurrent();
+      break;
   }
 }
 
@@ -213,6 +213,5 @@ void Controller::setFault(const State::ControllerFault fault) {
   State::get().fault = fault;
   setControllerState(State::FAULT);
 }
-
 }
 }

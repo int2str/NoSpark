@@ -18,8 +18,9 @@
 namespace nospark {
 namespace utils {
 
-template <class T1, class T2> class Pair {
-public:
+template <class T1, class T2>
+class Pair {
+ public:
   T1 first;
   T2 second;
 

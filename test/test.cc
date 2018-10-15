@@ -62,8 +62,7 @@ void test_utils_queue() {
   q.push(3);
 
   auto i = 1;
-  for (auto it = q.begin(); it != q.end(); ++it)
-    assert(*it == i++);
+  for (auto it = q.begin(); it != q.end(); ++it) assert(*it == i++);
 
   assert(!q.empty());
   assert(q.front() == 1);

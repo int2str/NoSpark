@@ -55,7 +55,7 @@ void run() {
   }
 }
 
-} // namespace nospark
+}  // namespace nospark
 
 int main() {
   sei();

@@ -24,7 +24,7 @@ namespace nospark {
 namespace ui {
 
 class LcdStateError : public LcdState {
-public:
+ public:
   LcdStateError(stream::LcdStream &lcd);
   bool draw() override;
 };

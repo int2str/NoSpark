@@ -28,10 +28,10 @@ class Keyboard : public event::Handler {
   Keyboard();
   ~Keyboard();
 
-public:
+ public:
   static Keyboard &init();
 
-private:
+ private:
   void update();
   void onEvent(const event::Event &event) override;
 

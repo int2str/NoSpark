@@ -32,8 +32,7 @@ ISR(ADC_vect) { nospark::board::Adc::get().update(ADCW); }
 
 namespace {
 uint16_t normalize(const uint16_t adc) {
-  if (adc > 512)
-    return adc - 512;
+  if (adc > 512) return adc - 512;
   return 512 - adc;
 }
 
@@ -74,8 +73,13 @@ Adc &Adc::get() {
 }
 
 Adc::Adc()
-    : j1772(1023, 0), j1772_samples(0), ammeter(0), ammeter_samples(0),
-      ammeter_last_sample(0), ammeter_zero_crossings(0), mode(0) {
+    : j1772(1023, 0),
+      j1772_samples(0),
+      ammeter(0),
+      ammeter_samples(0),
+      ammeter_last_sample(0),
+      ammeter_zero_crossings(0),
+      mode(0) {
   // Set up ADC; slow speed (clk/128), interrupt enabled
   ADCSRA =
       (1 << ADEN) | (1 << ADIE) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
@@ -94,8 +98,7 @@ void Adc::update(const uint16_t val) {
       if ((val >= 512 && ammeter_last_sample < 512) ||
           (val < 512 && ammeter_last_sample >= 512)) {
         if (ammeter_zero_crossings == 0 || ammeter_samples > 25) {
-          if (ammeter_zero_crossings == 0)
-            ammeter_samples = 1;
+          if (ammeter_zero_crossings == 0) ammeter_samples = 1;
           ++ammeter_zero_crossings;
         }
       }
@@ -110,8 +113,7 @@ void Adc::update(const uint16_t val) {
     ++j1772_samples;
 
   } else {
-    if (++mode > ADC_J1772)
-      mode = 0;
+    if (++mode > ADC_J1772) mode = 0;
     ADMUX = (1 << REFS0) | mode;
   }
 

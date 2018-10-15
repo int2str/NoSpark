@@ -28,12 +28,12 @@ namespace board {
 // Once instantiated will monitor GFCI pin an trigger
 // an event if tripped.
 class GFCI {
-public:
+ public:
   GFCI();
 
   bool selfTest();
 
-private:
+ private:
   board::Pin pinSense;
   board::Pin pinTest;
 

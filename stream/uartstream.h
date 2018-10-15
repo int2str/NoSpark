@@ -22,13 +22,13 @@ namespace nospark {
 namespace stream {
 
 class UartStream : public OutputStream {
-public:
+ public:
   UartStream(serial::Usart &uart);
 
   bool avail();
   UartStream &operator>>(char &ch);
 
-private:
+ private:
   void write(const char ch) override;
 
   serial::Usart &uart;

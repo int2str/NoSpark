@@ -38,20 +38,16 @@ volatile uint8_t usart_index_read = 0;
 void usart_insert(const uint8_t b) {
   usart_buffer[usart_index_insert++] = b;
 
-  if (usart_index_insert == USART_BUFFER_SIZE)
-    usart_index_insert = 0;
+  if (usart_index_insert == USART_BUFFER_SIZE) usart_index_insert = 0;
 
-  if (usart_index_insert == usart_index_read)
-    ++usart_index_read;
+  if (usart_index_insert == usart_index_read) ++usart_index_read;
 }
 
 uint8_t usart_read() {
   utils::Atomic _atomic;
-  if (usart_index_read >= USART_BUFFER_SIZE)
-    usart_index_read = 0;
+  if (usart_index_read >= USART_BUFFER_SIZE) usart_index_read = 0;
 
-  if (usart_index_read == usart_index_insert)
-    return -1;
+  if (usart_index_read == usart_index_insert) return -1;
 
   return usart_buffer[usart_index_read++];
 }

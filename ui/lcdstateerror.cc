@@ -33,29 +33,29 @@ bool LcdStateError::draw() {
   lcd.move(0, 1);
 
   switch (State::get().fault) {
-  case State::FAULT_POST_GFCI:
-    lcd << stream::PGM << STR_FAULT_POST_GFCI;
-    break;
+    case State::FAULT_POST_GFCI:
+      lcd << stream::PGM << STR_FAULT_POST_GFCI;
+      break;
 
-  case State::FAULT_RELAY_NO_GROUND:
-    lcd << stream::PGM << STR_FAULT_RELAY_NO_GROUND;
-    break;
+    case State::FAULT_RELAY_NO_GROUND:
+      lcd << stream::PGM << STR_FAULT_RELAY_NO_GROUND;
+      break;
 
-  case State::FAULT_RELAY_STUCK:
-    lcd << stream::PGM << STR_FAULT_RELAY_STUCK;
-    break;
+    case State::FAULT_RELAY_STUCK:
+      lcd << stream::PGM << STR_FAULT_RELAY_STUCK;
+      break;
 
-  case State::FAULT_GFCI_TRIPPED:
-    lcd << stream::PGM << STR_FAULT_GFCI_TRIPPED;
-    break;
+    case State::FAULT_GFCI_TRIPPED:
+      lcd << stream::PGM << STR_FAULT_GFCI_TRIPPED;
+      break;
 
-  case State::FAULT_TEMPERATURE_CRITICAL:
-    lcd << stream::PGM << STR_FAULT_TEMPERATURE;
-    break;
+    case State::FAULT_TEMPERATURE_CRITICAL:
+      lcd << stream::PGM << STR_FAULT_TEMPERATURE;
+      break;
 
-  case State::NOTHING_WRONG:
-    // Then why are we here?!
-    break;
+    case State::NOTHING_WRONG:
+      // Then why are we here?!
+      break;
   }
   return true;
 }

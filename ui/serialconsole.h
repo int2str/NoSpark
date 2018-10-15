@@ -37,14 +37,14 @@ struct SerialCommand {
 
 // Simple command line interface for control and monitoring.
 class SerialConsole {
-public:
+ public:
   SerialConsole(stream::UartStream &uart);
 
   void onEvent(const event::Event &event);
 
   bool handleCommand(const char *buffer, const uint8_t len);
 
-private:
+ private:
   void commandHelp(const char *param, const uint8_t param_len);
   void commandReset(const char *param, const uint8_t param_len);
   void commandSetCurrent(const char *param, const uint8_t param_len);

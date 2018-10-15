@@ -23,7 +23,7 @@ namespace nospark {
 namespace ui {
 
 class LcdState {
-public:
+ public:
   LcdState(stream::LcdStream &lcd) : lcd(lcd){};
 
   virtual bool draw() = 0;
@@ -32,7 +32,7 @@ public:
   virtual void select(){};
   virtual void advance() {}
 
-protected:
+ protected:
   stream::LcdStream &lcd;
 };
 }

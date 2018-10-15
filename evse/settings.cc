@@ -83,17 +83,13 @@ void Settings::upgrade() {
 
 void Settings::postLoad() {
   devices::DS3231 &rtc = devices::DS3231::get();
-  if (!rtc.isPresent())
-    return;
+  if (!rtc.isPresent()) return;
 
   rtc.read();
 
-  if (rtc.year != (kwh_index & 0xFF))
-    kwh_year = 0;
-  if (rtc.month != ((kwh_index >> 8) & 0xF))
-    kwh_month = 0;
-  if (rtc.weekday < ((kwh_index >> 12) & 0xF))
-    kwh_week = 0;
+  if (rtc.year != (kwh_index & 0xFF)) kwh_year = 0;
+  if (rtc.month != ((kwh_index >> 8) & 0xF)) kwh_month = 0;
+  if (rtc.weekday < ((kwh_index >> 12) & 0xF)) kwh_week = 0;
 }
 
 void Settings::preSave() {
@@ -110,8 +106,7 @@ void EepromSettings::load(Settings &settings) {
       settings.revision > SETTINGS_REVISION)
     settings.defaults();
 
-  if (settings.revision < SETTINGS_REVISION)
-    settings.upgrade();
+  if (settings.revision < SETTINGS_REVISION) settings.upgrade();
 
   settings.postLoad();
 }

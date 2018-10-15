@@ -32,53 +32,53 @@ SerialMonitor &SerialMonitor::init() {
 }
 
 SerialMonitor::SerialMonitor()
-    : uart(serial::Usart::get()), api(uart), console(uart),
-      state(CONSOLE_STARTUP), echo(true), len(0) {}
+    : uart(serial::Usart::get()),
+      api(uart),
+      console(uart),
+      state(CONSOLE_STARTUP),
+      echo(true),
+      len(0) {}
 
 void SerialMonitor::update() {
   char ch;
 
   switch (state) {
-  case CONSOLE_STARTUP:
-    // Good place to set BT name etc...
-    state = CONSOLE_ACCUMULATING;
-    break;
+    case CONSOLE_STARTUP:
+      // Good place to set BT name etc...
+      state = CONSOLE_ACCUMULATING;
+      break;
 
-  case CONSOLE_ACCUMULATING:
-    while (uart.avail()) {
-      uart >> ch;
+    case CONSOLE_ACCUMULATING:
+      while (uart.avail()) {
+        uart >> ch;
 
-      if (len == 0 && ch == '$')
-        echo = false;
+        if (len == 0 && ch == '$') echo = false;
 
-      if (echo) {
-        uart << ch;
-        if (ch == CR)
-          uart << LF;
-      }
+        if (echo) {
+          uart << ch;
+          if (ch == CR) uart << LF;
+        }
 
-      if (ch == BS || ch == DEL) {
-        if (len)
+        if (ch == BS || ch == DEL) {
+          if (len) buffer[--len] = 0;
+        } else {
+          if (ch != LF) buffer[len++] = ch;
+        }
+
+        if (len == CONSOLE_BUFFER || ch == CR) {
           buffer[--len] = 0;
-      } else {
-        if (ch != LF)
-          buffer[len++] = ch;
+          state = CONSOLE_COMMAND;
+          break;
+        }
       }
+      break;
 
-      if (len == CONSOLE_BUFFER || ch == CR) {
-        buffer[--len] = 0;
-        state = CONSOLE_COMMAND;
-        break;
-      }
-    }
-    break;
-
-  case CONSOLE_COMMAND:
-    handleCommand();
-    len = 0;
-    echo = true;
-    state = CONSOLE_ACCUMULATING;
-    break;
+    case CONSOLE_COMMAND:
+      handleCommand();
+      len = 0;
+      echo = true;
+      state = CONSOLE_ACCUMULATING;
+      break;
   }
 }
 
@@ -93,13 +93,13 @@ void SerialMonitor::handleCommand() {
 
 void SerialMonitor::onEvent(const event::Event &event) {
   switch (event.id) {
-  case EVENT_UPDATE:
-    update();
-    break;
+    case EVENT_UPDATE:
+      update();
+      break;
 
-  default:
-    console.onEvent(event);
-    break;
+    default:
+      console.onEvent(event);
+      break;
   }
 }
 }

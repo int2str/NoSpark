@@ -23,11 +23,11 @@ namespace board {
 // Toggles external PIN to show that the EVSE is currently
 // suspended (i.e. timer active etc.).
 class SleepIndicator {
-public:
+ public:
   SleepIndicator();
   void set(const bool enable);
 
-private:
+ private:
   Pin pin;
 };
 }

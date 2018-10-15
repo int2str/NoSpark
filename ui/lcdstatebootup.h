@@ -24,11 +24,11 @@ namespace nospark {
 namespace ui {
 
 class LcdStateBootup : public LcdState {
-public:
+ public:
   LcdStateBootup(stream::LcdStream &lcd);
   bool draw() override;
 
-private:
+ private:
   bool intro_shown;
 };
 }

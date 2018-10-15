@@ -18,7 +18,7 @@
 #include "events.h"
 #include "system/timer.h"
 
-#define LCD_I2C_ADDR 0x20 // LCD backpack has buttons
+#define LCD_I2C_ADDR 0x20  // LCD backpack has buttons
 
 #define DEBOUNCE_DELAY 30
 #define KEYHOLD_DELAY 600
@@ -48,18 +48,15 @@ void Keyboard::update() {
   const uint32_t now = system::Timer::millis();
   const uint32_t diff = now - last_change;
 
-  if (diff <= DEBOUNCE_DELAY)
-    return;
+  if (diff <= DEBOUNCE_DELAY) return;
 
   uint8_t state = last_state & KEY_HOLD;
-  if (key_down)
-    state |= KEY_DOWN;
+  if (key_down) state |= KEY_DOWN;
 
   if (key_down && (last_state & KEY_DOWN) != 0 && diff > KEYHOLD_DELAY)
     state |= KEY_HOLD;
 
-  if (state == last_state)
-    return;
+  if (state == last_state) return;
 
   if (state & KEY_DOWN && state & KEY_HOLD)
     event::Loop::post(event::Event(EVENT_KEYHOLD));
@@ -75,8 +72,7 @@ void Keyboard::update() {
 }
 
 void Keyboard::onEvent(const event::Event &event) {
-  if (event.id == EVENT_UPDATE)
-    update();
+  if (event.id == EVENT_UPDATE) update();
 }
 }
 }

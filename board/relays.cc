@@ -26,17 +26,20 @@
 static nospark::board::Relays *relays = 0;
 
 ISR(TIMER2_OVF_vect) {
-  if (relays)
-    relays->updateState();
+  if (relays) relays->updateState();
 }
 
 namespace nospark {
 namespace board {
 
 Relays::Relays()
-    : state(UNKNOWN), enabled(false), sample_history(0),
-      pinACRelay(PIN_AC_RELAY), pinDCRelay1(PIN_DC_RELAY1),
-      pinDCRelay2(PIN_DC_RELAY2), pinSense1(PIN_AC_TEST1),
+    : state(UNKNOWN),
+      enabled(false),
+      sample_history(0),
+      pinACRelay(PIN_AC_RELAY),
+      pinDCRelay1(PIN_DC_RELAY1),
+      pinDCRelay2(PIN_DC_RELAY2),
+      pinSense1(PIN_AC_TEST1),
       pinSense2(PIN_AC_TEST2) {
   relays = this;
 
@@ -47,8 +50,7 @@ Relays::Relays()
 }
 
 void Relays::set(const bool enable) {
-  if (enabled == enable)
-    return;
+  if (enabled == enable) return;
 
   pinACRelay = enable;
   pinDCRelay1 = enable;
@@ -62,8 +64,7 @@ void Relays::set(const bool enable) {
 
 Relays::RelayState Relays::checkStatus() {
   // Do NOT recover from an error
-  if (state != UNKNOWN && state != OK)
-    return state;
+  if (state != UNKNOWN && state != OK) return state;
 
   // Give relays time to settle
   if ((system::Timer::millis() - last_change) < RELAY_TOGGLE_DELAY_MS)

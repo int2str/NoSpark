@@ -27,13 +27,13 @@ namespace ui {
 
 // Simple command line interface for control and monitoring.
 class SerialApi {
-public:
+ public:
   SerialApi(stream::UartStream &uart);
 
   void onEvent(const event::Event &event);
   bool handleCommand(const char *buffer, const uint8_t len);
 
-private:
+ private:
   stream::UartStream &uart;
 
   DISALLOW_COPY_AND_ASSIGN(SerialApi);

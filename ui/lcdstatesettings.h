@@ -31,7 +31,7 @@ class LcdStateSettings;
 typedef bool (LcdStateSettings::*PageHandler)();
 
 class LcdStateSettings : public LcdState {
-public:
+ public:
   LcdStateSettings(stream::LcdStream &lcd);
 
   bool draw() override;
@@ -51,7 +51,7 @@ public:
   virtual void select() override;
   virtual void advance() override;
 
-private:
+ private:
   bool timedOut();
   void resetTimeout();
 

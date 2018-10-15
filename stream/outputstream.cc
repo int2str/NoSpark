@@ -31,8 +31,7 @@ OutputStream &OutputStream::operator<<(const Flags flag) {
 }
 
 OutputStream &OutputStream::operator<<(const Spaces spaces) {
-  for (size_t i = 0; i != spaces.num; ++i)
-    *this << ' ';
+  for (size_t i = 0; i != spaces.num; ++i) *this << ' ';
   return *this;
 }
 
@@ -43,11 +42,9 @@ OutputStream &OutputStream::operator<<(const char ch) {
 
 OutputStream &OutputStream::operator<<(const char *str) {
   if (flags & (1 << Flags::PGM)) {
-    while (pgm_read_byte(str))
-      write(pgm_read_byte(str++));
+    while (pgm_read_byte(str)) write(pgm_read_byte(str++));
   } else {
-    while (*str)
-      write(*str++);
+    while (*str) write(*str++);
   }
   flags = 0;
   return *this;

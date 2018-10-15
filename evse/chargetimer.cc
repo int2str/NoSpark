@@ -70,10 +70,8 @@ void ChargeTimer::checkTime() {
     uint16_t now = (rtc.hour << 8) | rtc.minute;
     uint16_t start_time = settings.charge_timer_t1;
     uint16_t end_time = settings.charge_timer_t2;
-    if (now < start_time)
-      now += (24 << 8);
-    if (end_time < start_time)
-      end_time += (24 << 8);
+    if (now < start_time) now += (24 << 8);
+    if (end_time < start_time) end_time += (24 << 8);
 
     can_charge_now = (now >= start_time) && (now <= end_time);
   }

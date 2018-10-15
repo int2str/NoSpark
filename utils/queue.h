@@ -18,17 +18,18 @@
 namespace nospark {
 namespace utils {
 
-template <typename T> class Queue {
+template <typename T>
+class Queue {
   struct Node {
     T data;
     Node *next;
   };
 
-public:
+ public:
   class iterator {
     explicit iterator(Node *p) : node(p) {}
 
-  public:
+   public:
     bool operator!=(const iterator &rhs) { return this->node != rhs.node; }
 
     iterator &operator++() {
@@ -44,7 +45,7 @@ public:
 
     T &operator*() { return node->data; }
 
-  private:
+   private:
     friend class Queue;
     Node *node;
   };
@@ -52,8 +53,7 @@ public:
   Queue() : head(0) {}
 
   ~Queue() {
-    while (!empty())
-      pop();
+    while (!empty()) pop();
   }
 
   void push(const T &data) {
@@ -62,15 +62,13 @@ public:
 
     } else {
       auto n = head;
-      while (n->next)
-        n = n->next;
+      while (n->next) n = n->next;
       n->next = new Node{data, 0};
     }
   }
 
   void pop() {
-    if (empty())
-      return;
+    if (empty()) return;
 
     auto n = head;
     head = head->next;
@@ -103,7 +101,7 @@ public:
 
   iterator end() { return iterator(0); }
 
-private:
+ private:
   Node *head;
 };
 }

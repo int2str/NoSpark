@@ -28,7 +28,7 @@ class DS3231 {
   DS3231();
   ~DS3231();
 
-public:
+ public:
   static DS3231 &get();
 
   bool isPresent() const;
@@ -48,7 +48,7 @@ public:
   uint8_t year;
   uint8_t weekday;
 
-private:
+ private:
   const uint8_t i2c_addr;
   I2CMaster &i2c;
   const bool present;

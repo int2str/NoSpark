@@ -23,21 +23,22 @@
 #include "utils/atomic.h"
 
 #define GFCI_TEST_PULSES 100
-#define GFCI_TEST_DELAY_US 8333 // ~60Hz
+#define GFCI_TEST_DELAY_US 8333  // ~60Hz
 #define GFCI_RESET_DELAY_MS 500
 
 static nospark::board::GFCI *gfci = 0;
 
 ISR(INT0_vect) {
-  if (gfci)
-    gfci->trip();
+  if (gfci) gfci->trip();
 }
 
 namespace nospark {
 namespace board {
 
 GFCI::GFCI()
-    : pinSense(PIN_GFCI_SENSE), pinTest(PIN_GFCI_TEST), self_test(false),
+    : pinSense(PIN_GFCI_SENSE),
+      pinTest(PIN_GFCI_TEST),
+      self_test(false),
       tripped(false) {
   // Pointer for ISR
   gfci = this;
@@ -57,8 +58,7 @@ void GFCI::sendPulses() {
 }
 
 bool GFCI::selfTest() {
-  if (tripped)
-    return false;
+  if (tripped) return false;
 
   bool result = false;
   self_test = true;
@@ -68,8 +68,7 @@ bool GFCI::selfTest() {
 
   // Wait for pin to go low again
   uint8_t retries = 0;
-  while (++retries && !!pinSense)
-    _delay_ms(10);
+  while (++retries && !!pinSense) _delay_ms(10);
 
   // Extra delay to let peak hold cap bleed off
   _delay_ms(GFCI_RESET_DELAY_MS);
@@ -84,13 +83,11 @@ bool GFCI::selfTest() {
 }
 
 void GFCI::trip() {
-  if (tripped)
-    return;
+  if (tripped) return;
 
   tripped = true;
 
-  if (!self_test)
-    event::Loop::post(event::Event(EVENT_GFCI_TRIPPED));
+  if (!self_test) event::Loop::post(event::Event(EVENT_GFCI_TRIPPED));
 }
 }
 }

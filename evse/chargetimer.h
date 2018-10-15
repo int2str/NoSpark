@@ -27,10 +27,10 @@ class ChargeTimer : public event::Handler {
   ChargeTimer();
   ~ChargeTimer();
 
-public:
+ public:
   static ChargeTimer &init();
 
-private:
+ private:
   void onEvent(const event::Event &event) override;
   void checkTime();
 

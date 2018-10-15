@@ -20,8 +20,9 @@
 namespace nospark {
 namespace utils {
 
-template <class T> class Eeprom {
-public:
+template <class T>
+class Eeprom {
+ public:
   static T load(const uint8_t offset) {
     T t;
     eeprom_read_block(&t, reinterpret_cast<const void *>(offset), sizeof(T));

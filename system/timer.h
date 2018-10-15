@@ -26,12 +26,12 @@ namespace system {
 class Timer {
   Timer();
 
-public:
+ public:
   // This is lazily initialized. First call will always
   // return 0. TImer overflows every ~49 days.
   static uint32_t millis();
 
-private:
+ private:
   uint32_t millis_impl() const;
 };
 }

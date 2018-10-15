@@ -75,8 +75,12 @@ namespace nospark {
 namespace ui {
 
 LcdStateSettings::LcdStateSettings(stream::LcdStream &lcd)
-    : LcdState(lcd), page(0), option(NOT_ADJUSTING), value(UNINITIALIZED),
-      last_action(0), blink_state(BLINK_TIMEOUT),
+    : LcdState(lcd),
+      page(0),
+      option(NOT_ADJUSTING),
+      value(UNINITIALIZED),
+      last_action(0),
+      blink_state(BLINK_TIMEOUT),
       pageHandlers{
           &LcdStateSettings::pageSetCurrent, &LcdStateSettings::pageChargeTimer,
           &LcdStateSettings::pageKwhLimit,   &LcdStateSettings::pageSetTime,
@@ -89,13 +93,11 @@ LcdStateSettings::LcdStateSettings(stream::LcdStream &lcd)
 }
 
 bool LcdStateSettings::draw() {
-  if (timedOut())
-    return false;
+  if (timedOut()) return false;
 
   lcd.setBacklight(LCD16x2::WHITE);
 
-  if (page >= SETTINGS_PAGES)
-    page = 0;
+  if (page >= SETTINGS_PAGES) page = 0;
 
   return (this->*pageHandlers[page])();
 }
@@ -130,14 +132,11 @@ bool LcdStateSettings::pageSetTime() {
     minute = rtc.minute;
   }
 
-  if (value == UNINITIALIZED)
-    value = 0;
+  if (value == UNINITIALIZED) value = 0;
 
-  if (option == ADJUST_HH)
-    hour = (hour + value) % 24;
+  if (option == ADJUST_HH) hour = (hour + value) % 24;
 
-  if (option == ADJUST_MM)
-    minute = (minute + value) % 60;
+  if (option == ADJUST_MM) minute = (minute + value) % 60;
 
   lcd << stream::Time(hour, minute);
 
@@ -185,20 +184,16 @@ bool LcdStateSettings::pageSetDate() {
     day = rtc.day;
   }
 
-  if (value == UNINITIALIZED)
-    value = 0;
+  if (value == UNINITIALIZED) value = 0;
 
-  if (option == ADJUST_DD)
-    day = utils::max((day + value) % 32, 1);
+  if (option == ADJUST_DD) day = utils::max((day + value) % 32, 1);
 
-  if (option == ADJUST_MM)
-    month = utils::max((month + value) % 13, 1);
+  if (option == ADJUST_MM) month = utils::max((month + value) % 13, 1);
 
   if (option == ADJUST_Y_TENS)
     year_tens = utils::max((year_tens + value) % 10, 1);
 
-  if (option == ADJUST_Y_ONES)
-    year_ones = (year_ones + value) % 10;
+  if (option == ADJUST_Y_ONES) year_ones = (year_ones + value) % 10;
 
   lcd << stream::PAD_ZERO << day << '.' << stream::PAD_ZERO << month << '.'
       << "20" << year_tens << year_ones;
@@ -217,8 +212,7 @@ bool LcdStateSettings::pageSetCurrent() {
   const uint8_t currents[] = {10, 16, 20, 24, 30, 35, 40, 45, 50};
 
   // Initialize amps
-  if (value == UNINITIALIZED)
-    value = State::get().max_amps_target;
+  if (value == UNINITIALIZED) value = State::get().max_amps_target;
 
   // Save new state if we're done adjusting
   if (option > ADJUST_SINGLE) {
@@ -234,13 +228,11 @@ bool LcdStateSettings::pageSetCurrent() {
 
   // Snap to currents above if we're still adjusting
   if (option == ADJUST_SINGLE) {
-    if (value > currents[sizeof(currents) - 1])
-      value = currents[0];
+    if (value > currents[sizeof(currents) - 1]) value = currents[0];
 
     // Snap
     uint8_t i = 0;
-    while (currents[i] < value)
-      ++i;
+    while (currents[i] < value) ++i;
     value = currents[i];
   }
 
@@ -284,8 +276,7 @@ bool LcdStateSettings::pageChargeTimer() {
     temp_buffer[4] = settings.charge_timer_t2 & 0xFF;
   }
 
-  if (value == UNINITIALIZED)
-    value = 0;
+  if (value == UNINITIALIZED) value = 0;
 
   lcd.move(0, 0);
   lcd << static_cast<char>(CustomCharacters::HOURGLASS) << PGM
@@ -296,14 +287,12 @@ bool LcdStateSettings::pageChargeTimer() {
   if (option == ADJUST_TIMER_ONOFF)
     temp_buffer[0] = (temp_buffer[0] + value) % 2;
 
-  if (option == ADJUST_T1_HH)
-    temp_buffer[1] = (temp_buffer[1] + value) % 24;
+  if (option == ADJUST_T1_HH) temp_buffer[1] = (temp_buffer[1] + value) % 24;
 
   if (option == ADJUST_T1_MM)
     temp_buffer[2] = (temp_buffer[2] + value * 15) % 60;
 
-  if (option == ADJUST_T2_HH)
-    temp_buffer[3] = (temp_buffer[3] + value) % 24;
+  if (option == ADJUST_T2_HH) temp_buffer[3] = (temp_buffer[3] + value) % 24;
 
   if (option == ADJUST_T2_MM)
     temp_buffer[4] = (temp_buffer[4] + value * 15) % 60;
@@ -332,8 +321,7 @@ bool LcdStateSettings::pageChargeTimer() {
 }
 
 bool LcdStateSettings::pageKwhLimit() {
-  if (value == UNINITIALIZED)
-    value = settings.kwh_limit;
+  if (value == UNINITIALIZED) value = settings.kwh_limit;
 
   // Save new state if we're done adjusting
   if (option > ADJUST_SINGLE) {
@@ -343,8 +331,7 @@ bool LcdStateSettings::pageKwhLimit() {
   }
 
   if (option == ADJUST_SINGLE) {
-    if (value > KWH_LIMIT_MAX)
-      value = 0;
+    if (value > KWH_LIMIT_MAX) value = 0;
   }
 
   // Draw screen, flashing value while adjusting
@@ -368,10 +355,9 @@ bool LcdStateSettings::pageKwhLimit() {
 
 bool LcdStateSettings::pageKwhCost() {
   const char currencies[3] = {'$', CustomCharacters::EURO,
-                              '\\'}; // Backslash = Yen
+                              '\\'};  // Backslash = Yen
 
-  if (value == UNINITIALIZED)
-    value = 0;
+  if (value == UNINITIALIZED) value = 0;
 
   if (option > ADJUST_HUNDREDTH) {
     EepromSettings::save(settings);
@@ -387,14 +373,11 @@ bool LcdStateSettings::pageKwhCost() {
   if (option == ADJUST_CURRENCY)
     settings.kwh_currency = (settings.kwh_currency + value) % 3;
 
-  if (option == ADJUST_ONES)
-    ones = (ones + value) % 10;
+  if (option == ADJUST_ONES) ones = (ones + value) % 10;
 
-  if (option == ADJUST_TENTH)
-    tenth = (tenth + value) % 10;
+  if (option == ADJUST_TENTH) tenth = (tenth + value) % 10;
 
-  if (option == ADJUST_HUNDREDTH)
-    hundredth = (hundredth + value) % 10;
+  if (option == ADJUST_HUNDREDTH) hundredth = (hundredth + value) % 10;
 
   settings.kwh_cost = hundredth + (tenth * 10) + (ones * 100);
 
@@ -419,8 +402,7 @@ bool LcdStateSettings::pageKwhCost() {
 }
 
 bool LcdStateSettings::pageSleepmode() {
-  if (value == UNINITIALIZED)
-    value = settings.sleep_mode;
+  if (value == UNINITIALIZED) value = settings.sleep_mode;
 
   // Save new state if we're done adjusting
   if (option > ADJUST_SINGLE) {
@@ -437,23 +419,23 @@ bool LcdStateSettings::pageSleepmode() {
   lcd.move(2, 1);
   if (option == NOT_ADJUSTING || blink_state.get()) {
     switch (value) {
-    default:
-      value = 0;
-    // fall-through intended
-    case 0:
-      if (devices::DS3231::get().isPresent()) {
-        lcd << PGM << STR_SET_SLEEPMODE_TIME;
+      default:
+        value = 0;
+      // fall-through intended
+      case 0:
+        if (devices::DS3231::get().isPresent()) {
+          lcd << PGM << STR_SET_SLEEPMODE_TIME;
+          break;
+        } else {
+          ++value;
+        }
+      // fall-through possible
+      case 1:
+        lcd << PGM << STR_SET_SLEEPMODE_OFF;
         break;
-      } else {
-        ++value;
-      }
-    // fall-through possible
-    case 1:
-      lcd << PGM << STR_SET_SLEEPMODE_OFF;
-      break;
-    case 2:
-      lcd << PGM << STR_SET_SLEEPMODE_DISABLED;
-      break;
+      case 2:
+        lcd << PGM << STR_SET_SLEEPMODE_DISABLED;
+        break;
     }
   } else {
     lcd << stream::Spaces(13);
@@ -463,8 +445,7 @@ bool LcdStateSettings::pageSleepmode() {
 }
 
 bool LcdStateSettings::pageLcdType() {
-  if (value == UNINITIALIZED)
-    value = settings.lcd_type;
+  if (value == UNINITIALIZED) value = settings.lcd_type;
 
   // Save new state if we're done adjusting
   if (option > ADJUST_SINGLE) {
@@ -481,15 +462,15 @@ bool LcdStateSettings::pageLcdType() {
   lcd.move(2, 1);
   if (option == NOT_ADJUSTING || blink_state.get()) {
     switch (value) {
-    default:
-      value = 0;
-    // fall-through intended
-    case 0:
-      lcd << PGM << STR_SET_TYPE_RGB;
-      break;
-    case 1:
-      lcd << PGM << STR_SET_TYPE_MONO;
-      break;
+      default:
+        value = 0;
+      // fall-through intended
+      case 0:
+        lcd << PGM << STR_SET_TYPE_RGB;
+        break;
+      case 1:
+        lcd << PGM << STR_SET_TYPE_MONO;
+        break;
     }
   } else {
     lcd << stream::Spaces(13);
@@ -501,14 +482,13 @@ bool LcdStateSettings::pageLcdType() {
 bool LcdStateSettings::pageReset() {
   lcd.move(0, 0);
   lcd << '!' << PGM << STR_SET_RESET;
-  if (option != NOT_ADJUSTING)
-    Watchdog::forceRestart();
+  if (option != NOT_ADJUSTING) Watchdog::forceRestart();
   return true;
 }
 
 bool LcdStateSettings::pageExit() {
   lcd.move(0, 0);
-  lcd << static_cast<char>(0x7F) // <- back arrow
+  lcd << static_cast<char>(0x7F)  // <- back arrow
       << PGM << STR_SET_EXIT;
   return (option == NOT_ADJUSTING);
 }

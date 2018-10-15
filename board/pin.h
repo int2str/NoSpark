@@ -25,7 +25,7 @@ namespace nospark {
 namespace board {
 
 class Pin {
-public:
+ public:
   enum PinDirection { PIN_IN, PIN_IN_PULLUP, PIN_OUT };
 
   Pin(volatile uint8_t *reg_pin, const uint8_t b, const PinDirection d);
@@ -35,7 +35,7 @@ public:
   Pin &operator=(const uint8_t rhs);
   bool operator!() const;
 
-private:
+ private:
   volatile uint8_t *const reg_pin;
   const uint8_t b;
 };

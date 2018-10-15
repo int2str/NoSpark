@@ -28,7 +28,7 @@ namespace board {
 
 // Relay monitoring and control
 class Relays {
-public:
+ public:
   enum RelayState { UNKNOWN, OK, STUCK, NO_GROUND };
 
   Relays();
@@ -41,7 +41,7 @@ public:
   // not and whether power is present or not.
   RelayState checkStatus();
 
-private:
+ private:
   RelayState state;
   bool enabled;
   uint32_t last_change;

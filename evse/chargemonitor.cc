@@ -72,7 +72,10 @@ ChargeMonitor &ChargeMonitor::get() {
 }
 
 ChargeMonitor::ChargeMonitor()
-    : time_start_ms(0), time_stop_ms(0), last_sample(0), watt_seconds(0),
+    : time_start_ms(0),
+      time_stop_ms(0),
+      last_sample(0),
+      watt_seconds(0),
       reset_stats_on_charge(true) {}
 
 bool ChargeMonitor::isCharging() const {
@@ -80,10 +83,8 @@ bool ChargeMonitor::isCharging() const {
 }
 
 uint32_t ChargeMonitor::chargeDuration() const {
-  if (time_start_ms == 0)
-    return 0;
-  if (time_stop_ms != 0)
-    return time_stop_ms - time_start_ms;
+  if (time_start_ms == 0) return 0;
+  if (time_stop_ms != 0) return time_stop_ms - time_start_ms;
   return system::Timer::millis() - time_start_ms;
 }
 
@@ -135,18 +136,17 @@ void ChargeMonitor::chargeStateChanged(const bool charging) {
 
 void ChargeMonitor::onEvent(const event::Event &event) {
   switch (event.id) {
-  case EVENT_UPDATE:
-    update();
-    break;
+    case EVENT_UPDATE:
+      update();
+      break;
 
-  case EVENT_CHARGE_STATE:
-    chargeStateChanged(event.param);
-    break;
+    case EVENT_CHARGE_STATE:
+      chargeStateChanged(event.param);
+      break;
 
-  case EVENT_J1772_STATE:
-    if (event.param == J1772Pilot::STATE_A)
-      reset_stats_on_charge = true;
-    break;
+    case EVENT_J1772_STATE:
+      if (event.param == J1772Pilot::STATE_A) reset_stats_on_charge = true;
+      break;
   }
 }
 }

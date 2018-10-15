@@ -21,13 +21,13 @@ namespace nospark {
 namespace board {
 
 class Ammeter {
-public:
+ public:
   Ammeter();
 
   // Returns mA
   uint32_t sample();
 
-private:
+ private:
   uint32_t last_sample;
 };
 }

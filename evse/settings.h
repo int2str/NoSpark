@@ -21,7 +21,7 @@ namespace nospark {
 namespace evse {
 
 class Settings {
-public:
+ public:
   uint16_t marker;
   uint8_t revision;
 
@@ -62,7 +62,7 @@ public:
 };
 
 class EepromSettings {
-public:
+ public:
   static void load(Settings &settings);
   static void save(Settings &settings);
 };

@@ -23,12 +23,12 @@ namespace system {
 class Watchdog {
   Watchdog();
 
-public:
+ public:
   static void enable();
   static void reset();
   static void forceRestart();
 
-private:
+ private:
   DISALLOW_COPY_AND_ASSIGN(Watchdog);
 };
 }

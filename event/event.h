@@ -22,7 +22,7 @@ namespace nospark {
 namespace event {
 
 class Event {
-public:
+ public:
   explicit Event(const uint8_t id, const uint8_t param = 0);
 
   bool operator==(const Event &rhs) const;

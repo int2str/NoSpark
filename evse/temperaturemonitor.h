@@ -30,13 +30,13 @@ namespace evse {
 class TemperatureMonitor : public event::Handler {
   TemperatureMonitor();
 
-public:
+ public:
   enum TemperatureState { NOMINAL, ELEVATED, HIGH, CRITICAL };
 
   static TemperatureMonitor &init();
   static TemperatureState getState();
 
-private:
+ private:
   void onEvent(const event::Event &event) override;
   void update(bool force_update = false);
 

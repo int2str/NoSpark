@@ -44,16 +44,14 @@ using nospark::stream::PGM;
 
 namespace {
 uint8_t dec_from_charpair(const char *s) {
-  if (s[0] < '0' || s[0] > '9' || s[1] < '0' || s[1] > '9')
-    return 0;
+  if (s[0] < '0' || s[0] > '9' || s[1] < '0' || s[1] > '9') return 0;
   return (s[0] - '0') * 10 + (s[1] - '0');
 }
 
 void write_help(OutputStream &out, const char *cmd, const char *help) {
   out << ' ' << PGM << cmd;
   uint8_t len = strlen_P(cmd);
-  while (len++ < 12)
-    out << ' ';
+  while (len++ < 12) out << ' ';
   out << PGM << help << EOL;
 }
 
@@ -93,7 +91,8 @@ namespace nospark {
 namespace ui {
 
 SerialConsole::SerialConsole(UartStream &uart)
-    : uart(uart), event_debug(false) // TODO: Read from EEPROM?
+    : uart(uart),
+      event_debug(false)  // TODO: Read from EEPROM?
       ,
       commands({{STR_CMD_HELP, &SerialConsole::commandHelp},
                 {STR_CMD_STATUS, &SerialConsole::commandStatus},
@@ -108,52 +107,50 @@ SerialConsole::SerialConsole(UartStream &uart)
 
 void SerialConsole::onEvent(const event::Event &event) {
   switch (event.id) {
-  case EVENT_UPDATE:
-    break;
+    case EVENT_UPDATE:
+      break;
 
-  case EVENT_J1772_STATE:
-    if (event_debug) {
-      uart << PGM << STR_EVENT << PGM << STR_EVT_J1772_STATE
-           << static_cast<char>('A' - 1 + event.param) << EOL;
+    case EVENT_J1772_STATE:
+      if (event_debug) {
+        uart << PGM << STR_EVENT << PGM << STR_EVT_J1772_STATE
+             << static_cast<char>('A' - 1 + event.param) << EOL;
+      }
+      break;
+
+    case EVENT_CONTROLLER_STATE:
+      if (event_debug) {
+        uart << PGM << STR_EVENT << PGM << STR_EVT_CONTROLLER_STATE
+             << static_cast<char>('0' + State::get().controller) << EOL;
+      }
+      break;
+
+    case EVENT_GFCI_TRIPPED:
+      uart << PGM << STR_EVENT << PGM << STR_EVT_GFCI_TRIPPED << EOL;
+      break;
+
+    default: {
+      if (event_debug) {
+        char params[6] = {0};
+
+        utoa(event.id, params, 10);
+        uart << PGM << STR_EVENT << PGM << STR_EVT_DEFAULT1 << params;
+
+        utoa(event.param, params, 10);
+        uart << PGM << STR_EVT_DEFAULT2 << params << EOL;
+      }
+      break;
     }
-    break;
-
-  case EVENT_CONTROLLER_STATE:
-    if (event_debug) {
-      uart << PGM << STR_EVENT << PGM << STR_EVT_CONTROLLER_STATE
-           << static_cast<char>('0' + State::get().controller) << EOL;
-    }
-    break;
-
-  case EVENT_GFCI_TRIPPED:
-    uart << PGM << STR_EVENT << PGM << STR_EVT_GFCI_TRIPPED << EOL;
-    break;
-
-  default: {
-    if (event_debug) {
-      char params[6] = {0};
-
-      utoa(event.id, params, 10);
-      uart << PGM << STR_EVENT << PGM << STR_EVT_DEFAULT1 << params;
-
-      utoa(event.param, params, 10);
-      uart << PGM << STR_EVT_DEFAULT2 << params << EOL;
-    }
-    break;
-  }
   }
 }
 
 bool SerialConsole::handleCommand(const char *buffer, const uint8_t len) {
-  if (buffer[0] == 0)
-    return false;
+  if (buffer[0] == 0) return false;
 
   for (uint8_t i = 0; i != MAX_COMMANDS; ++i) {
     const uint8_t cmd_len = strlen_P(commands[i].command);
     if (strncmp_P(buffer, commands[i].command, cmd_len) == 0) {
       if (len > cmd_len) {
-        if (buffer[cmd_len] != ' ')
-          continue;
+        if (buffer[cmd_len] != ' ') continue;
         (this->*commands[i].handler)(buffer + cmd_len + 1, len - cmd_len - 1);
       } else {
         (this->*commands[i].handler)(nullptr, 0);
@@ -224,7 +221,7 @@ void SerialConsole::commandSetLimit(const char *param,
 }
 
 void SerialConsole::commandSetTime(const char *param, const uint8_t param_len) {
-  if (param_len != 4 && param_len != 6) // Allow <hhmm> and <hhmmss>
+  if (param_len != 4 && param_len != 6)  // Allow <hhmm> and <hhmmss>
   {
     uart << PGM << STR_ERR_SETTIME_PARAM << EOL;
     return;
@@ -235,8 +232,7 @@ void SerialConsole::commandSetTime(const char *param, const uint8_t param_len) {
 
   rtc.hour = dec_from_charpair(param);
   rtc.minute = dec_from_charpair(param + 2);
-  if (param_len == 6)
-    rtc.second = dec_from_charpair(param + 4);
+  if (param_len == 6) rtc.second = dec_from_charpair(param + 4);
 
   rtc.write();
 }

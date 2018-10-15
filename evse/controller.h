@@ -34,10 +34,10 @@ class Controller : public event::Handler {
   Controller();
   ~Controller();
 
-public:
+ public:
   static Controller &init();
 
-private:
+ private:
   void onEvent(const event::Event &event) override;
 
   void update();

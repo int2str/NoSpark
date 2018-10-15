@@ -29,9 +29,9 @@
 #define LCD_EN (1 << 5)
 #define LCD_D4_OFFSET 1
 
-#define LCD_BL_R (1 << 6) // A
-#define LCD_BL_G (1 << 7) // A
-#define LCD_BL_B (1 << 0) // B
+#define LCD_BL_R (1 << 6)  // A
+#define LCD_BL_G (1 << 7)  // A
+#define LCD_BL_B (1 << 0)  // B
 
 #define LCD_CLEAR (1 << 0)
 
@@ -76,8 +76,7 @@ Pair<uint8_t, uint8_t> bits4color(const LCD16x2::BacklightType type,
   uint8_t a = LCD_BL_R | LCD_BL_G;
   uint8_t b = LCD_BL_B;
 
-  if (color == LCD16x2::OFF)
-    return Pair<uint8_t, uint8_t>(a, b);
+  if (color == LCD16x2::OFF) return Pair<uint8_t, uint8_t>(a, b);
 
   if (color == LCD16x2::WHITE || type == LCD16x2::MONOCHROME)
     return Pair<uint8_t, uint8_t>(0, 0);
@@ -116,8 +115,7 @@ LCD16x2::LCD16x2()
 
   uint8_t fn = LCD_FN_SET | LCD_FN_4BIT | LCD_FN_2LINE;
   for (uint8_t i = 0; i != 4; ++i) {
-    if (i == 3)
-      fn &= ~LCD_FN_4BIT;
+    if (i == 3) fn &= ~LCD_FN_4BIT;
     pulse(TUPLE_MAP[fn >> 4]);
     _delay_us(LCD_COMMAND_DELAY_US);
   }
@@ -160,17 +158,15 @@ void LCD16x2::setBacklightType(const BacklightType type) {
 void LCD16x2::createChar(const uint8_t idx, const uint8_t *data,
                          const uint8_t len) {
   writeCommand(LCD_SET_CG_ADDR | (idx << 3));
-  for (uint8_t i = 0; i != len; ++i)
-    write(*data++);
-  move(0, 0); // To reset address pointer
+  for (uint8_t i = 0; i != len; ++i) write(*data++);
+  move(0, 0);  // To reset address pointer
 }
 
 void LCD16x2::createChar_P(const uint8_t idx, const uint8_t *data,
                            const uint8_t len) {
   writeCommand(LCD_SET_CG_ADDR | (idx << 3));
-  for (uint8_t i = 0; i != len; ++i)
-    write(pgm_read_byte(data++));
-  move(0, 0); // To reset address pointer
+  for (uint8_t i = 0; i != len; ++i) write(pgm_read_byte(data++));
+  move(0, 0);  // To reset address pointer
 }
 
 void LCD16x2::write(const uint8_t ch) {

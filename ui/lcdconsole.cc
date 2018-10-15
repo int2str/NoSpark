@@ -60,14 +60,16 @@ LcdConsole &LcdConsole::init() {
 }
 
 LcdConsole::LcdConsole()
-    : in_settings(false), sleeping(false), last_event(Timer::millis()),
-      lcdState(new LcdStateBootup(lcd)), lcd(lcd_int) {
+    : in_settings(false),
+      sleeping(false),
+      last_event(Timer::millis()),
+      lcdState(new LcdStateBootup(lcd)),
+      lcd(lcd_int) {
   updateBacklightType(lcd_int);
 }
 
 void LcdConsole::setState(LcdState *newState) {
-  if (lcdState != 0)
-    delete lcdState;
+  if (lcdState != 0) delete lcdState;
 
   lcd.clear();
   lcdState = newState;
@@ -87,46 +89,45 @@ void LcdConsole::update() {
 
 void LcdConsole::onEvent(const event::Event &event) {
   switch (event.id) {
-  case EVENT_UPDATE:
-    update();
-    break;
+    case EVENT_UPDATE:
+      update();
+      break;
 
-  case EVENT_KEYHOLD:
-    if (!sleeping) {
-      if (!in_settings) {
-        in_settings = true;
-        setState(new LcdStateSettings(lcd));
-      } else {
-        lcdState->advance();
+    case EVENT_KEYHOLD:
+      if (!sleeping) {
+        if (!in_settings) {
+          in_settings = true;
+          setState(new LcdStateSettings(lcd));
+        } else {
+          lcdState->advance();
+        }
       }
-    }
-    break;
+      break;
 
-  case EVENT_KEYUP:
-    if (!sleeping)
-      lcdState->select();
-    break;
+    case EVENT_KEYUP:
+      if (!sleeping) lcdState->select();
+      break;
 
-  case EVENT_CONTROLLER_STATE:
-    if (event.param == State::RUNNING)
-      setState(new LcdStateRunning(lcd));
-    else if (event.param == State::FAULT)
-      setState(new LcdStateError(lcd));
-    break;
+    case EVENT_CONTROLLER_STATE:
+      if (event.param == State::RUNNING)
+        setState(new LcdStateRunning(lcd));
+      else if (event.param == State::FAULT)
+        setState(new LcdStateError(lcd));
+      break;
 
-  case EVENT_REQUEST_SLEEP:
-    sleeping = event.param;
-    in_settings = false;
-    last_event = Timer::millis();
-    if (sleeping)
-      setState(new LcdStateSleeping(lcd));
-    else
-      setState(new LcdStateRunning(lcd));
-    break;
+    case EVENT_REQUEST_SLEEP:
+      sleeping = event.param;
+      in_settings = false;
+      last_event = Timer::millis();
+      if (sleeping)
+        setState(new LcdStateSleeping(lcd));
+      else
+        setState(new LcdStateRunning(lcd));
+      break;
 
-  case EVENT_SETTINGS_CHANGED:
-    updateBacklightType(lcd_int);
-    break;
+    case EVENT_SETTINGS_CHANGED:
+      updateBacklightType(lcd_int);
+      break;
   }
 
   updateSleepState(event);
@@ -137,7 +138,7 @@ void LcdConsole::updateSleepState(const event::Event &event) {
     if (!sleeping && (Timer::millis() - last_event) > SLEEP_DELAY_MS) {
       Settings settings;
       EepromSettings::load(settings);
-      if (settings.sleep_mode != 2) // 2 = No sleepmode...
+      if (settings.sleep_mode != 2)  // 2 = No sleepmode...
       {
         sleeping = 1;
         setState(new LcdStateSleeping(lcd));
