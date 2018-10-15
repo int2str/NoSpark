@@ -22,7 +22,7 @@
 #include "ui/lcdstate.h"
 #include "ui/timedflipflop.h"
 
-#define SETTINGS_PAGES 10
+#define SETTINGS_PAGES 9
 
 namespace nospark {
 namespace ui {
@@ -43,7 +43,6 @@ class LcdStateSettings : public LcdState {
   bool pageKwhLimit();
   bool pageKwhCost();
   bool pageSleepmode();
-  bool pageLcdType();
   bool pageReset();
   bool pageExit();
 
@@ -69,5 +68,6 @@ class LcdStateSettings : public LcdState {
 
   PageHandler pageHandlers[SETTINGS_PAGES];
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

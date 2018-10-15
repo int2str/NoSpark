@@ -49,9 +49,6 @@ extern char const STR_SET_SLEEPMODE[];
 extern char const STR_SET_SLEEPMODE_TIME[];
 extern char const STR_SET_SLEEPMODE_OFF[];
 extern char const STR_SET_SLEEPMODE_DISABLED[];
-extern char const STR_SET_LCD_TYPE[];
-extern char const STR_SET_TYPE_RGB[];
-extern char const STR_SET_TYPE_MONO[];
 extern char const STR_SET_RESET[];
 extern char const STR_SET_EXIT[];
 

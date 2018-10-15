@@ -38,18 +38,13 @@ using nospark::evse::State;
 using nospark::system::Timer;
 
 namespace {
+
 bool isWakeEvent(const uint8_t event_id) {
   return event_id != EVENT_UPDATE_CHARGE_TIMER && event_id != EVENT_KEYDOWN &&
          event_id != EVENT_REQUEST_SLEEP;
 }
 
-void updateBacklightType(LCD16x2 &lcd) {
-  Settings settings;
-  EepromSettings::load(settings);
-  lcd.setBacklightType(settings.lcd_type == 0 ? LCD16x2::RGB
-                                              : LCD16x2::MONOCHROME);
-}
-}
+}  // namespace
 
 namespace nospark {
 namespace ui {
@@ -65,7 +60,6 @@ LcdConsole::LcdConsole()
       last_event(Timer::millis()),
       lcdState(new LcdStateBootup(lcd)),
       lcd(lcd_int) {
-  updateBacklightType(lcd_int);
 }
 
 void LcdConsole::setState(LcdState *newState) {
@@ -124,10 +118,6 @@ void LcdConsole::onEvent(const event::Event &event) {
       else
         setState(new LcdStateRunning(lcd));
       break;
-
-    case EVENT_SETTINGS_CHANGED:
-      updateBacklightType(lcd_int);
-      break;
   }
 
   updateSleepState(event);
@@ -156,5 +146,6 @@ void LcdConsole::updateSleepState(const event::Event &event) {
     }
   }
 }
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

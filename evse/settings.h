@@ -51,6 +51,7 @@ class Settings {
   uint16_t ammeter_offset;
 
   // Rev 6
+  // @DEPRECATED
   uint8_t lcd_type;
 
   Settings();
@@ -66,5 +67,6 @@ class EepromSettings {
   static void load(Settings &settings);
   static void save(Settings &settings);
 };
-}
-}
+
+}  // namespace evse
+}  // namespace nospark

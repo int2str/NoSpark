@@ -28,8 +28,6 @@ class LCD16x2 {
  public:
   enum Backlight { OFF, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, WHITE };
 
-  enum BacklightType { RGB, MONOCHROME };
-
   LCD16x2();
 
   void clear();
@@ -41,18 +39,15 @@ class LCD16x2 {
 
   void setBacklight(const Backlight color);
 
-  // |setBacklight| must be called after changing the backlight type
-  void setBacklightType(const BacklightType type);
-
   void write(const uint8_t ch);
 
  private:
   devices::MCP23017 io;
   utils::Pair<uint8_t, uint8_t> backlight_bits;
-  BacklightType backlight_type;
 
   void writeCommand(const uint8_t b);
   void pulse(const uint8_t b);
 };
-}
-}
+
+}  // namespace devices
+}  // namespace nospark

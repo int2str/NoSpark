@@ -40,9 +40,6 @@ char const STR_SET_SLEEPMODE[] PROGMEM =          " Sleep mode";
 char const STR_SET_SLEEPMODE_TIME[] PROGMEM =     "show time";
 char const STR_SET_SLEEPMODE_OFF[] PROGMEM =      "display off";
 char const STR_SET_SLEEPMODE_DISABLED[] PROGMEM = "always on";
-char const STR_SET_LCD_TYPE[] PROGMEM =           " LCD backlight";
-char const STR_SET_TYPE_RGB[] PROGMEM =           "Color RGB";
-char const STR_SET_TYPE_MONO[] PROGMEM =          "Monochrome";
 char const STR_SET_RESET[] PROGMEM =              " Force restart";
 char const STR_SET_EXIT[] PROGMEM =               " Exit settings";
 

@@ -69,7 +69,7 @@ using nospark::system::Watchdog;
 namespace {
 // Temporary memory for settings in progress...
 uint8_t temp_buffer[8] = {0};
-}
+}  // namespace
 
 namespace nospark {
 namespace ui {
@@ -85,8 +85,8 @@ LcdStateSettings::LcdStateSettings(stream::LcdStream &lcd)
           &LcdStateSettings::pageSetCurrent, &LcdStateSettings::pageChargeTimer,
           &LcdStateSettings::pageKwhLimit,   &LcdStateSettings::pageSetTime,
           &LcdStateSettings::pageSetDate,    &LcdStateSettings::pageKwhCost,
-          &LcdStateSettings::pageSleepmode,  &LcdStateSettings::pageLcdType,
-          &LcdStateSettings::pageReset,      &LcdStateSettings::pageExit} {
+          &LcdStateSettings::pageSleepmode,  &LcdStateSettings::pageReset,
+          &LcdStateSettings::pageExit} {
   CustomCharacters::loadCustomChars(lcd.getLCD());
   EepromSettings::load(settings);
   resetTimeout();
@@ -444,41 +444,6 @@ bool LcdStateSettings::pageSleepmode() {
   return true;
 }
 
-bool LcdStateSettings::pageLcdType() {
-  if (value == UNINITIALIZED) value = settings.lcd_type;
-
-  // Save new state if we're done adjusting
-  if (option > ADJUST_SINGLE) {
-    settings.lcd_type = value;
-    EepromSettings::save(settings);
-    option = NOT_ADJUSTING;
-  }
-
-  // Draw screen, flashing value while adjusting
-
-  lcd.move(0, 0);
-  lcd << static_cast<char>(0xDB) << PGM << STR_SET_LCD_TYPE;
-
-  lcd.move(2, 1);
-  if (option == NOT_ADJUSTING || blink_state.get()) {
-    switch (value) {
-      default:
-        value = 0;
-      // fall-through intended
-      case 0:
-        lcd << PGM << STR_SET_TYPE_RGB;
-        break;
-      case 1:
-        lcd << PGM << STR_SET_TYPE_MONO;
-        break;
-    }
-  } else {
-    lcd << stream::Spaces(13);
-  }
-
-  return true;
-}
-
 bool LcdStateSettings::pageReset() {
   lcd.move(0, 0);
   lcd << '!' << PGM << STR_SET_RESET;
@@ -515,5 +480,6 @@ bool LcdStateSettings::timedOut() {
 }
 
 void LcdStateSettings::resetTimeout() { last_action = Timer::millis(); }
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

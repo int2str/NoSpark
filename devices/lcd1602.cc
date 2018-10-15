@@ -63,6 +63,7 @@
 using nospark::utils::Pair;
 
 namespace {
+
 using nospark::devices::LCD16x2;
 
 // This is a map of tuples, bit reversed and left shifted over
@@ -71,15 +72,13 @@ using nospark::devices::LCD16x2;
 const uint8_t TUPLE_MAP[] = {0x00, 0x10, 0x08, 0x18, 0x04, 0x14, 0x0c, 0x1c,
                              0x02, 0x12, 0x0a, 0x1a, 0x06, 0x16, 0x0e, 0x1e};
 
-Pair<uint8_t, uint8_t> bits4color(const LCD16x2::BacklightType type,
-                                  const LCD16x2::Backlight color) {
+Pair<uint8_t, uint8_t> bits4color(const LCD16x2::Backlight color) {
   uint8_t a = LCD_BL_R | LCD_BL_G;
   uint8_t b = LCD_BL_B;
 
   if (color == LCD16x2::OFF) return Pair<uint8_t, uint8_t>(a, b);
 
-  if (color == LCD16x2::WHITE || type == LCD16x2::MONOCHROME)
-    return Pair<uint8_t, uint8_t>(0, 0);
+  if (color == LCD16x2::WHITE) return Pair<uint8_t, uint8_t>(0, 0);
 
   if (color == LCD16x2::RED || color == LCD16x2::YELLOW ||
       color == LCD16x2::MAGENTA)
@@ -95,14 +94,14 @@ Pair<uint8_t, uint8_t> bits4color(const LCD16x2::BacklightType type,
 
   return Pair<uint8_t, uint8_t>(a, b);
 }
-}
+
+}  // namespace
 
 namespace nospark {
 namespace devices {
 
-LCD16x2::LCD16x2()
-    : io(LCD_I2C_ADDR), backlight_bits(0, 0), backlight_type(RGB) {
-  backlight_bits = bits4color(backlight_type, OFF);
+LCD16x2::LCD16x2() : io(LCD_I2C_ADDR), backlight_bits(0, 0) {
+  backlight_bits = bits4color(OFF);
 
   // Initialize GPIO expander
   io.ioDir(0x1F, 0x00);
@@ -147,12 +146,8 @@ void LCD16x2::move(const uint8_t x, const uint8_t y) {
 }
 
 void LCD16x2::setBacklight(const Backlight color) {
-  backlight_bits = bits4color(backlight_type, color);
+  backlight_bits = bits4color(color);
   io.write(backlight_bits.first, backlight_bits.second);
-}
-
-void LCD16x2::setBacklightType(const BacklightType type) {
-  backlight_type = type;
 }
 
 void LCD16x2::createChar(const uint8_t idx, const uint8_t *data,
@@ -183,5 +178,6 @@ void LCD16x2::pulse(const uint8_t b) {
   io.writeB(b | backlight_bits.second | LCD_EN);
   io.writeB(b | backlight_bits.second);
 }
-}
-}
+
+}  // namespace devices
+}  // namespace nospark
