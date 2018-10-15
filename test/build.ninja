@@ -33,5 +33,5 @@ ldflags = $ldflags -L$builddir
 build test: link $builddir/test.o | $builddir/test.o
 default test
 
-build $builddir/test.o: cxx test.cpp
+build $builddir/test.o: cxx test.cc
 
