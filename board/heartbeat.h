@@ -16,6 +16,7 @@
 #pragma once
 
 #include "board/pin.h"
+#include "event/handler.h"
 #include "utils/cpp.h"
 
 namespace nospark {
@@ -23,14 +24,18 @@ namespace board {
 
 // Simple pulse generator used for debugging/benchmarking.
 // Toggles SCK pin.
-class Heartbeat {
+class Heartbeat : public event::Handler {
   Heartbeat();
 
  public:
-  static void toggle();
+  static Heartbeat& init();
 
  private:
-  Pin pin;
+  Pin pin_;
+  void onEvent(const event::Event& event) override;
+
+  DISALLOW_COPY_AND_ASSIGN(Heartbeat);
 };
-}
-}
+
+}  // namespace board
+}  // namespace nospark

@@ -15,15 +15,21 @@
 
 #include "board/heartbeat.h"
 #include "board/pins.h"
+#include "events.h"
 
 namespace nospark {
 namespace board {
 
-void Heartbeat::toggle() {
+Heartbeat& Heartbeat::init() {
   static Heartbeat heartbeat;
-  heartbeat.pin = !heartbeat.pin;
+  return heartbeat;
 }
 
-Heartbeat::Heartbeat() : pin(PIN_SCK) {}
+Heartbeat::Heartbeat() : pin_(PIN_SCK) {}
+
+void Heartbeat::onEvent(const event::Event& event) {
+  if (event.id == EVENT_UPDATE) pin_ = !pin_;
 }
-}
+
+}  // namespace board
+}  // namespace nospark

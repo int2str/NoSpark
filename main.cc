@@ -44,6 +44,7 @@ void run() {
   evse::ChargeMonitor::get();
   evse::ChargeTimer::init();
   evse::TemperatureMonitor::init();
+  board::Heartbeat::init();
 
   // Start event dispatch loop
   while (1) {
@@ -51,7 +52,6 @@ void run() {
     event::Loop::dispatch();
 
     system::Watchdog::reset();
-    board::Heartbeat::toggle();
   }
 }
 
