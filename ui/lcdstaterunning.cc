@@ -49,24 +49,24 @@ using nospark::ui::CustomCharacters;
 
 namespace {
 
-void write_duration(OutputStream &lcd, const uint32_t ms) {
+void write_duration(OutputStream &os, const uint32_t ms) {
   if (!ms) {
-    lcd << "--:--";
+    os << "--:--";
     return;
   }
 
   const uint32_t mins = ms / 1000 / 60;
-  lcd << Time(mins / 60, mins % 60);
+  os << Time(mins / 60, mins % 60);
 }
 
-void write_kwh(OutputStream &lcd, const uint32_t wh) {
+void write_kwh(OutputStream &os, const uint32_t wh) {
   char buffer[10] = {0};
   ltoa(wh / 1000, buffer, 10);
 
-  lcd << buffer << '.' << static_cast<char>('0' + ((wh / 100) % 10)) << " kWh";
+  os << buffer << '.' << static_cast<char>('0' + ((wh / 100) % 10)) << " kWh";
 }
 
-void write_cost(OutputStream &lcd, const uint8_t currency, const uint32_t cents,
+void write_cost(OutputStream &os, const uint8_t currency, const uint32_t cents,
                 const uint32_t wh) {
   if (cents == 0) return;
 
@@ -78,9 +78,9 @@ void write_cost(OutputStream &lcd, const uint8_t currency, const uint32_t cents,
   ltoa(cost / 100, buffer, 10);
   cost %= 100;
 
-  lcd << " / " << static_cast<char>(currencies[currency]) << buffer << "."
-      << static_cast<char>('0' + cost / 10)
-      << static_cast<char>('0' + cost % 10);
+  os << static_cast<char>(currencies[currency]) << buffer << "."
+     << static_cast<char>('0' + cost / 10)
+     << static_cast<char>('0' + cost % 10);
 }
 
 uint8_t center_P(OutputStream &lcd, const char *str, const uint8_t offset = 0) {
@@ -267,8 +267,7 @@ void LcdStateRunning::drawKwhStats() {
   ltoa(p ? *p : 0, buffer, 10);
 
   lcd << buffer << " kWh";
-  write_cost(lcd, settings.kwh_currency, settings.kwh_cost,
-             *p * 1000l);
+  write_cost(lcd, settings.kwh_currency, settings.kwh_cost, *p * 1000l);
 }
 
 void LcdStateRunning::select() {

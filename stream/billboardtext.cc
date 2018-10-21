@@ -39,7 +39,7 @@ BillboardText &BillboardText::operator>>(OutputStream &os) {
   uint8_t i = 0;
   uint8_t offset = current_item_ * width_ + current_item_;
   while (buffer_[offset + i] && i < width_) os << buffer_[offset + i++];
-  while (i++ < width_) os << "-";
+  while (i++ < width_) os << " ";
   update();
   return *this;
 }
