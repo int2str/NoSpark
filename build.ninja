@@ -74,11 +74,13 @@ build $builddir/libserial.a: ar $builddir/usart.o
 
 build $builddir/lcdstream.o: cxx stream/lcdstream.cc
 build $builddir/outputstream.o: cxx stream/outputstream.cc
+build $builddir/billboardtext.o: cxx stream/billboardtext.cc
 build $builddir/scrollingtext.o: cxx stream/scrollingtext.cc
 build $builddir/uartstream.o: cxx stream/uartstream.cc
 build $builddir/time.o: cxx stream/time.cc
 build $builddir/libstream.a: ar $builddir/lcdstream.o $builddir/outputstream.o $
-    $builddir/scrollingtext.o $builddir/uartstream.o $builddir/time.o
+    $builddir/billboardtext.o $builddir/scrollingtext.o $builddir/uartstream.o $
+    $builddir/time.o
 
 build $builddir/timer.o: cxx system/timer.cc
 build $builddir/watchdog.o: cxx system/watchdog.cc

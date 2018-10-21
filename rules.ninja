@@ -29,7 +29,7 @@ cflags = -Os -g -mmcu=$mcu -DF_CPU=$freq -std=c++11 -W -Wall -pedantic $
     -fno-inline-small-functions -fshort-enums -fno-exceptions -I.
 ldflags = -Wl,--gc-sections -Wl,--relax
 
-dudeflags = -V -p $mcu -c usbtiny
+dudeflags = -V -p $mcu -c usbasp
 
 rule cxx
     command = $cxx -MMD -MF $out.d $cflags -c $in -o $out

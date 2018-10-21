@@ -41,12 +41,14 @@ using nospark::evse::ChargeMonitor;
 using nospark::evse::Settings;
 using nospark::evse::EepromSettings;
 using nospark::evse::State;
+using nospark::stream::BillboardText;
 using nospark::stream::OutputStream;
 using nospark::stream::Spaces;
 using nospark::stream::Time;
 using nospark::ui::CustomCharacters;
 
 namespace {
+
 void write_duration(OutputStream &lcd, const uint32_t ms) {
   if (!ms) {
     lcd << "--:--";
@@ -87,7 +89,8 @@ uint8_t center_P(OutputStream &lcd, const char *str, const uint8_t offset = 0) {
   lcd << Spaces(padding) << nospark::stream::PGM << str << Spaces(padding + 1);
   return padding;
 }
-}
+
+}  // namespace
 
 namespace nospark {
 namespace ui {
@@ -96,7 +99,7 @@ LcdStateRunning::LcdStateRunning(stream::LcdStream &lcd)
     : LcdState(lcd),
       page(PAGE_DEFAULT),
       display_state(PAGE_TIMEOUT),
-      scrolling_text(40, 11) {
+      billboard_text(10, 3) {
   CustomCharacters::loadCustomChars(lcd.getLCD());
   EepromSettings::load(settings);
 }
@@ -160,7 +163,7 @@ void LcdStateRunning::drawDefault() {
     lcd << ' ';
 
   lcd.move(0, 1);
-  scrolling_text.clear();
+  billboard_text.clear();
 
   switch (state.j1772) {
     case J1772Pilot::UNKNOWN:
@@ -177,14 +180,16 @@ void LcdStateRunning::drawDefault() {
           chargeMonitor.wattHours() == 0) {
         center_P(lcd, STR_NOT_CONNECTED);
       } else {
-        scrolling_text.setWidth(LCD_COLUMNS);
-        scrolling_text << stream::PGM << STR_CHARGED << " ";
-        write_duration(scrolling_text, chargeMonitor.chargeDuration());
-        scrolling_text << " / ";
-        write_kwh(scrolling_text, chargeMonitor.wattHours());
-        write_cost(scrolling_text, settings.kwh_currency, settings.kwh_cost,
+        billboard_text << BillboardText::ITEM(0) << stream::PGM << STR_CHARGED;
+        billboard_text << BillboardText::ITEM(1);
+        write_kwh(billboard_text, chargeMonitor.wattHours());
+        billboard_text << BillboardText::ITEM(2);
+        write_cost(billboard_text, settings.kwh_currency, settings.kwh_cost,
                    chargeMonitor.wattHours());
-        scrolling_text >> lcd;
+        billboard_text >> lcd;
+
+        lcd << static_cast<char>(CustomCharacters::SEPARATOR);
+        write_duration(lcd, chargeMonitor.chargeDuration());
       }
       break;
 
@@ -196,12 +201,13 @@ void LcdStateRunning::drawDefault() {
     case J1772Pilot::STATE_C: {
       lcd.setBacklight(LCD16x2::CYAN);
 
-      scrolling_text.setWidth(10);
-      if (rtc.isPresent()) scrolling_text << stream::PGM << STR_CHARGING << " ";
-      write_kwh(scrolling_text, chargeMonitor.wattHours());
-      write_cost(scrolling_text, settings.kwh_currency, settings.kwh_cost,
+      billboard_text << BillboardText::ITEM(0) << stream::PGM << STR_CHARGING;
+      billboard_text << BillboardText::ITEM(1);
+      write_kwh(billboard_text, chargeMonitor.wattHours());
+      billboard_text << BillboardText::ITEM(2);
+      write_cost(billboard_text, settings.kwh_currency, settings.kwh_cost,
                  chargeMonitor.wattHours());
-      scrolling_text >> lcd;
+      billboard_text >> lcd;
 
       lcd << static_cast<char>(CustomCharacters::SEPARATOR);
       write_duration(lcd, chargeMonitor.chargeDuration());
@@ -228,31 +234,26 @@ void LcdStateRunning::drawKwhStats() {
   lcd.setBacklight(LCD16x2::WHITE);
 
   lcd.move(0, 0);
-  lcd << stream::PGM << (STR_STATS_KWH);
-
-  lcd.move(0, 1);
-  scrolling_text.clear();
-  scrolling_text.setWidth(16);
 
   uint16_t *p = 0;
   switch (page) {
     case PAGE_KWH_WEEK:
-      scrolling_text << stream::PGM << STR_STATS_WEEK;
+      lcd << stream::PGM << STR_STATS_WEEK;
       p = &settings.kwh_week;
       break;
 
     case PAGE_KWH_MONTH:
-      scrolling_text << stream::PGM << STR_STATS_MONTH;
+      lcd << stream::PGM << STR_STATS_MONTH;
       p = &settings.kwh_month;
       break;
 
     case PAGE_KWH_YEAR:
-      scrolling_text << stream::PGM << STR_STATS_YEAR;
+      lcd << stream::PGM << STR_STATS_YEAR;
       p = &settings.kwh_year;
       break;
 
     case PAGE_KWH_TOTAL:
-      scrolling_text << stream::PGM << STR_STATS_TOTAL;
+      lcd << stream::PGM << STR_STATS_TOTAL;
       p = &settings.kwh_total;
       break;
 
@@ -260,13 +261,14 @@ void LcdStateRunning::drawKwhStats() {
       break;
   }
 
+  lcd.move(0, 1);
+
   char buffer[10] = {0};
   ltoa(p ? *p : 0, buffer, 10);
 
-  scrolling_text << " " << buffer << " kWh";
-  write_cost(scrolling_text, settings.kwh_currency, settings.kwh_cost,
+  lcd << buffer << " kWh";
+  write_cost(lcd, settings.kwh_currency, settings.kwh_cost,
              *p * 1000l);
-  scrolling_text >> lcd;
 }
 
 void LcdStateRunning::select() {
@@ -276,5 +278,6 @@ void LcdStateRunning::select() {
   // If we're about to display KWH stats, refresh the settings first
   if (page != PAGE_DEFAULT) EepromSettings::load(settings);
 }
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

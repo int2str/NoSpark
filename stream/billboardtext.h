@@ -15,43 +15,39 @@
 
 #pragma once
 
-#include <stdint.h>
-
-#include "evse/settings.h"
-#include "evse/state.h"
-#include "stream/billboardtext.h"
-#include "stream/lcdstream.h"
-#include "stream/billboardtext.h"
-#include "ui/lcdstate.h"
-#include "ui/timedflipflop.h"
+#include "stream/outputstream.h"
 
 namespace nospark {
-namespace ui {
+namespace stream {
 
-class LcdStateRunning : public LcdState {
+class BillboardText : public OutputStream {
  public:
-  LcdStateRunning(stream::LcdStream &lcd);
-  bool draw() override;
-
- private:
-  enum RunningPages {
-    PAGE_DEFAULT,
-    PAGE_KWH_WEEK,
-    PAGE_KWH_MONTH,
-    PAGE_KWH_YEAR,
-    PAGE_KWH_TOTAL,
-    PAGE_MAX
+  struct ITEM {
+    ITEM(uint8_t item) : item(item) {}
+    const uint8_t item;
   };
 
-  void drawDefault();
-  void drawKwhStats();
-  void select() override;
+  BillboardText(const uint8_t width, const uint8_t items);
+  ~BillboardText();
 
-  uint8_t page;
-  TimedFlipFlop display_state;
-  stream::BillboardText billboard_text;
-  evse::Settings settings;
+  void clear();
+
+  BillboardText &operator>>(OutputStream &os);
+  OutputStream &operator<<(const ITEM &item);
+
+ private:
+  void update();
+
+  virtual void write(const char ch);
+
+  uint32_t last_update_;
+
+  const uint8_t width_;
+  const uint8_t items_;
+  uint8_t current_item_;
+  uint8_t insert_position_;
+  char *buffer_;
 };
 
-}  // namespace ui
+}  // namespace stream
 }  // namespace nospark
