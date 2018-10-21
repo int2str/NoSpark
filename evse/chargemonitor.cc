@@ -32,6 +32,7 @@ using nospark::evse::EepromSettings;
 using nospark::evse::State;
 
 namespace {
+
 void saveChargeStats(const uint32_t kwh) {
   Settings settings;
   EepromSettings::load(settings);
@@ -61,7 +62,8 @@ void setKwhLimited(const bool limited) {
     Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
   }
 }
-}
+
+}  // namespace
 
 namespace nospark {
 namespace evse {
@@ -73,65 +75,73 @@ ChargeMonitor &ChargeMonitor::get() {
 
 ChargeMonitor::ChargeMonitor()
     : time_start_ms(0),
-      time_stop_ms(0),
       last_sample(0),
+      charge_time_ms(0),
       watt_seconds(0),
       reset_stats_on_charge(true) {}
 
-bool ChargeMonitor::isCharging() const {
-  return (time_start_ms > 0 && time_stop_ms == 0);
-}
+bool ChargeMonitor::isCharging() const { return time_start_ms > 0; }
 
 uint32_t ChargeMonitor::chargeDuration() const {
-  if (time_start_ms == 0) return 0;
-  if (time_stop_ms != 0) return time_stop_ms - time_start_ms;
-  return system::Timer::millis() - time_start_ms;
+  return charge_time_ms + getActiveDuration();
 }
 
 uint32_t ChargeMonitor::chargeCurrent() const {
   return isCharging() ? current_samples.get() : 0;
 }
 
-uint32_t ChargeMonitor::wattHours() const { return watt_seconds / 3600; }
+void ChargeMonitor::beginSession() {
+  time_start_ms = system::Timer::millis();
+  current_samples.clear();
 
-void ChargeMonitor::update() {
-  if (isCharging()) {
-    current_samples.push(ammeter.sample());
-    const uint32_t now = system::Timer::millis();
-    if ((now - last_sample) > 1000) {
-      // Update charge energy
-      watt_seconds += current_samples.get() * VOLTAGE / 1000;
-      last_sample = now;
-
-      // Check charge limit
-      const uint32_t charge_limit = getChargeLimit();
-      if (charge_limit) {
-        State &state = State::get();
-        if (state.ready == State::READY && wattHours() > charge_limit)
-          setKwhLimited(true);
-      }
-    }
+  if (reset_stats_on_charge) {
+    watt_seconds = 0;
+    charge_time_ms = 0;
+    reset_stats_on_charge = false;
   }
 }
 
-void ChargeMonitor::chargeStateChanged(const bool charging) {
-  if (charging) {
-    // Record charge start time
-    time_start_ms = system::Timer::millis();
-    time_stop_ms = 0;
-    if (reset_stats_on_charge) {
-      watt_seconds = 0;
-      reset_stats_on_charge = false;
-    }
-  } else {
-    // Record end time
-    if (time_start_ms != 0 && time_stop_ms == 0) {
-      time_stop_ms = system::Timer::millis();
-      saveChargeStats(wattHours() / 1000);
-    }
+void ChargeMonitor::endSession() {
+  charge_time_ms += getActiveDuration();
+  time_start_ms = 0;
+  saveChargeStats(wattHours() / 1000);
+}
+
+uint32_t ChargeMonitor::getActiveDuration() const {
+  if (time_start_ms == 0) return 0;
+
+  uint32_t now = system::Timer::millis();
+  if (now < time_start_ms) {
+    // Timer overflow...
+    // We're just going to split the difference for now. Theoretically, this
+    // will cause a problem if we've been charging for >49 days. But for now,
+    // we're just going to say this can't happen...
+    return 0xFFFFFFFF - time_start_ms + now;
   }
 
-  current_samples.clear();
+  return now - time_start_ms;
+}
+
+uint32_t ChargeMonitor::wattHours() const { return watt_seconds / 3600; }
+
+void ChargeMonitor::update() {
+  if (!isCharging()) return;
+
+  current_samples.push(ammeter.sample());
+  const uint32_t now = system::Timer::millis();
+  if ((now - last_sample) < 1000) return;  // Too soon to update...
+
+  // Update charge energy
+  watt_seconds += current_samples.get() * VOLTAGE / 1000;
+  last_sample = now;
+
+  // Check charge limit
+  const uint32_t charge_limit = getChargeLimit();
+  if (charge_limit) {
+    State &state = State::get();
+    if (state.ready == State::READY && wattHours() > charge_limit)
+      setKwhLimited(true);
+  }
 }
 
 void ChargeMonitor::onEvent(const event::Event &event) {
@@ -141,7 +151,10 @@ void ChargeMonitor::onEvent(const event::Event &event) {
       break;
 
     case EVENT_CHARGE_STATE:
-      chargeStateChanged(event.param);
+      if (event.param)
+        beginSession();
+      else
+        endSession();
       break;
 
     case EVENT_J1772_STATE:
@@ -149,5 +162,6 @@ void ChargeMonitor::onEvent(const event::Event &event) {
       break;
   }
 }
-}
-}
+
+}  // namespace evse
+}  // namespace nospark

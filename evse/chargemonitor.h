@@ -44,11 +44,16 @@ class ChargeMonitor : public event::Handler {
 
   void onEvent(const event::Event &event) override;
 
+  void beginSession();
+  void endSession();
+
+  uint32_t getActiveDuration() const;
+
   board::Ammeter ammeter;
   uint32_t time_start_ms;
-  uint32_t time_stop_ms;
   uint32_t last_sample;
 
+  uint32_t charge_time_ms;
   uint32_t watt_seconds;
   bool reset_stats_on_charge;
 
@@ -56,5 +61,6 @@ class ChargeMonitor : public event::Handler {
 
   DISALLOW_COPY_AND_ASSIGN(ChargeMonitor);
 };
-}
-}
+
+}  // namespace evse
+}  // namespace nospark
