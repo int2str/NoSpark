@@ -29,14 +29,22 @@ namespace ui {
 class SerialApi {
  public:
   SerialApi(stream::UartStream &uart);
-
-  void onEvent(const event::Event &event);
   bool handleCommand(const char *buffer, const uint8_t len);
 
  private:
   stream::UartStream &uart;
 
+  void handleGet(const char *buffer);
+  void handleSet(const char *buffer);
+  void handleFunction(const char *buffer);
+
+  void sendOk(const char *params = nullptr);
+  void sendError();
+
+  void sendWithChecksum(const char *buffer, const uint8_t seed = 0);
+
   DISALLOW_COPY_AND_ASSIGN(SerialApi);
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

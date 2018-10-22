@@ -261,112 +261,92 @@ uint8_t cmdSetKwhCost(const char *buffer) {
 
   return OK;
 }
+
+constexpr uint16_t NOT_FOUND = -1;
+
+uint16_t find_char(const char *buffer, char ch) {
+  const char *it = buffer;
+  while (*it && *it != ch) ++it;
+  if (*it == 0) return NOT_FOUND;
+  return it - buffer;
 }
+
+uint8_t hex_val(char ch) {
+  if (ch >= '0' && ch <= '9') return ch - '0';
+  if (ch >= 'a' && ch <= 'f') return ch - 'a' + 10;
+  if (ch >= 'A' && ch <= 'A') return ch - 'A' + 10;
+  return 0;
+}
+
+char hex_ch(uint8_t val) {
+  if (val < 10) return '0' + val;
+  if (val < 16) return 'A' + val - 10;
+  return '?';
+}
+
+bool verifyChecksum(const char *buffer) {
+  uint16_t checksum_offset = find_char(buffer, '^');
+  if (checksum_offset == NOT_FOUND) return true;
+
+  uint8_t checksum_in = hex_val(buffer[checksum_offset + 1]) * 16 +
+                        hex_val(buffer[checksum_offset + 2]);
+
+  uint8_t checksum_calc = 0;
+  while (*buffer != '^') checksum_calc ^= *buffer++;
+
+  return checksum_calc == checksum_in;
+}
+
+}  // namespace
 
 namespace nospark {
 namespace ui {
 
 SerialApi::SerialApi(stream::UartStream &uart) : uart(uart) {}
 
-void SerialApi::onEvent(const event::Event &) {}
-
-bool SerialApi::handleCommand(const char *buffer, const uint8_t) {
-  const uint8_t e = paramGet(buffer, 'E');
-  char response[64] = {0};
-  uint8_t err = OK;
-
-  switch (e) {
-    case CMD_GET_STATE:
-      cmdGetStatus(response);
+void SerialApi::handleGet(const char *buffer) {
+  switch (buffer[2]) {
+    case 'V':  // Send version info
+      sendOk("N1.0.0 4.0.1");
       break;
-
-    case CMD_GET_CHARGE_STATE:
-      cmdGetChargeStatus(response);
-      break;
-
-    case CMD_GET_KWH_STATS:
-      cmdGetKwhStats(response);
-      break;
-
-    case CMD_GET_MAX_CURRENT:
-      paramAdd(response, 'A', State::get().max_amps_target);
-      paramAdd(response, 'L', State::get().max_amps_limit);
-      break;
-
-    case CMD_SET_MAX_CURRENT:
-      err = cmdSetCurrent(buffer);
-      break;
-
-    case CMD_GET_TIME:
-      cmdGetTime(response);
-      break;
-
-    case CMD_SET_TIME:
-      cmdSetTime(buffer);
-      break;
-
-    case CMD_GET_DATE:
-      cmdGetDate(response);
-      break;
-
-    case CMD_SET_DATE:
-      cmdSetDate(buffer);
-      break;
-
-    case CMD_GET_TIMER:
-      cmdGetTimer(response);
-      break;
-
-    case CMD_SET_TIMER:
-      err = cmdSetTimer(buffer);
-      break;
-
-    case CMD_GET_CHARGE_LIMIT:
-      cmdGetChargeLimit(response);
-      break;
-
-    case CMD_SET_CHARGE_LIMIT:
-      err = cmdSetChargeLimit(buffer);
-      break;
-
-    case CMD_SET_SLEEP:
-      Loop::post(Event(EVENT_REQUEST_SLEEP, paramGet(buffer, 'S')));
-      break;
-
-    case CMD_SET_READY_STATE:
-      err = cmdSetReadyState(buffer);
-      break;
-
-    case CMD_GET_KWH_COST:
-      cmdGetKwhCost(response);
-      break;
-
-    case CMD_SET_KWH_COST:
-      err = cmdSetKwhCost(buffer);
-      break;
-
-    case CMD_GET_SAPI_VERSION:
-      paramAdd(response, 'V', SAPI_VERSION);
-      break;
-
-    case CMD_GET_NOSPARK_VERSION:
-      uart << "$OK " << stream::PGM << STR_NOSPARK << CR;
-      return true;
 
     default:
-      err = UNKNOWN_COMMAND;
+      sendError();
       break;
   }
+}
 
-  if (err == OK) {
-    uart << "$OK" << response << CR;
-  } else {
-    char error[] = "$ERR 0";
-    error[5] += err;
-    uart << error << CR;
+void SerialApi::handleSet(const char *buffer) {}
+void SerialApi::handleFunction(const char *buffer) {}
+
+bool SerialApi::handleCommand(const char *buffer, const uint8_t) {
+  if (!verifyChecksum(buffer)) {
+    sendError();
+    return true;
   }
+
+  if (buffer[1] == 'G') handleGet(buffer);
 
   return true;
 }
+
+void SerialApi::sendWithChecksum(const char *buffer, uint8_t seed) {
+  uart << buffer;
+  uint8_t checksum = seed;
+  while (*buffer) checksum ^= *buffer++;
+  uart << "^" << hex_ch(checksum >> 4) << hex_ch(checksum & 0xF) << CR;
 }
+
+void SerialApi::sendOk(const char *params) {
+  if (params) {
+    uart << "$OK ";
+    sendWithChecksum(params);  // As luck would have it, XOR for "$OK " = 0!
+  } else {
+    sendWithChecksum("$OK");
+  }
 }
+
+void SerialApi::sendError() { sendWithChecksum("$NK"); }
+
+}  // namespace ui
+}  // namespace nospark

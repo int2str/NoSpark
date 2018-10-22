@@ -84,7 +84,7 @@ void SerialMonitor::update() {
 
 void SerialMonitor::handleCommand() {
   if (len > 2 && buffer[0] == '$') {
-    api.handleCommand(buffer + 1, len - 1);
+    api.handleCommand(buffer, len);
   } else {
     console.handleCommand(buffer, len);
     uart << stream::PGM << STR_PROMPT;
