@@ -289,9 +289,10 @@ uint8_t hex_val(char ch) {
   return 0;
 }
 
-bool verifyChecksum(const char *buffer) {
+bool verifyChecksum(const char *buffer, const uint8_t len) {
   uint16_t checksum_offset = find_char(buffer, '^');
   if (checksum_offset == NOT_FOUND) return true;
+  if (checksum_offset >= (uint16_t)(len - 2)) return false;
 
   uint8_t checksum_in = hex_val(buffer[checksum_offset + 1]) * 16 +
                         hex_val(buffer[checksum_offset + 2]);
@@ -432,7 +433,8 @@ void SerialApi::handleGet(const char *buffer) {
       break;
 
     case GET_TEMPERATURE:
-      rapi << RapiStream::OK() << (uint8_t)(getTemperature() * 10) << " -2560 -2560";
+      rapi << RapiStream::OK() << (uint8_t)(getTemperature() * 10)
+           << " -2560 -2560";
       break;
 
     case GET_FAULT_COUNTERS:
@@ -453,10 +455,7 @@ void SerialApi::handleSet(const char *buffer) {}
 void SerialApi::handleFunction(const char *buffer) {}
 
 bool SerialApi::handleCommand(const char *buffer, const uint8_t len) {
-  if (!verifyChecksum(buffer) || len < 3) {
-    rapi << RapiStream::ERROR() << RapiStream::END();
-    return true;
-  }
+  if (!verifyChecksum(buffer, len) || len < 3) return true;
 
   switch (buffer[1]) {  // Command type
     case COMMAND_TYPE_GET:
@@ -467,6 +466,9 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t len) {
       break;
     case COMMAND_TYPE_FUNCTION:
       handleFunction(buffer);
+      break;
+    default:
+      rapi << RapiStream::ERROR() << RapiStream::END();
       break;
   }
 
