@@ -409,7 +409,7 @@ void SerialApi::handleGet(const char *buffer) {
 
     case GET_CHARGE_STATS:
       rapi << RapiStream::OK() << getChargingWattseconds() << " "
-           << getTotalKwh();
+           << getTotalKwh() * 1000;
       break;
 
     case GET_CURRENT_AND_FLAGS:
