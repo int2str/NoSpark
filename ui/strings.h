@@ -23,6 +23,7 @@ extern char const STR_OPENEVSE[];
 extern char const STR_OPENEVSE_BY[];
 extern char const STR_NOSPARK[];
 extern char const STR_NOSPARK_BY[];
+extern char const STR_NOSPARK_VER[];
 
 // General UI
 extern char const STR_STATE_READY[];

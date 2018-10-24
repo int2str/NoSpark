@@ -58,6 +58,7 @@ bool LcdStateBootup::draw() {
 
   lcd.move(0, 0);
   lcd << stream::PGM << STR_NOSPARK;
+  lcd << stream::PGM << STR_NOSPARK_VER;
   lcd.move(0, 1);
   lcd << stream::PGM << STR_NOSPARK_BY;
 

@@ -20,11 +20,13 @@
 #define CR '\r'
 #define LF '\n'
 
+char const STR_NOSPARK_VER[] PROGMEM = "1.00";
+
 // Credit where credit is due...
 char const STR_OPENEVSE[] PROGMEM = "OpenEVSE";
 char const STR_OPENEVSE_BY[] PROGMEM = "by Chris Howell";
 
-char const STR_NOSPARK[] PROGMEM = "NoSpark v1.00";
+char const STR_NOSPARK[] PROGMEM = "NoSpark v";
 char const STR_NOSPARK_BY[] PROGMEM = "by A. Eisenbach";
 
 // Language specific

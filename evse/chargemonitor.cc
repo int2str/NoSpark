@@ -124,6 +124,8 @@ uint32_t ChargeMonitor::getActiveDuration() const {
 
 uint32_t ChargeMonitor::wattHours() const { return watt_seconds / 3600; }
 
+uint32_t ChargeMonitor::wattSeconds() const { return watt_seconds; }
+
 void ChargeMonitor::update() {
   if (!isCharging()) return;
 

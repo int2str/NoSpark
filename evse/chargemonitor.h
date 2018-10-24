@@ -37,6 +37,7 @@ class ChargeMonitor : public event::Handler {
   uint32_t chargeDuration() const;
   uint32_t chargeCurrent() const;
   uint32_t wattHours() const;
+  uint32_t wattSeconds() const;
 
  private:
   void update();

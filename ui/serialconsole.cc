@@ -43,6 +43,7 @@ using nospark::stream::Time;
 using nospark::stream::PGM;
 
 namespace {
+
 uint8_t dec_from_charpair(const char *s) {
   if (s[0] < '0' || s[0] > '9' || s[1] < '0' || s[1] > '9') return 0;
   return (s[0] - '0') * 10 + (s[1] - '0');
@@ -85,7 +86,8 @@ void saveMaxAmps(const uint8_t max_amps) {
   settings.max_current = max_amps;
   EepromSettings::save(settings);
 }
-}
+
+}  // namespace
 
 namespace nospark {
 namespace ui {
@@ -320,7 +322,9 @@ void SerialConsole::commandStatus(const char *, const uint8_t) {
 }
 
 void SerialConsole::commandVersion(const char *, const uint8_t) {
-  uart << PGM << STR_NOSPARK << EOL << PGM << STR_NOSPARK_BY << EOL << EOL;
+  uart << PGM << STR_NOSPARK << PGM << STR_NOSPARK_VER << EOL;
+  uart << PGM << STR_NOSPARK_BY << EOL << EOL;
 }
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

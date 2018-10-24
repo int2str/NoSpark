@@ -15,31 +15,38 @@
 
 #pragma once
 
-#include <stdbool.h>
-#include <stdint.h>
-
-#include "stream/rapistream.h"
-#include "ui/serialapi.h"
-#include "utils/cpp.h"
+#include "serial/usart.h"
+#include "stream/uartstream.h"
 
 namespace nospark {
-namespace ui {
+namespace stream {
 
-// Simple command line interface for control and monitoring.
-class SerialApi {
+class RapiStream : public OutputStream {
  public:
-  SerialApi(stream::UartStream &uart);
-  bool handleCommand(const char *buffer, const uint8_t len);
+  struct OK {};
+  struct ERROR {};
+  struct END {};
+
+  RapiStream(UartStream &uart);
+
+  RapiStream &operator<<(const Flags flags);
+  RapiStream &operator<<(const uint8_t val);
+  RapiStream &operator<<(const uint32_t val);
+  RapiStream &operator<<(const char *str);
+
+  RapiStream &operator<<(const OK &ok);
+  RapiStream &operator<<(const ERROR &error);
+  RapiStream &operator<<(const END &end);
 
  private:
-  stream::RapiStream rapi;
+  UartStream &uart_;
+  uint8_t checksum_;
+  bool first_parameter_;
 
-  void handleGet(const char *buffer);
-  void handleSet(const char *buffer);
-  void handleFunction(const char *buffer);
+  void insertSpaceBeforeFirstParam();
 
-  DISALLOW_COPY_AND_ASSIGN(SerialApi);
+  void write(const char ch) override;
 };
 
-}  // namespace ui
+}  // namespace stream
 }  // namespace nospark

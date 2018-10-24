@@ -15,6 +15,29 @@
 
 #pragma once
 
+// Query with $GV
+constexpr const char RAPI_VERSION[] PROGMEM = "4.0.1";
+
+constexpr char COMMAND_TYPE_GET = 'G';
+constexpr char COMMAND_TYPE_SET = 'S';
+constexpr char COMMAND_TYPE_FUNCTION = 'F';
+
+constexpr char GET_AMMETER_CALIBRATION = 'A';
+constexpr char GET_MIN_MAX_AMPS = 'C';
+constexpr char GET_CHARGE_TIMER = 'D';
+constexpr char GET_CURRENT_AND_FLAGS = 'E';
+constexpr char GET_FAULT_COUNTERS = 'F';
+constexpr char GET_CURRENT = 'G';
+constexpr char GET_KWH_LIMIT = 'H';
+constexpr char GET_TEMPERATURE = 'P';
+constexpr char GET_STATE = 'S';
+constexpr char GET_CHARGE_STATS = 'U';
+constexpr char GET_VERSION = 'V';
+
+// =============================================================
+// TODO: DELETE BELOW HERE ONCE RAPI SWITCH IS COMPLETE
+
+
 // Query version with $E254 (see below)
 #define SAPI_VERSION 1
 
@@ -27,7 +50,7 @@
 
 // Status/error codes -------------------------------------------------
 
-#define OK 0
+#define SUCCESS 0
 #define UNKNOWN_COMMAND 1
 #define INVALID_PARAMETER 2
 
