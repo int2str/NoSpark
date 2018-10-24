@@ -20,7 +20,7 @@
 #include "serial/usart.h"
 #include "utils/atomic.h"
 
-#define USART_BAUD_RATE 57600
+#define USART_BAUD_RATE 115200
 
 #define USART_BUFFER_SIZE 64
 
