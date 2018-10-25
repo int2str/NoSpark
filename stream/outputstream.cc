@@ -52,7 +52,7 @@ OutputStream &OutputStream::operator<<(const char *str) {
 
 OutputStream &OutputStream::operator<<(const uint8_t val) {
   if (flags == 0) {
-    char buffer[6] = {0};
+    char buffer[4] = {0};
     utoa(val, buffer, 10);
     return *this << buffer;
   }
@@ -70,9 +70,10 @@ OutputStream &OutputStream::operator<<(const uint8_t val) {
 }
 
 OutputStream &OutputStream::operator<<(const uint32_t val) {
-  char buffer[6] = {0};
+  char buffer[11] = {0};
   ltoa(val, buffer, 10);
   return *this << buffer;
 }
-}
-}
+
+}  // namespace stream
+}  // namespace nospark
