@@ -219,7 +219,7 @@ void SerialApi::handleGet(const char *buffer) {
       break;
 
     case GET_TEMPERATURE:
-      rapi << RapiStream::OK() << (uint8_t)(getTemperature() * 10)
+      rapi << RapiStream::OK() << (uint32_t)(getTemperature() * 10)
            << " -2560 -2560";
       break;
 
