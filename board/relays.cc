@@ -47,19 +47,24 @@ Relays::Relays()
   TCCR2A |= _BV(WGM21) | _BV(WGM20);
   TCCR2B |= _BV(CS22);
   TIMSK2 |= _BV(TOIE2);
+
+  setPins(false);
 }
 
 void Relays::set(const bool enable) {
   if (enabled == enable) return;
 
-  pinACRelay = enable;
-  pinDCRelay1 = enable;
-  pinDCRelay2 = enable;
-
+  setPins(enable);
   enabled = enable;
   last_change = system::Timer::millis();
 
   event::Loop::post(event::Event(EVENT_CHARGE_STATE, enable));
+}
+
+void Relays::setPins(const bool enable) {
+  pinACRelay = enable;
+  pinDCRelay1 = enable;
+  pinDCRelay2 = enable;
 }
 
 Relays::RelayState Relays::checkStatus() {
@@ -90,5 +95,6 @@ void Relays::updateState() {
   const bool active = !pinSense1 || !pinSense2;
   sample_history = (sample_history << 1) | active;
 }
-}
-}
+
+}  // namespace board
+}  // namespace nospark

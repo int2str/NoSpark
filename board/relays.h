@@ -57,10 +57,12 @@ class Relays {
   board::Pin pinSense2;
 
   bool isActive() const;
+  void setPins(const bool enable);
 
   void updateState();
   friend void ::TIMER2_OVF_vect(void);
   DISALLOW_COPY_AND_ASSIGN(Relays);
 };
-}
-}
+
+}  // namespace board
+}  // namespace nospark
