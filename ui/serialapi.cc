@@ -38,6 +38,7 @@ using nospark::evse::Settings;
 using nospark::evse::State;
 using nospark::devices::DS3231;
 using nospark::serial::Usart;
+using nospark::stream::OutputStream;
 using nospark::stream::RapiStream;
 
 namespace {
@@ -60,19 +61,28 @@ uint16_t find_char(const char *buffer, char ch) {
   return it - buffer;
 }
 
-// TODO: Move hex_ functions to utils somewhere,
-// or incorporate into stream::?
-char hex_ch(uint8_t val) {
-  if (val < 10) return '0' + val;
-  if (val < 16) return 'A' + val - 10;
-  return '?';
-}
-
 uint8_t hex_val(char ch) {
   if (ch >= '0' && ch <= '9') return ch - '0';
   if (ch >= 'a' && ch <= 'f') return ch - 'a' + 10;
   if (ch >= 'A' && ch <= 'A') return ch - 'A' + 10;
   return 0;
+}
+
+const char *parseUint8(const char *buffer, uint8_t &out) {
+  out = 0;
+  if (!buffer) return nullptr;
+
+  while (*buffer != 0 && *buffer != ' ') {
+    if (*buffer < '0' || *buffer > '9') return nullptr;
+    out *= 10;
+    out += *buffer++ - '0';
+  }
+
+  while (*buffer == ' ') {
+    ++buffer;
+  }
+
+  return buffer;
 }
 
 bool verifyChecksum(const char *buffer, const uint8_t len) {
@@ -128,6 +138,33 @@ uint8_t getTemperature() {
   DS3231 &rtc = DS3231::get();
   if (!rtc.isPresent()) return 0;
   return rtc.readTemp();
+}
+
+void sendTime(OutputStream &out) {
+  DS3231 &rtc = DS3231::get();
+  if (rtc.isPresent()) {
+    rtc.read();
+    out << (uint32_t)rtc.year << " " << (uint32_t)rtc.month << " "
+        << (uint32_t)rtc.day << " ";
+    out << (uint32_t)rtc.hour << " " << (uint32_t)rtc.minute << " "
+        << (uint32_t)rtc.second;
+  } else {
+    out << "76 01 01 12 34 56";
+  }
+}
+
+void setTime(const char *buffer) {
+  DS3231 &rtc = DS3231::get();
+  if (!rtc.isPresent()) return;
+
+  buffer = parseUint8(buffer, rtc.year);
+  buffer = parseUint8(buffer, rtc.month);
+  buffer = parseUint8(buffer, rtc.day);
+  buffer = parseUint8(buffer, rtc.hour);
+  buffer = parseUint8(buffer, rtc.minute);
+  buffer = parseUint8(buffer, rtc.second);
+
+  rtc.write();
 }
 
 // Map the EVSE and J1772 to the RAPI states
@@ -229,6 +266,11 @@ void SerialApi::handleGet(const char *buffer) {
       rapi << RapiStream::OK() << "0 0 0";
       break;
 
+    case GET_TIME:
+      rapi << RapiStream::OK() << " ";
+      sendTime(rapi);
+      break;
+
     default:
       rapi << RapiStream::ERROR();
       break;
@@ -237,7 +279,20 @@ void SerialApi::handleGet(const char *buffer) {
   rapi << RapiStream::END();
 }
 
-void SerialApi::handleSet(const char *) {}
+void SerialApi::handleSet(const char *buffer) {
+  switch (buffer[2]) {
+    case SET_TIME:
+      setTime(buffer + 4);
+      rapi << RapiStream::OK();
+      break;
+
+    default:
+      rapi << RapiStream::ERROR();
+      break;
+  }
+  rapi << RapiStream::END();
+}
+
 void SerialApi::handleFunction(const char *) {}
 
 bool SerialApi::handleCommand(const char *buffer, const uint8_t len) {
