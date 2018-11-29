@@ -45,7 +45,7 @@ GFCI::GFCI()
 
   // Enable pin change interrupt (rising edge)
   utils::Atomic _atomic;
-  EICRA = (1 << ISC01) || (1 << ISC00);
+  EICRA = (1 << ISC01) | (1 << ISC00);
   EIMSK = (1 << INT0);
 }
 
