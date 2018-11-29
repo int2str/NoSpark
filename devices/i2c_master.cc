@@ -81,6 +81,7 @@ ISR(TWI_vect) {
     case TW_MR_DATA_ACK:
       *i2c_data++ = TWDR;
       --i2c_len;
+      [[gnu::fallthrough]];
     case TW_MR_SLA_ACK:
       TWCR = (i2c_len > 1) ? I2C_ACK : I2C_NACK;
       break;
@@ -88,6 +89,7 @@ ISR(TWI_vect) {
     case TW_MR_DATA_NACK:
       *i2c_data = TWDR;
       --i2c_len;
+      [[gnu::fallthrough]];
     case TW_MR_SLA_NACK:
       TWCR = I2C_STOP;
       break;
