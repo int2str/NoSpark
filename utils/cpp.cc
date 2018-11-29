@@ -18,11 +18,13 @@
 
 void *operator new(const size_t size) { return malloc(size); }
 
+void operator delete(void *p, size_t) { free(p); }
 void operator delete(void *p) { free(p); }
 
 void *operator new[](const size_t size) { return malloc(size); }
 
 void operator delete[](void *p) { free(p); }
+void operator delete[](void *p, size_t) { free(p); }
 
 extern "C" {
 __extension__ typedef int __guard __attribute__((mode(__DI__)));

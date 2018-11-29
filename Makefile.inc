@@ -53,7 +53,7 @@ SIZEFLAGS =
 PRJCXXFLAGS = -Os -g -mmcu=$(BUILD_MCU) -DF_CPU=$(BUILD_F_CPU) \
 	-ffunction-sections -fdata-sections -fmerge-all-constants \
 	-fno-inline-small-functions -fshort-enums \
-	-fno-exceptions -std=c++11 \
+	-fno-exceptions -std=c++14 \
 	-W -Wall -pedantic
 
 LDFLAGS := $(LDFLAGS) -Wl,--gc-sections -Wl,--relax
