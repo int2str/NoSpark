@@ -111,10 +111,10 @@ void test_utils_movingaverage() {
   assert(ma.get() == 0);
 
   ma.push(3);
-  ma.push(1);
-  assert(ma.get() == 2);
+  ma.push(0);
+  assert(ma.get() == 1);
 
-  ma.push(8);
+  ma.push(9);
   assert(ma.get() == 4);
 
   ma.push(3);
@@ -123,9 +123,9 @@ void test_utils_movingaverage() {
   ma.clear();
   assert(ma.get() == 0);
 
-  ma.push(3);
+  ma.push(4);
   ma.push(11);
-  assert(ma.get() == 7);
+  assert(ma.get() == 5);
 }
 
 int main() {

@@ -23,36 +23,28 @@ namespace utils {
 template <class T, size_t WINDOW>
 class MovingAverage {
  public:
-  MovingAverage() : buffer{0}, size(WINDOW), index(0), items(0), sum(0) {}
+  MovingAverage() : buffer{0}, index(0), sum(0) {}
 
-  void push(const T val) {
+  void push(const T value) {
     sum -= buffer[index];
-    sum += val;
-    buffer[index] = val;
-    if (++index == size) index = 0;
-    if (items < size) ++items;
+    sum += value;
+    buffer[index] = value;
+    if (++index == WINDOW) index = 0;
   }
 
-  T get() const {
-    // Make sure we have sufficient data
-    // to avoid initial spikes
-    if (items < (size / 2)) return 0;
-    return sum / items;
-  }
+  T get() const { return sum / WINDOW; }
 
   void clear() {
-    for (index = 0; index != size; ++index) buffer[index] = 0;
     sum = 0;
-    items = 0;
     index = 0;
+    for (auto &i : buffer) i = 0;
   }
 
  private:
   T buffer[WINDOW];
-  const size_t size;
   size_t index;
-  size_t items;
   T sum;
 };
-}
-}
+
+}  // namespace utils
+}  // namespace nospark
