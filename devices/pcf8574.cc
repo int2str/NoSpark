@@ -33,5 +33,6 @@ void PCF8574::write(const uint8_t b) {
   uint8_t b2 = b & ~ddr;
   i2c.write(i2c_addr, &b2, 1);
 }
-}
-}
+
+}  // namespace devices
+}  // namespace nospark

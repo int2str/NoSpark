@@ -24,5 +24,6 @@ OutputStream &operator<<(OutputStream &out, const Time &time) {
   return out << stream::PAD_ZERO << time.hh << ':' << stream::PAD_ZERO
              << time.mm;
 }
-}
-}
+
+}  // namespace stream
+}  // namespace nospark

@@ -31,5 +31,6 @@ class LcdStateBootup : public LcdState {
  private:
   bool intro_shown;
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

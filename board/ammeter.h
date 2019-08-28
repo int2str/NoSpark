@@ -30,5 +30,6 @@ class Ammeter {
  private:
   uint32_t last_sample;
 };
-}
-}
+
+}  // namespace board
+}  // namespace nospark

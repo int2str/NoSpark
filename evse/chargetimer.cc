@@ -27,8 +27,8 @@
 using nospark::devices::DS3231;
 using nospark::event::Event;
 using nospark::event::Loop;
-using nospark::evse::Settings;
 using nospark::evse::EepromSettings;
+using nospark::evse::Settings;
 using nospark::evse::State;
 
 namespace {
@@ -43,7 +43,7 @@ void setChargeLimited(const bool limited) {
     Loop::post(Event(EVENT_READY_STATE_CHANGED, state.ready));
   }
 }
-}
+}  // namespace
 
 namespace nospark {
 namespace evse {
@@ -91,5 +91,6 @@ void ChargeTimer::onEvent(const event::Event &event) {
       (event.id == EVENT_CONTROLLER_STATE && event.param == State::RUNNING))
     checkTime();
 }
-}
-}
+
+}  // namespace evse
+}  // namespace nospark

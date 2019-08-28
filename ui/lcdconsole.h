@@ -53,5 +53,6 @@ class LcdConsole : public event::Handler {
 
   DISALLOW_COPY_AND_ASSIGN(LcdConsole);
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

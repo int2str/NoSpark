@@ -33,5 +33,6 @@ class I2CMaster {
  private:
   DISALLOW_COPY_AND_ASSIGN(I2CMaster);
 };
-}
-}
+
+}  // namespace devices
+}  // namespace nospark

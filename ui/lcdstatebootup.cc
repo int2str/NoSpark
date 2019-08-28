@@ -32,7 +32,7 @@ void introFade(nospark::stream::LcdStream &lcd, const char ch) {
     _delay_ms(FADE_DELAY_MS);
   }
 }
-}
+}  // namespace
 
 namespace nospark {
 namespace ui {
@@ -71,5 +71,6 @@ bool LcdStateBootup::draw() {
   intro_shown = true;
   return true;
 }
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

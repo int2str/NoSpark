@@ -49,7 +49,7 @@ ISR(TIMER0_OVF_vect) {
   timer0_fract = f;
   timer0_millis = m;
 }
-}
+}  // namespace
 
 namespace nospark {
 namespace system {
@@ -76,5 +76,6 @@ uint32_t Timer::millis_impl() const {
   utils::Atomic _atomic;
   return timer0_millis;
 }
-}
-}
+
+}  // namespace system
+}  // namespace nospark

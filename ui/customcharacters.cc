@@ -64,7 +64,7 @@ void loadCustomCharacters(LCD16x2 &lcd, const uint8_t p[][8]) {
     lcd.createChar_P(i, &p[i][0], 8);
 }
 
-}  // namsepace
+}  // namespace
 
 namespace nospark {
 namespace ui {

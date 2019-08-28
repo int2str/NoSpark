@@ -31,7 +31,7 @@ uint8_t bit2num(uint8_t b) {
   }
   return n;
 }
-}
+}  // namespace
 
 namespace nospark {
 namespace board {
@@ -66,5 +66,6 @@ Pin &Pin::operator=(const uint8_t rhs) {
 }
 
 bool Pin::operator!() const { return (_PIN & b) ? false : true; }
-}
-}
+
+}  // namespace board
+}  // namespace nospark

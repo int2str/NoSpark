@@ -89,5 +89,6 @@ void GFCI::trip() {
 
   if (!self_test) event::Loop::post(event::Event(EVENT_GFCI_TRIPPED));
 }
-}
-}
+
+}  // namespace board
+}  // namespace nospark

@@ -62,5 +62,6 @@ class SerialConsole {
 
   DISALLOW_COPY_AND_ASSIGN(SerialConsole);
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

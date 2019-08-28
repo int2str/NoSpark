@@ -72,7 +72,7 @@ void updateCurrentLimit(
 
   State::get().max_amps_limit = amps;
 }
-}
+}  // namespace
 
 namespace nospark {
 namespace evse {
@@ -118,5 +118,6 @@ void TemperatureMonitor::update(bool force_update) {
     last_temp = temp;
   }
 }
-}
-}
+
+}  // namespace evse
+}  // namespace nospark

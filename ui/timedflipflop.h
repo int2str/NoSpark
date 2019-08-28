@@ -32,5 +32,6 @@ class TimedFlipFlop {
   bool last_state;
   uint32_t last_change;
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

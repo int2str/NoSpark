@@ -34,5 +34,6 @@ class LcdStateSleeping : public LcdState {
   TimedFlipFlop blink_state;
   uint8_t sleep_mode;
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

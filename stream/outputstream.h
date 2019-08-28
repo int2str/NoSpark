@@ -46,5 +46,6 @@ class OutputStream {
  private:
   uint8_t flags;
 };
-}
-}
+
+}  // namespace stream
+}  // namespace nospark

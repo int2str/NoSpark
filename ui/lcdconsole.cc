@@ -59,8 +59,7 @@ LcdConsole::LcdConsole()
       sleeping(false),
       last_event(Timer::millis()),
       lcdState(new LcdStateBootup(lcd)),
-      lcd(lcd_int) {
-}
+      lcd(lcd_int) {}
 
 void LcdConsole::setState(LcdState *newState) {
   if (lcdState != 0) delete lcdState;

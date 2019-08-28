@@ -72,5 +72,6 @@ class Adc {
   friend void ::ADC_vect(void);
   DISALLOW_COPY_AND_ASSIGN(Adc);
 };
-}
-}
+
+}  // namespace board
+}  // namespace nospark

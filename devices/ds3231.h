@@ -55,5 +55,6 @@ class DS3231 {
 
   DISALLOW_COPY_AND_ASSIGN(DS3231);
 };
-}
-}
+
+}  // namespace devices
+}  // namespace nospark

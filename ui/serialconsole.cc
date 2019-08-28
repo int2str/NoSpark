@@ -31,16 +31,16 @@
 #define AMPS_MIN 6
 #define AMPS_MAX 80
 
+using nospark::devices::DS3231;
+using nospark::event::Loop;
 using nospark::evse::ChargeMonitor;
 using nospark::evse::EepromSettings;
 using nospark::evse::Settings;
 using nospark::evse::State;
-using nospark::devices::DS3231;
-using nospark::event::Loop;
 using nospark::stream::OutputStream;
-using nospark::stream::UartStream;
-using nospark::stream::Time;
 using nospark::stream::PGM;
+using nospark::stream::Time;
+using nospark::stream::UartStream;
 
 namespace {
 

@@ -51,5 +51,6 @@ T square_root(const T &val) {
 
   return min;
 }
-}
-}
+
+}  // namespace utils
+}  // namespace nospark

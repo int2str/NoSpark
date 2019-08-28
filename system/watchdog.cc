@@ -29,5 +29,6 @@ void Watchdog::forceRestart() {
   while (1) {
   }
 }
-}
-}
+
+}  // namespace system
+}  // namespace nospark

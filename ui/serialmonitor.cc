@@ -102,5 +102,6 @@ void SerialMonitor::onEvent(const event::Event &event) {
       break;
   }
 }
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

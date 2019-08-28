@@ -30,7 +30,7 @@ BillboardText::BillboardText(const uint8_t width, const uint8_t items)
 
 BillboardText::~BillboardText() { delete[] buffer_; }
 
-OutputStream &BillboardText::operator<<(const ITEM& item) {
+OutputStream &BillboardText::operator<<(const ITEM &item) {
   if (item.item < items_) insert_position_ = width_ * item.item + item.item;
   return *this;
 }

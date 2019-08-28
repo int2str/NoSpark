@@ -44,5 +44,6 @@ class Keyboard : public event::Handler {
 
   DISALLOW_COPY_AND_ASSIGN(Keyboard);
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

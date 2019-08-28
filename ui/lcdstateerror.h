@@ -28,5 +28,6 @@ class LcdStateError : public LcdState {
   LcdStateError(stream::LcdStream &lcd);
   bool draw() override;
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

@@ -117,5 +117,6 @@ void EepromSettings::save(Settings &settings) {
   eeprom_write_block(&settings, addr, sizeof(Settings));
   event::Loop::post(event::Event(EVENT_SETTINGS_CHANGED));
 }
-}
-}
+
+}  // namespace evse
+}  // namespace nospark

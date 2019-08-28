@@ -58,7 +58,7 @@ uint8_t usart_available() {
 }
 
 ISR(USART_RX_vect) { usart_insert(UDR0); }
-}
+}  // namespace
 
 namespace serial {
 
@@ -85,5 +85,6 @@ void Usart::write(const uint8_t b) {
 uint8_t Usart::read() { return usart_read(); }
 
 bool Usart::avail() const { return usart_available(); }
-}
-}
+
+}  // namespace serial
+}  // namespace nospark

@@ -77,7 +77,7 @@ J1772Pilot::State stateFromSample(const uint16_t sample) {
   return ADC_TO_STATE_MAP[(sample - J1772_THRESHOLD_OFFSET) /
                           J1772_THRESHOLD_STEP];
 }
-}
+}  // namespace
 
 namespace nospark {
 namespace board {
@@ -122,5 +122,6 @@ J1772Pilot::State J1772Pilot::getState(const bool force_update) {
 
   return last_state;
 }
-}
-}
+
+}  // namespace board
+}  // namespace nospark

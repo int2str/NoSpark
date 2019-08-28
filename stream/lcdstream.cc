@@ -33,5 +33,6 @@ void LcdStream::setBacklight(const LCD16x2::Backlight color) {
 }
 
 void LcdStream::write(const char ch) { lcd.write(ch); }
-}
-}
+
+}  // namespace stream
+}  // namespace nospark

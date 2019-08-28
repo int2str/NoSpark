@@ -38,5 +38,6 @@ class ChargeTimer : public event::Handler {
 
   DISALLOW_COPY_AND_ASSIGN(ChargeTimer);
 };
-}
-}
+
+}  // namespace evse
+}  // namespace nospark

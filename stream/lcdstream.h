@@ -37,5 +37,6 @@ class LcdStream : public OutputStream {
 
   devices::LCD16x2 &lcd;
 };
-}
-}
+
+}  // namespace stream
+}  // namespace nospark

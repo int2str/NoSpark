@@ -57,5 +57,6 @@ class State {
  private:
   DISALLOW_COPY_AND_ASSIGN(State);
 };
-}
-}
+
+}  // namespace evse
+}  // namespace nospark

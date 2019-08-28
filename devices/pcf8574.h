@@ -40,5 +40,6 @@ class PCF8574 {
 
   DISALLOW_COPY_AND_ASSIGN(PCF8574);
 };
-}
-}
+
+}  // namespace devices
+}  // namespace nospark

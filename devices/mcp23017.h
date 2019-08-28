@@ -49,5 +49,6 @@ class MCP23017 {
 
   DISALLOW_COPY_AND_ASSIGN(MCP23017);
 };
-}
-}
+
+}  // namespace devices
+}  // namespace nospark

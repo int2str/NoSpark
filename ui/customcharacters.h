@@ -39,5 +39,6 @@ class CustomCharacters {
   static void largeDigit(devices::LCD16x2 &lcd, const uint8_t digit,
                          const uint8_t offset);
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

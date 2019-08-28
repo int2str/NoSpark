@@ -34,5 +34,6 @@ class Eeprom {
                        sizeof(T));
   }
 };
-}
-}
+
+}  // namespace utils
+}  // namespace nospark

@@ -39,5 +39,6 @@ class Pin {
   volatile uint8_t *const reg_pin;
   const uint8_t b;
 };
-}
-}
+
+}  // namespace board
+}  // namespace nospark

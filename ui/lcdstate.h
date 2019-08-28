@@ -35,5 +35,6 @@ class LcdState {
  protected:
   stream::LcdStream &lcd;
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

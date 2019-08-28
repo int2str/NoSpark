@@ -31,5 +31,6 @@ class Watchdog {
  private:
   DISALLOW_COPY_AND_ASSIGN(Watchdog);
 };
-}
-}
+
+}  // namespace system
+}  // namespace nospark

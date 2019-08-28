@@ -22,5 +22,6 @@ namespace event {
 Handler::Handler() { Loop::get().addHandler(this); }
 
 Handler::~Handler() {}
-}
-}
+
+}  // namespace event
+}  // namespace nospark

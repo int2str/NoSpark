@@ -30,13 +30,13 @@
 #define PARAM_NOT_FOUND 0xFFFF
 
 using nospark::board::J1772Pilot;
+using nospark::devices::DS3231;
 using nospark::event::Event;
 using nospark::event::Loop;
 using nospark::evse::ChargeMonitor;
 using nospark::evse::EepromSettings;
 using nospark::evse::Settings;
 using nospark::evse::State;
-using nospark::devices::DS3231;
 using nospark::serial::Usart;
 using nospark::stream::OutputStream;
 using nospark::stream::RapiStream;

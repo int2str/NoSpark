@@ -39,5 +39,6 @@ class Usart {
 
   DISALLOW_COPY_AND_ASSIGN(Usart);
 };
-}
-}
+
+}  // namespace serial
+}  // namespace nospark

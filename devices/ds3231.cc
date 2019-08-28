@@ -58,7 +58,7 @@ bool checkPresent(nospark::devices::I2CMaster &i2c, const uint8_t i2c_addr) {
   i2c.read(i2c_addr, &temp, 1);
   return temp != 0;
 }
-}
+}  // namespace
 
 namespace nospark {
 namespace devices {
@@ -108,5 +108,6 @@ uint8_t DS3231::readTemp() {
   i2c.read(i2c_addr, buffer, 2);
   return buffer[0];
 }
-}
-}
+
+}  // namespace devices
+}  // namespace nospark

@@ -59,5 +59,6 @@ class Controller : public event::Handler {
 
   DISALLOW_COPY_AND_ASSIGN(Controller);
 };
-}
-}
+
+}  // namespace evse
+}  // namespace nospark

@@ -46,5 +46,6 @@ class GFCI {
 
   DISALLOW_COPY_AND_ASSIGN(GFCI);
 };
-}
-}
+
+}  // namespace board
+}  // namespace nospark

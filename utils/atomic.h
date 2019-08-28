@@ -32,5 +32,6 @@ class Atomic {
 
   _INLINE_ ~Atomic() { sei(); }
 };
-}
-}
+
+}  // namespace utils
+}  // namespace nospark

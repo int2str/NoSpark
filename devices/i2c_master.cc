@@ -42,7 +42,7 @@ uint8_t i2c_addr = 0;
 
 ISR(TWI_vect) {
   switch (TW_STATUS) {
-    // Master read/write --------------------------------------
+      // Master read/write --------------------------------------
 
     case TW_START:
     case TW_REP_START:
@@ -54,7 +54,7 @@ ISR(TWI_vect) {
       TWCR = I2C_START;
       break;
 
-    // Master write -------------------------------------------
+      // Master write -------------------------------------------
 
     case TW_MT_SLA_ACK:
     case TW_MT_DATA_ACK:
@@ -76,7 +76,7 @@ ISR(TWI_vect) {
       }
       break;
 
-    // Master read --------------------------------------------
+      // Master read --------------------------------------------
 
     case TW_MR_DATA_ACK:
       *i2c_data++ = TWDR;

@@ -44,5 +44,6 @@ class TemperatureMonitor : public event::Handler {
 
   DISALLOW_COPY_AND_ASSIGN(TemperatureMonitor);
 };
-}
-}
+
+}  // namespace evse
+}  // namespace nospark

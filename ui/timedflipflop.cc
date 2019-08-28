@@ -30,5 +30,6 @@ bool TimedFlipFlop::get() {
   }
   return last_state;
 }
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

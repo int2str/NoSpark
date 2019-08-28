@@ -89,5 +89,6 @@ void MCP23017::writeB(const uint8_t b) {
   uint8_t buffer[2] = {MCP23017_GPIOB, b};
   i2c.write(i2c_addr, buffer, 2);
 }
-}
-}
+
+}  // namespace devices
+}  // namespace nospark

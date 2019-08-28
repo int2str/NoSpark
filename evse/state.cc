@@ -35,5 +35,6 @@ State::State()
   max_amps_target = settings.max_current;
   max_amps_limit = max_amps_target;
 }
-}
-}
+
+}  // namespace evse
+}  // namespace nospark

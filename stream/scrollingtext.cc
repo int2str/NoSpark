@@ -67,5 +67,6 @@ void ScrollingText::update() {
 void ScrollingText::write(const char ch) {
   if (length < (size - 1)) buffer[length++] = ch;
 }
-}
-}
+
+}  // namespace stream
+}  // namespace nospark

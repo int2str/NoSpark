@@ -62,7 +62,7 @@ uint32_t square_root(uint32_t val) {
 
   return root;
 }
-}
+}  // namespace
 
 namespace nospark {
 namespace board {
@@ -155,5 +155,6 @@ uint32_t Adc::readAmmeter() {
 
   return ret;
 }
-}
-}
+
+}  // namespace board
+}  // namespace nospark

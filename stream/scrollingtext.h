@@ -43,5 +43,6 @@ class ScrollingText : public OutputStream {
   uint8_t offset;
   char *buffer;
 };
-}
-}
+
+}  // namespace stream
+}  // namespace nospark

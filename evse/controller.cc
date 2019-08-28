@@ -41,7 +41,7 @@ void setJ1772State(const J1772Pilot::State j1772) {
   State::get().j1772 = j1772;
   Loop::post(Event(EVENT_J1772_STATE, j1772));
 }
-}
+}  // namespace
 
 namespace nospark {
 namespace evse {
@@ -213,5 +213,6 @@ void Controller::setFault(const State::ControllerFault fault) {
   State::get().fault = fault;
   setControllerState(State::FAULT);
 }
-}
-}
+
+}  // namespace evse
+}  // namespace nospark

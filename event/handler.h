@@ -32,5 +32,6 @@ class Handler {
 
   DISALLOW_COPY_AND_ASSIGN(Handler);
 };
-}
-}
+
+}  // namespace event
+}  // namespace nospark

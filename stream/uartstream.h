@@ -33,5 +33,6 @@ class UartStream : public OutputStream {
 
   serial::Usart &uart;
 };
-}
-}
+
+}  // namespace stream
+}  // namespace nospark

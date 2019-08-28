@@ -104,5 +104,6 @@ class Queue {
  private:
   Node *head;
 };
-}
-}
+
+}  // namespace utils
+}  // namespace nospark

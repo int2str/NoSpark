@@ -33,5 +33,6 @@ class Time {
 };
 
 OutputStream &operator<<(OutputStream &out, const Time &time);
-}
-}
+
+}  // namespace stream
+}  // namespace nospark

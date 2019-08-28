@@ -21,7 +21,6 @@
 #include "evse/state.h"
 #include "stream/billboardtext.h"
 #include "stream/lcdstream.h"
-#include "stream/billboardtext.h"
 #include "ui/lcdstate.h"
 #include "ui/timedflipflop.h"
 

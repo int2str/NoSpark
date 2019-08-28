@@ -22,5 +22,6 @@ namespace board {
 SleepIndicator::SleepIndicator() : pin(PIN_MISO) {}
 
 void SleepIndicator::set(const bool enable) { pin = enable; }
-}
-}
+
+}  // namespace board
+}  // namespace nospark

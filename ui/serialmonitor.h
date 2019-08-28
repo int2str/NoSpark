@@ -54,5 +54,6 @@ class SerialMonitor : public event::Handler {
 
   DISALLOW_COPY_AND_ASSIGN(SerialMonitor);
 };
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

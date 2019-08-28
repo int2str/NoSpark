@@ -67,5 +67,6 @@ bool LcdStateSleeping::draw() {
 
   return true;
 }
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

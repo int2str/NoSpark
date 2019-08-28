@@ -27,8 +27,8 @@
 using nospark::board::J1772Pilot;
 using nospark::event::Event;
 using nospark::event::Loop;
-using nospark::evse::Settings;
 using nospark::evse::EepromSettings;
+using nospark::evse::Settings;
 using nospark::evse::State;
 
 namespace {

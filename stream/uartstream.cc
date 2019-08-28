@@ -28,5 +28,6 @@ UartStream &UartStream::operator>>(char &ch) {
 }
 
 void UartStream::write(const char ch) { uart.write(ch); }
-}
-}
+
+}  // namespace stream
+}  // namespace nospark

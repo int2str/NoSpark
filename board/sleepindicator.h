@@ -30,5 +30,6 @@ class SleepIndicator {
  private:
   Pin pin;
 };
-}
-}
+
+}  // namespace board
+}  // namespace nospark

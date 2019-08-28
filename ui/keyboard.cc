@@ -74,5 +74,6 @@ void Keyboard::update() {
 void Keyboard::onEvent(const event::Event &event) {
   if (event.id == EVENT_UPDATE) update();
 }
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

@@ -59,5 +59,6 @@ bool LcdStateError::draw() {
   }
   return true;
 }
-}
-}
+
+}  // namespace ui
+}  // namespace nospark

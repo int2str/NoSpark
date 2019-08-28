@@ -34,5 +34,6 @@ class Timer {
  private:
   uint32_t millis_impl() const;
 };
-}
-}
+
+}  // namespace system
+}  // namespace nospark

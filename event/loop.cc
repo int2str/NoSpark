@@ -74,5 +74,6 @@ void Loop::dispatch_impl() {
     }
   }
 }
-}
-}
+
+}  // namespace event
+}  // namespace nospark

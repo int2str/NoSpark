@@ -62,5 +62,6 @@ class Loop {
 
   DISALLOW_COPY_AND_ASSIGN(Loop);
 };
-}
-}
+
+}  // namespace event
+}  // namespace nospark

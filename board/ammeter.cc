@@ -38,5 +38,6 @@ uint32_t Ammeter::sample() {
 
   return last_sample;
 }
-}
-}
+
+}  // namespace board
+}  // namespace nospark
