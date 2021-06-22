@@ -25,7 +25,7 @@ size = avr-size
 dude = avrdude
 
 cflags = -Os -g -mmcu=$mcu -DF_CPU=$freq -std=c++14 -W -Wall -pedantic $
-    -ffunction-sections -fdata-sections -fmerge-all-constants $
+    -ffunction-sections -fdata-sections -fmerge-all-constants -fno-stack-protector $
     -fno-inline-small-functions -fshort-enums -fno-exceptions -I.
 ldflags = -Wl,--gc-sections -Wl,--relax
 
