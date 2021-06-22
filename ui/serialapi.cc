@@ -43,15 +43,6 @@ using nospark::stream::RapiStream;
 
 namespace {
 
-// Save on event change somehow? Simplify code?
-// Un-dupe? :)
-void saveMaxAmps(const uint8_t max_amps) {
-  Settings settings;
-  EepromSettings::load(settings);
-  settings.max_current = max_amps;
-  EepromSettings::save(settings);
-}
-
 constexpr uint16_t NOT_FOUND = -1;
 
 uint16_t find_char(const char *buffer, char ch) {
