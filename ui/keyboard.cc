@@ -14,6 +14,7 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "ui/keyboard.h"
+
 #include "event/loop.h"
 #include "events.h"
 #include "system/timer.h"
@@ -40,8 +41,6 @@ Keyboard::Keyboard() : io(LCD_I2C_ADDR), last_state(0), last_change(0) {
   io.ioDir(BUTTON_MASK, 0x00);
   io.pullUp(BUTTON_MASK, 0x00);
 }
-
-Keyboard::~Keyboard() {}
 
 void Keyboard::update() {
   const bool key_down = !(io.readA() & BUTTON_MASK);

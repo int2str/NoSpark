@@ -14,6 +14,7 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "evse/controller.h"
+
 #include "board/pin.h"
 #include "board/pins.h"
 #include "event/loop.h"
@@ -52,8 +53,6 @@ Controller &Controller::init() {
 }
 
 Controller::Controller() { enableCharge(false); }
-
-Controller::~Controller() {}
 
 void Controller::update() {
   switch (State::get().controller) {

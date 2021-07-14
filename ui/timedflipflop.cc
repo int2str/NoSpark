@@ -14,6 +14,7 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "ui/timedflipflop.h"
+
 #include "system/timer.h"
 
 namespace nospark {
@@ -22,7 +23,7 @@ namespace ui {
 TimedFlipFlop::TimedFlipFlop(const uint16_t duration)
     : duration(duration), last_state(false), last_change(0) {}
 
-bool TimedFlipFlop::get() {
+bool TimedFlipFlop::operator()() {
   const uint32_t now = system::Timer::millis();
   if (now - last_change > duration) {
     last_state = !last_state;

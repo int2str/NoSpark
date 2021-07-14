@@ -14,6 +14,7 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "ds3231.h"
+
 #include "utils/bcd.h"
 
 #define DS3231_I2C_ADDRESS 0x68
@@ -72,8 +73,6 @@ DS3231::DS3231()
     : i2c_addr(DS3231_I2C_ADDRESS),
       i2c(I2CMaster::get()),
       present(checkPresent(i2c, i2c_addr)) {}
-
-DS3231::~DS3231() {}
 
 bool DS3231::isPresent() const { return present; }
 

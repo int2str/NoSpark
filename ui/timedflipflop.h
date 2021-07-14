@@ -25,7 +25,7 @@ namespace ui {
 class TimedFlipFlop {
  public:
   TimedFlipFlop(const uint16_t duration);
-  bool get();
+  bool operator()();
 
  private:
   const uint16_t duration;

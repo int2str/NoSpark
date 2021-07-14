@@ -26,7 +26,6 @@ namespace ui {
 // This is a singleton; there shall be only one.
 class Keyboard : public event::Handler {
   Keyboard();
-  ~Keyboard();
 
  public:
   static Keyboard &init();

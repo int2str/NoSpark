@@ -13,6 +13,8 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "ui/lcdstatesettings.h"
+
 #include <stdlib.h>
 
 #include "devices/ds3231.h"
@@ -23,7 +25,6 @@
 #include "system/timer.h"
 #include "system/watchdog.h"
 #include "ui/customcharacters.h"
-#include "ui/lcdstatesettings.h"
 #include "ui/strings.h"
 #include "utils/bcd.h"
 #include "utils/math.h"
@@ -140,7 +141,7 @@ bool LcdStateSettings::pageSetTime() {
 
   lcd << stream::Time(hour, minute);
 
-  if (option != NOT_ADJUSTING && !blink_state.get()) {
+  if (option != NOT_ADJUSTING && !blink_state()) {
     const uint8_t offset[2] = {2, 5};
     lcd.move(offset[option - 1], 1);
     lcd << "  ";
@@ -198,7 +199,7 @@ bool LcdStateSettings::pageSetDate() {
   lcd << stream::PAD_ZERO << day << '.' << stream::PAD_ZERO << month << '.'
       << "20" << year_tens << year_ones;
 
-  if (option != NOT_ADJUSTING && !blink_state.get()) {
+  if (option != NOT_ADJUSTING && !blink_state()) {
     const uint8_t offset[4] = {2, 5, 10, 11};
     lcd.move(offset[option - 1], 1);
     lcd << stream::Spaces(option >= ADJUST_Y_TENS ? 1 : 2);
@@ -242,7 +243,7 @@ bool LcdStateSettings::pageSetCurrent() {
   lcd << static_cast<char>(CustomCharacters::BOLT) << PGM << STR_SET_CURRENT;
 
   lcd.move(2, 1);
-  if (option == NOT_ADJUSTING || blink_state.get())
+  if (option == NOT_ADJUSTING || blink_state())
     lcd << value << "A ";
   else
     lcd << stream::Spaces(5);
@@ -300,7 +301,7 @@ bool LcdStateSettings::pageChargeTimer() {
   value = 0;
 
   if (temp_buffer[0] == 0) {
-    if (option == NOT_ADJUSTING || blink_state.get())
+    if (option == NOT_ADJUSTING || blink_state())
       lcd << PGM << STR_OFF << stream::Spaces(12);
     else
       lcd << stream::Spaces(14);
@@ -310,7 +311,7 @@ bool LcdStateSettings::pageChargeTimer() {
         << static_cast<char>(126)
         << stream::Time(temp_buffer[3], temp_buffer[4]);
 
-    if (blink_state.get()) {
+    if (blink_state()) {
       const uint8_t offset[5] = {2, 5, 8, 11, 14};
       lcd.move(offset[option - 1], 1);
       lcd << "  ";
@@ -341,7 +342,7 @@ bool LcdStateSettings::pageKwhLimit() {
       << STR_SET_KWH_LIMIT;
 
   lcd.move(2, 1);
-  if (option == NOT_ADJUSTING || blink_state.get()) {
+  if (option == NOT_ADJUSTING || blink_state()) {
     if (value == 0)
       lcd << PGM << STR_OFF;
     else
@@ -391,7 +392,7 @@ bool LcdStateSettings::pageKwhCost() {
       << static_cast<char>('0' + ones) << '.' << static_cast<char>('0' + tenth)
       << static_cast<char>('0' + hundredth);
 
-  if (option != NOT_ADJUSTING && !blink_state.get()) {
+  if (option != NOT_ADJUSTING && !blink_state()) {
     const uint8_t offset[4] = {2, 4, 6, 7};
     lcd.move(offset[option - 1], 1);
     lcd << " ";
@@ -417,7 +418,7 @@ bool LcdStateSettings::pageSleepmode() {
   lcd << static_cast<char>(CustomCharacters::ZZ) << PGM << STR_SET_SLEEPMODE;
 
   lcd.move(2, 1);
-  if (option == NOT_ADJUSTING || blink_state.get()) {
+  if (option == NOT_ADJUSTING || blink_state()) {
     switch (value) {
       default:
         value = 0;

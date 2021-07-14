@@ -26,7 +26,7 @@ namespace event {
 class Handler {
  public:
   Handler();
-  virtual ~Handler();
+  virtual ~Handler() = default;
 
   virtual void onEvent(const Event &event) = 0;
 

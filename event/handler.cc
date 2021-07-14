@@ -14,14 +14,13 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "event/handler.h"
+
 #include "event/loop.h"
 
 namespace nospark {
 namespace event {
 
 Handler::Handler() { Loop::get().addHandler(this); }
-
-Handler::~Handler() {}
 
 }  // namespace event
 }  // namespace nospark

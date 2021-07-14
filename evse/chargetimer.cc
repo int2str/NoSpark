@@ -14,12 +14,12 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "evse/chargetimer.h"
+
 #include "devices/ds3231.h"
 #include "event/loop.h"
 #include "events.h"
 #include "evse/settings.h"
 #include "evse/state.h"
-
 #include "system/timer.h"
 
 #define CHARGE_TIMER_UPDATE_DELAY_MS 60000
@@ -54,8 +54,6 @@ ChargeTimer &ChargeTimer::init() {
 }
 
 ChargeTimer::ChargeTimer() : can_charge(true) {}
-
-ChargeTimer::~ChargeTimer() {}
 
 void ChargeTimer::checkTime() {
   bool can_charge_now = true;

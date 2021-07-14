@@ -14,6 +14,7 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "ui/lcdstatesleeping.h"
+
 #include "devices/ds3231.h"
 #include "evse/settings.h"
 #include "ui/customcharacters.h"
@@ -58,7 +59,7 @@ bool LcdStateSleeping::draw() {
   CustomCharacters::largeDigit(lcd.getLCD(), rtc.minute / 10, 8);
   CustomCharacters::largeDigit(lcd.getLCD(), rtc.minute % 10, 11);
 
-  const char o = blink_state.get() ? ' ' : 7;
+  const char o = blink_state() ? ' ' : 7;
 
   lcd.move(7, 1);
   lcd << static_cast<char>(o);

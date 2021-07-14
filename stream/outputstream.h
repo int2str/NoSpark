@@ -31,7 +31,7 @@ struct Spaces {
 class OutputStream {
  public:
   OutputStream();
-  virtual ~OutputStream();
+  virtual ~OutputStream() = default;
 
   OutputStream &operator<<(const Flags flags);
   OutputStream &operator<<(const Spaces spaces);

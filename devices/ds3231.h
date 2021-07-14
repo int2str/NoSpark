@@ -26,7 +26,6 @@ namespace devices {
 
 class DS3231 {
   DS3231();
-  ~DS3231();
 
  public:
   static DS3231 &get();

@@ -25,10 +25,10 @@ namespace ui {
 class LcdState {
  public:
   LcdState(stream::LcdStream &lcd) : lcd(lcd){};
+  virtual ~LcdState() = default;
 
   virtual bool draw() = 0;
 
-  virtual ~LcdState() {}
   virtual void select(){};
   virtual void advance() {}
 

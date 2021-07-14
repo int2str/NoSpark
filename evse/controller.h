@@ -32,7 +32,6 @@ namespace evse {
 
 class Controller : public event::Handler {
   Controller();
-  ~Controller();
 
  public:
   static Controller &init();

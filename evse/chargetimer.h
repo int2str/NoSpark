@@ -25,7 +25,6 @@ namespace evse {
 
 class ChargeTimer : public event::Handler {
   ChargeTimer();
-  ~ChargeTimer();
 
  public:
   static ChargeTimer &init();

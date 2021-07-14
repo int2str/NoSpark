@@ -13,17 +13,15 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "stream/outputstream.h"
+
 #include <avr/pgmspace.h>
 #include <stdlib.h>
-
-#include "stream/outputstream.h"
 
 namespace nospark {
 namespace stream {
 
 OutputStream::OutputStream() : flags(0) {}
-
-OutputStream::~OutputStream() {}
 
 OutputStream &OutputStream::operator<<(const Flags flag) {
   flags |= (1 << flag);
