@@ -13,11 +13,12 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "lcd1602.h"
+
 #include <avr/pgmspace.h>
 #include <stdbool.h>
 #include <util/delay.h>
 
-#include "lcd1602.h"
 #include "utils/pair.h"
 
 #define LCD_I2C_ADDR 0x20
@@ -69,10 +70,11 @@ using nospark::devices::LCD16x2;
 // This is a map of tuples, bit reversed and left shifted over
 // by one to map the D4-D7 bits onto the I/O expanders "B"
 // register.
-const uint8_t TUPLE_MAP[] = {0x00, 0x10, 0x08, 0x18, 0x04, 0x14, 0x0c, 0x1c,
-                             0x02, 0x12, 0x0a, 0x1a, 0x06, 0x16, 0x0e, 0x1e};
+constexpr uint8_t TUPLE_MAP[] = {0x00, 0x10, 0x08, 0x18, 0x04, 0x14,
+                                 0x0c, 0x1c, 0x02, 0x12, 0x0a, 0x1a,
+                                 0x06, 0x16, 0x0e, 0x1e};
 
-Pair<uint8_t, uint8_t> bits4color(const LCD16x2::Backlight color) {
+constexpr Pair<uint8_t, uint8_t> bits4color(const LCD16x2::Backlight color) {
   uint8_t a = LCD_BL_R | LCD_BL_G;
   uint8_t b = LCD_BL_B;
 
@@ -100,9 +102,7 @@ Pair<uint8_t, uint8_t> bits4color(const LCD16x2::Backlight color) {
 namespace nospark {
 namespace devices {
 
-LCD16x2::LCD16x2() : io(LCD_I2C_ADDR), backlight_bits(0, 0) {
-  backlight_bits = bits4color(OFF);
-
+LCD16x2::LCD16x2() : io{LCD_I2C_ADDR}, backlight_bits{bits4color(OFF)} {
   // Initialize GPIO expander
   io.ioDir(0x1F, 0x00);
   io.pullUp(0x1F, 0x00);

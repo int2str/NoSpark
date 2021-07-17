@@ -24,7 +24,7 @@ namespace ui {
 
 class LcdState {
  public:
-  LcdState(stream::LcdStream &lcd) : lcd(lcd){};
+  explicit LcdState(stream::LcdStream &lcd) : lcd(lcd){};
   virtual ~LcdState() = default;
 
   virtual bool draw() = 0;

@@ -16,6 +16,7 @@
 #pragma once
 
 #include "stream/outputstream.h"
+#include "utils/cpp.h"
 
 namespace nospark {
 namespace stream {
@@ -23,7 +24,7 @@ namespace stream {
 class BillboardText : public OutputStream {
  public:
   struct ITEM {
-    ITEM(uint8_t item) : item(item) {}
+    explicit constexpr ITEM(uint8_t item) : item(item) {}
     const uint8_t item;
   };
 
@@ -38,7 +39,7 @@ class BillboardText : public OutputStream {
  private:
   void update();
 
-  virtual void write(const char ch);
+  virtual void write(const char ch) override;
 
   uint32_t last_update_;
 
@@ -47,6 +48,8 @@ class BillboardText : public OutputStream {
   uint8_t current_item_;
   uint8_t insert_position_;
   char *buffer_;
+
+  DISALLOW_COPY_AND_ASSIGN(BillboardText);
 };
 
 }  // namespace stream

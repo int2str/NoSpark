@@ -13,9 +13,10 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "stream/scrollingtext.h"
+
 #include <stdlib.h>
 
-#include "stream/scrollingtext.h"
 #include "system/timer.h"
 
 #define SCROLL_DELAY_MS 300
@@ -24,7 +25,7 @@ namespace nospark {
 namespace stream {
 
 ScrollingText::ScrollingText(const uint8_t size, const uint8_t width)
-    : size(size), width(width), length(0), offset(0) {
+    : last_update{}, size(size), width(width), length(0), offset(0) {
   buffer = new char[size];
 }
 

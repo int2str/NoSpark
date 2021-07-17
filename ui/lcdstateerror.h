@@ -25,7 +25,7 @@ namespace ui {
 
 class LcdStateError : public LcdState {
  public:
-  LcdStateError(stream::LcdStream &lcd);
+  explicit LcdStateError(stream::LcdStream &lcd);
   bool draw() override;
 };
 

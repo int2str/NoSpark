@@ -32,7 +32,7 @@ typedef bool (LcdStateSettings::*PageHandler)();
 
 class LcdStateSettings : public LcdState {
  public:
-  LcdStateSettings(stream::LcdStream &lcd);
+  explicit LcdStateSettings(stream::LcdStream &lcd);
 
   bool draw() override;
 

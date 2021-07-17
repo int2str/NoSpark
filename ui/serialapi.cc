@@ -13,6 +13,8 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "ui/serialapi.h"
+
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 
@@ -23,7 +25,6 @@
 #include "evse/settings.h"
 #include "evse/state.h"
 #include "system/watchdog.h"
-#include "ui/serialapi.h"
 #include "ui/serialprotocol.h"
 #include "ui/strings.h"
 
@@ -96,19 +97,16 @@ uint32_t getElapsed() {
   return cm.chargeDuration() / 1000;
 }
 
-uint8_t getMaxAmps() {
-  State &state = State::get();
-  return state.max_amps_limit;
-}
+uint8_t getMaxAmps() { return State::get().max_amps_limit; }
 
 uint32_t getChargingMilliamps() {
-  ChargeMonitor &cm = ChargeMonitor::get();
+  const ChargeMonitor &cm = ChargeMonitor::get();
   if (!cm.isCharging()) return 0;
   return cm.chargeCurrent();
 }
 
 uint32_t getChargingWattseconds() {
-  ChargeMonitor &cm = ChargeMonitor::get();
+  const ChargeMonitor &cm = ChargeMonitor::get();
   if (!cm.isCharging()) return 0;
   return cm.wattSeconds();
 }
@@ -153,14 +151,14 @@ void setTime(const char *buffer) {
   buffer = parseUint8(buffer, rtc.day);
   buffer = parseUint8(buffer, rtc.hour);
   buffer = parseUint8(buffer, rtc.minute);
-  buffer = parseUint8(buffer, rtc.second);
+  parseUint8(buffer, rtc.second);
 
   rtc.write();
 }
 
 // Map the EVSE and J1772 to the RAPI states
 uint8_t mapState() {
-  State &state = State::get();
+  const State &state = State::get();
 
   // J1772 states map pretty much directly
   if (state.controller == State::RUNNING) {

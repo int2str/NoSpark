@@ -23,7 +23,7 @@ namespace devices {
 
 class PCF8574 {
  public:
-  PCF8574(const uint8_t i2c_addr);
+  explicit PCF8574(const uint8_t i2c_addr);
 
   // 1 = input, 0 = output
   // Note that this is exactly opposite of the AVR

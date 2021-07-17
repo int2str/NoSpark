@@ -23,7 +23,7 @@ namespace stream {
 
 class UartStream : public OutputStream {
  public:
-  UartStream(serial::Usart &uart);
+  explicit UartStream(serial::Usart &uart);
 
   bool avail();
   UartStream &operator>>(char &ch);

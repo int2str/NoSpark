@@ -21,10 +21,10 @@
 namespace nospark {
 namespace stream {
 
-enum Flags { PGM, PAD_ZERO, PAD_SPACE };
+enum Flags : uint8_t { PGM, PAD_ZERO, PAD_SPACE };
 
 struct Spaces {
-  Spaces(const size_t num) : num(num) {}
+  explicit constexpr Spaces(const size_t num) : num(num) {}
   const size_t num;
 };
 

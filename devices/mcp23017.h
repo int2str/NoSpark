@@ -23,7 +23,7 @@ namespace devices {
 
 class MCP23017 {
  public:
-  MCP23017(const uint8_t i2c_addr);
+  explicit MCP23017(const uint8_t i2c_addr);
 
   // 1 = input, 0 = output
   // Note that this is exactly opposite of the AVR

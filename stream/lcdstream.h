@@ -23,7 +23,7 @@ namespace stream {
 
 class LcdStream : public OutputStream {
  public:
-  LcdStream(devices::LCD16x2 &lcd);
+  explicit LcdStream(devices::LCD16x2 &lcd);
 
   void clear();
   void move(const uint8_t x, const uint8_t y);

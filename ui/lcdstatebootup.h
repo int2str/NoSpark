@@ -25,7 +25,7 @@ namespace ui {
 
 class LcdStateBootup : public LcdState {
  public:
-  LcdStateBootup(stream::LcdStream &lcd);
+  explicit LcdStateBootup(stream::LcdStream &lcd);
   bool draw() override;
 
  private:

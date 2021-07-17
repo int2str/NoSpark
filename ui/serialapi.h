@@ -28,7 +28,7 @@ namespace ui {
 // Simple command line interface for control and monitoring.
 class SerialApi {
  public:
-  SerialApi(stream::UartStream &uart);
+  explicit SerialApi(stream::UartStream &uart);
   bool handleCommand(const char *buffer, const uint8_t len);
 
  private:

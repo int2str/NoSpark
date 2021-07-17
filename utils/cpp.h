@@ -17,4 +17,6 @@
 
 #define DISALLOW_COPY_AND_ASSIGN(T) \
   T(T const &) = delete;            \
-  void operator=(T const &) = delete
+  T(T const &&) = delete;           \
+  T &operator=(T const &) = delete; \
+  T &operator=(T const &&) = delete

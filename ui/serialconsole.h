@@ -18,6 +18,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "event/event.h"
 #include "stream/uartstream.h"
 #include "utils/cpp.h"
 
@@ -38,7 +39,7 @@ struct SerialCommand {
 // Simple command line interface for control and monitoring.
 class SerialConsole {
  public:
-  SerialConsole(stream::UartStream &uart);
+  explicit SerialConsole(stream::UartStream &uart);
 
   void onEvent(const event::Event &event);
 

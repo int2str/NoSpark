@@ -57,7 +57,7 @@ OutputStream &OutputStream::operator<<(const uint8_t val) {
 
   else if (flags & ((1 << Flags::PAD_ZERO) | (1 << Flags::PAD_SPACE))) {
     if (val < 10)
-      *this << static_cast<char>(flags & (1 << Flags::PAD_ZERO) ? '0' : ' ');
+      *this << static_cast<char>((flags & (1 << Flags::PAD_ZERO)) ? '0' : ' ');
     else
       *this << static_cast<char>('0' + val / 10);
     *this << static_cast<char>('0' + val % 10);

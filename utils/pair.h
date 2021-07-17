@@ -24,7 +24,8 @@ class Pair {
   T1 first;
   T2 second;
 
-  Pair(const T1 &first, const T2 &second) : first(first), second(second) {}
+  constexpr Pair(const T1 &first, const T2 &second)
+      : first(first), second(second) {}
 };
 
 }  // namespace utils

@@ -70,9 +70,16 @@ DS3231 &DS3231::get() {
 }
 
 DS3231::DS3231()
-    : i2c_addr(DS3231_I2C_ADDRESS),
-      i2c(I2CMaster::get()),
-      present(checkPresent(i2c, i2c_addr)) {}
+    : hour{},
+      minute{},
+      second{},
+      day{},
+      month{},
+      year{},
+      weekday{},
+      i2c_addr{DS3231_I2C_ADDRESS},
+      i2c{I2CMaster::get()},
+      present{checkPresent(i2c, i2c_addr)} {}
 
 bool DS3231::isPresent() const { return present; }
 

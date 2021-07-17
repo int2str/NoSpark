@@ -14,6 +14,7 @@
 // it online at <http://www.gnu.org/licenses/>.
 
 #include "ui/serialmonitor.h"
+
 #include "events.h"
 #include "ui/strings.h"
 #include "ui/strings_console.h"
@@ -37,6 +38,7 @@ SerialMonitor::SerialMonitor()
       console(uart),
       state(CONSOLE_STARTUP),
       echo(true),
+      buffer{0},
       len(0) {}
 
 void SerialMonitor::update() {

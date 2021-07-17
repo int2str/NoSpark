@@ -13,6 +13,8 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "ui/serialconsole.h"
+
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 
@@ -24,7 +26,6 @@
 #include "evse/state.h"
 #include "stream/time.h"
 #include "system/watchdog.h"
-#include "ui/serialconsole.h"
 #include "ui/strings.h"
 #include "ui/strings_console.h"
 
@@ -67,7 +68,6 @@ void write_energy_stat(OutputStream &out, const char *label,
     const char currencies[3] = {'$', 'E', 'Y'};
     uint32_t cost = kwh * cents;
 
-    char buffer[10] = {0};
     ltoa(cost / 100, buffer, 10);
     out << " / " << static_cast<char>(currencies[currency]) << buffer << ".";
 
@@ -281,8 +281,8 @@ void SerialConsole::commandDebug(const char *param, const uint8_t param_len) {
 }
 
 void SerialConsole::commandStatus(const char *, const uint8_t) {
-  State &state = State::get();
-  ChargeMonitor &cm = ChargeMonitor::get();
+  const State &state = State::get();
+  const ChargeMonitor &cm = ChargeMonitor::get();
 
   Settings settings;
   EepromSettings::load(settings);

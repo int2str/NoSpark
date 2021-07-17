@@ -29,7 +29,7 @@ namespace ui {
 
 class LcdStateRunning : public LcdState {
  public:
-  LcdStateRunning(stream::LcdStream &lcd);
+  explicit LcdStateRunning(stream::LcdStream &lcd);
   bool draw() override;
 
  private:

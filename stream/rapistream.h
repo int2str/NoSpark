@@ -27,7 +27,7 @@ class RapiStream : public OutputStream {
   struct ERROR {};
   struct END {};
 
-  RapiStream(UartStream &uart);
+  explicit RapiStream(UartStream &uart);
 
   RapiStream &operator<<(const Flags flags);
   RapiStream &operator<<(const uint8_t val);

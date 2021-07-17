@@ -34,22 +34,22 @@ template <typename T>
 T square_root(const T &val) {
   if (val < 2) return val;
 
-  T min = 1;
-  T max = val / 2 + 1;
+  T low = 1;
+  T high = val / 2 + 1;
 
-  while ((max - min) > 1) {
-    const T test = (max - min) / 2 + min;
+  while ((high - low) > 1) {
+    const T test = (high - low) / 2 + low;
     const T sq = test * test;
 
     if (sq == val)
       return test;
     else if (sq > val)
-      max = test;
+      high = test;
     else
-      min = test;
+      low = test;
   }
 
-  return min;
+  return low;
 }
 
 }  // namespace utils

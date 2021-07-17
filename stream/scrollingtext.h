@@ -16,6 +16,7 @@
 #pragma once
 
 #include "stream/outputstream.h"
+#include "utils/cpp.h"
 
 namespace nospark {
 namespace stream {
@@ -42,6 +43,8 @@ class ScrollingText : public OutputStream {
   uint8_t length;
   uint8_t offset;
   char *buffer;
+
+  DISALLOW_COPY_AND_ASSIGN(ScrollingText);
 };
 
 }  // namespace stream

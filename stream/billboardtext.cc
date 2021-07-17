@@ -13,9 +13,10 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "stream/billboardtext.h"
+
 #include <stdlib.h>
 
-#include "stream/billboardtext.h"
 #include "system/timer.h"
 
 #define ITEM_DELAY_MS 1500
@@ -24,7 +25,11 @@ namespace nospark {
 namespace stream {
 
 BillboardText::BillboardText(const uint8_t width, const uint8_t items)
-    : width_(width), items_(items), current_item_(0), insert_position_(0) {
+    : last_update_{},
+      width_(width),
+      items_(items),
+      current_item_(0),
+      insert_position_(0) {
   buffer_ = new char[(width + 1) * items];
 }
 

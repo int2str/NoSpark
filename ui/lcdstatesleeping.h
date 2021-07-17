@@ -27,7 +27,7 @@ namespace ui {
 
 class LcdStateSleeping : public LcdState {
  public:
-  LcdStateSleeping(stream::LcdStream &lcd);
+  explicit LcdStateSleeping(stream::LcdStream &lcd);
   bool draw() override;
 
  private:
