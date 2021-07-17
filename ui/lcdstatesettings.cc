@@ -422,7 +422,7 @@ bool LcdStateSettings::pageSleepmode() {
     switch (value) {
       default:
         value = 0;
-        [[gnu::fallthrough]];
+        [[fallthrough]];
       case 0:
         if (devices::DS3231::get().isPresent()) {
           lcd << PGM << STR_SET_SLEEPMODE_TIME;
@@ -430,7 +430,7 @@ bool LcdStateSettings::pageSleepmode() {
         } else {
           ++value;
         }
-        [[gnu::fallthrough]];
+        [[fallthrough]];
       case 1:
         lcd << PGM << STR_SET_SLEEPMODE_OFF;
         break;

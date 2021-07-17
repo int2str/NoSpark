@@ -13,12 +13,13 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
+#include "i2c_master.h"
+
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stdbool.h>
 #include <util/twi.h>
 
-#include "i2c_master.h"
 #include "utils/cpp.h"
 
 #define I2C_FREQ 400000UL
@@ -81,7 +82,7 @@ ISR(TWI_vect) {
     case TW_MR_DATA_ACK:
       *i2c_data++ = TWDR;
       --i2c_len;
-      [[gnu::fallthrough]];
+      [[fallthrough]];
     case TW_MR_SLA_ACK:
       TWCR = (i2c_len > 1) ? I2C_ACK : I2C_NACK;
       break;
@@ -89,7 +90,7 @@ ISR(TWI_vect) {
     case TW_MR_DATA_NACK:
       *i2c_data = TWDR;
       --i2c_len;
-      [[gnu::fallthrough]];
+      [[fallthrough]];
     case TW_MR_SLA_NACK:
       TWCR = I2C_STOP;
       break;
