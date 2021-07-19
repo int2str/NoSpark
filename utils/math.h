@@ -31,7 +31,7 @@ T max(T a, T b) {
 }
 
 template <typename T>
-T square_root(const T &val) {
+constexpr T square_root(const T &val) {
   if (val < 2) return val;
 
   T low = 1;
