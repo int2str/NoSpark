@@ -46,8 +46,7 @@ bool isWakeEvent(const uint8_t event_id) {
 
 }  // namespace
 
-namespace nospark {
-namespace ui {
+namespace nospark::ui {
 
 LcdConsole &LcdConsole::init() {
   static LcdConsole console;
@@ -146,5 +145,4 @@ void LcdConsole::updateSleepState(const event::Event &event) {
   }
 }
 
-}  // namespace ui
 }  // namespace nospark

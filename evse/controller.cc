@@ -44,8 +44,7 @@ void setJ1772State(const J1772Pilot::State j1772) {
 }
 }  // namespace
 
-namespace nospark {
-namespace evse {
+namespace nospark::evse {
 
 Controller &Controller::init() {
   static Controller controller;
@@ -213,5 +212,4 @@ void Controller::setFault(const State::ControllerFault fault) {
   setControllerState(State::FAULT);
 }
 
-}  // namespace evse
 }  // namespace nospark

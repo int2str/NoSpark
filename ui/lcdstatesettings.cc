@@ -72,8 +72,7 @@ namespace {
 uint8_t temp_buffer[8] = {0};
 }  // namespace
 
-namespace nospark {
-namespace ui {
+namespace nospark::ui {
 
 LcdStateSettings::LcdStateSettings(stream::LcdStream &lcd)
     : LcdState(lcd),
@@ -482,5 +481,4 @@ bool LcdStateSettings::timedOut() {
 
 void LcdStateSettings::resetTimeout() { last_action = Timer::millis(); }
 
-}  // namespace ui
 }  // namespace nospark

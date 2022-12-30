@@ -195,8 +195,7 @@ uint8_t mapState() {
 
 }  // namespace
 
-namespace nospark {
-namespace ui {
+namespace nospark::ui {
 
 SerialApi::SerialApi(stream::UartStream &uart) : rapi(uart) {}
 
@@ -305,5 +304,4 @@ bool SerialApi::handleCommand(const char *buffer, const uint8_t len) {
   return true;
 }
 
-}  // namespace ui
 }  // namespace nospark

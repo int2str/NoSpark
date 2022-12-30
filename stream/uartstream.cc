@@ -15,8 +15,7 @@
 
 #include "stream/uartstream.h"
 
-namespace nospark {
-namespace stream {
+namespace nospark::stream {
 
 UartStream::UartStream(serial::Usart &uart) : uart(uart) {}
 
@@ -29,5 +28,4 @@ UartStream &UartStream::operator>>(char &ch) {
 
 void UartStream::write(const char ch) { uart.write(ch); }
 
-}  // namespace stream
 }  // namespace nospark

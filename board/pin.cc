@@ -34,8 +34,7 @@ uint8_t bit2num(uint8_t b) {
 }
 }  // namespace
 
-namespace nospark {
-namespace board {
+namespace nospark::board {
 
 Pin::Pin(volatile uint8_t *reg_pin, const uint8_t b, const PinDirection d)
     : reg_pin(reg_pin), b(b) {
@@ -68,5 +67,4 @@ Pin &Pin::operator=(const uint8_t rhs) {
 
 bool Pin::operator!() const { return (_PIN & b) ? false : true; }
 
-}  // namespace board
 }  // namespace nospark

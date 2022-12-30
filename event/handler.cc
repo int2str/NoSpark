@@ -17,10 +17,8 @@
 
 #include "event/loop.h"
 
-namespace nospark {
-namespace event {
+namespace nospark::event {
 
 Handler::Handler() { Loop::get().addHandler(this); }
 
-}  // namespace event
 }  // namespace nospark

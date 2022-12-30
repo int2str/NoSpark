@@ -21,8 +21,7 @@
 
 #define ITEM_DELAY_MS 1500
 
-namespace nospark {
-namespace stream {
+namespace nospark::stream {
 
 BillboardText::BillboardText(const uint8_t width, const uint8_t items)
     : last_update_{},
@@ -70,5 +69,4 @@ void BillboardText::write(const char ch) {
   }
 }
 
-}  // namespace stream
 }  // namespace nospark

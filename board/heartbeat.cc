@@ -17,8 +17,7 @@
 #include "board/pins.h"
 #include "events.h"
 
-namespace nospark {
-namespace board {
+namespace nospark::board {
 
 Heartbeat& Heartbeat::init() {
   static Heartbeat heartbeat;
@@ -31,5 +30,4 @@ void Heartbeat::onEvent(const event::Event& event) {
   if (event.id == EVENT_UPDATE) pin_ = !pin_;
 }
 
-}  // namespace board
 }  // namespace nospark

@@ -19,8 +19,7 @@
 
 using nospark::evse::State;
 
-namespace nospark {
-namespace ui {
+namespace nospark::ui {
 
 LcdStateError::LcdStateError(stream::LcdStream &lcd) : LcdState(lcd) {}
 
@@ -60,5 +59,4 @@ bool LcdStateError::draw() {
   return true;
 }
 
-}  // namespace ui
 }  // namespace nospark

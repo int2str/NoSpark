@@ -27,8 +27,7 @@
 // ADC sampling....
 #define CURRENT_SCALE_FACTOR 200l
 
-namespace nospark {
-namespace board {
+namespace nospark::board {
 
 Ammeter::Ammeter() : last_sample(0) {}
 
@@ -39,5 +38,4 @@ uint32_t Ammeter::sample() {
   return last_sample;
 }
 
-}  // namespace board
 }  // namespace nospark

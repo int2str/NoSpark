@@ -15,8 +15,7 @@
 
 #include "pcf8574.h"
 
-namespace nospark {
-namespace devices {
+namespace nospark::devices {
 
 PCF8574::PCF8574(const uint8_t i2c_addr)
     : i2c_addr(i2c_addr), i2c(I2CMaster::get()), ddr(0xFF) {}
@@ -34,5 +33,4 @@ void PCF8574::write(const uint8_t b) {
   i2c.write(i2c_addr, &b2, 1);
 }
 
-}  // namespace devices
 }  // namespace nospark

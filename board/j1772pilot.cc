@@ -79,8 +79,7 @@ J1772Pilot::State stateFromSample(const uint16_t sample) {
 }
 }  // namespace
 
-namespace nospark {
-namespace board {
+namespace nospark::board {
 
 J1772Pilot::J1772Pilot() : last_state(NOT_READY), mode(LOW) {}
 
@@ -123,5 +122,4 @@ J1772Pilot::State J1772Pilot::getState(const bool force_update) {
   return last_state;
 }
 
-}  // namespace board
 }  // namespace nospark

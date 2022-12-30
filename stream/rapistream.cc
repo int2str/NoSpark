@@ -29,8 +29,7 @@ void appendChecksum(nospark::stream::UartStream& uart, uint8_t checksum) {
 
 }  // namespace
 
-namespace nospark {
-namespace stream {
+namespace nospark::stream {
 
 RapiStream::RapiStream(UartStream& uart)
     : uart_(uart), checksum_(0), first_parameter_(false) {}
@@ -91,5 +90,4 @@ RapiStream& RapiStream::operator<<(const END&) {
   return *this;
 }
 
-}  // namespace stream
 }  // namespace nospark

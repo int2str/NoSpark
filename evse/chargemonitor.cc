@@ -65,8 +65,7 @@ void setKwhLimited(const bool limited) {
 
 }  // namespace
 
-namespace nospark {
-namespace evse {
+namespace nospark::evse {
 
 ChargeMonitor &ChargeMonitor::get() {
   static ChargeMonitor monitor;
@@ -165,5 +164,4 @@ void ChargeMonitor::onEvent(const event::Event &event) {
   }
 }
 
-}  // namespace evse
 }  // namespace nospark

@@ -64,8 +64,7 @@ uint32_t square_root(uint32_t val) {
 }
 }  // namespace
 
-namespace nospark {
-namespace board {
+namespace nospark::board {
 
 Adc &Adc::get() {
   static Adc adc;
@@ -158,5 +157,4 @@ uint32_t Adc::readAmmeter() {
   return ret;
 }
 
-}  // namespace board
 }  // namespace nospark

@@ -17,8 +17,7 @@
 
 #include "system/watchdog.h"
 
-namespace nospark {
-namespace system {
+namespace nospark::system {
 
 void Watchdog::enable() { wdt_enable(WDTO_8S); }
 
@@ -30,5 +29,4 @@ void Watchdog::forceRestart() {
   }
 }
 
-}  // namespace system
 }  // namespace nospark

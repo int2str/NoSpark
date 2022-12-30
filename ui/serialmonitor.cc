@@ -24,8 +24,7 @@
 
 using nospark::serial::Usart;
 
-namespace nospark {
-namespace ui {
+namespace nospark::ui {
 
 SerialMonitor &SerialMonitor::init() {
   static SerialMonitor monitor;
@@ -105,5 +104,4 @@ void SerialMonitor::onEvent(const event::Event &event) {
   }
 }
 
-}  // namespace ui
 }  // namespace nospark

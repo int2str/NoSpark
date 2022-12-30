@@ -32,8 +32,7 @@ ISR(INT0_vect) {
   if (gfci) gfci->trip();
 }
 
-namespace nospark {
-namespace board {
+namespace nospark::board {
 
 GFCI::GFCI()
     : pinSense(PIN_GFCI_SENSE),
@@ -90,5 +89,4 @@ void GFCI::trip() {
   if (!self_test) event::Loop::post(event::Event(EVENT_GFCI_TRIPPED));
 }
 
-}  // namespace board
 }  // namespace nospark

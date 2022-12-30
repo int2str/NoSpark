@@ -89,8 +89,7 @@ void saveMaxAmps(const uint8_t max_amps) {
 
 }  // namespace
 
-namespace nospark {
-namespace ui {
+namespace nospark::ui {
 
 SerialConsole::SerialConsole(UartStream &uart)
     : uart(uart),
@@ -325,5 +324,4 @@ void SerialConsole::commandVersion(const char *, const uint8_t) {
   uart << PGM << STR_NOSPARK_BY << EOL << EOL;
 }
 
-}  // namespace ui
 }  // namespace nospark

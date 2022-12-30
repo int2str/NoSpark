@@ -27,8 +27,7 @@
 #define MCP23008_GPIO 0x09
 #define MCP23008_OLAT 0x0A
 
-namespace nospark {
-namespace devices {
+namespace nospark::devices {
 
 MCP23008::MCP23008(const uint8_t i2c_addr)
     : i2c_addr(i2c_addr), i2c(I2CMaster::get()) {}
@@ -55,5 +54,4 @@ void MCP23008::write(const uint8_t b) {
   i2c.write(i2c_addr, buffer, 2);
 }
 
-}  // namespace devices
 }  // namespace nospark

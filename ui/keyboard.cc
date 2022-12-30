@@ -29,8 +29,7 @@
 #define KEY_DOWN 0x01
 #define KEY_HOLD 0x02
 
-namespace nospark {
-namespace ui {
+namespace nospark::ui {
 
 Keyboard &Keyboard::init() {
   static Keyboard keyboard;
@@ -74,5 +73,4 @@ void Keyboard::onEvent(const event::Event &event) {
   if (event.id == EVENT_UPDATE) update();
 }
 
-}  // namespace ui
 }  // namespace nospark

@@ -17,8 +17,7 @@
 
 #include "system/timer.h"
 
-namespace nospark {
-namespace ui {
+namespace nospark::ui {
 
 TimedFlipFlop::TimedFlipFlop(const uint16_t duration)
     : duration(duration), last_state(false), last_change(0) {}
@@ -32,5 +31,4 @@ bool TimedFlipFlop::operator()() {
   return last_state;
 }
 
-}  // namespace ui
 }  // namespace nospark

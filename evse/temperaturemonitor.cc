@@ -74,8 +74,7 @@ void updateCurrentLimit(
 }
 }  // namespace
 
-namespace nospark {
-namespace evse {
+namespace nospark::evse {
 
 TemperatureMonitor &TemperatureMonitor::init() {
   static TemperatureMonitor temp;
@@ -119,5 +118,4 @@ void TemperatureMonitor::update(bool force_update) {
   }
 }
 
-}  // namespace evse
 }  // namespace nospark

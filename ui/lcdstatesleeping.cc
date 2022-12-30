@@ -27,8 +27,7 @@ using nospark::evse::EepromSettings;
 using nospark::evse::Settings;
 using nospark::stream::LcdStream;
 
-namespace nospark {
-namespace ui {
+namespace nospark::ui {
 
 LcdStateSleeping::LcdStateSleeping(LcdStream &lcd)
     : LcdState(lcd), blink_state(BLINK_TIMEOUT) {
@@ -69,5 +68,4 @@ bool LcdStateSleeping::draw() {
   return true;
 }
 
-}  // namespace ui
 }  // namespace nospark

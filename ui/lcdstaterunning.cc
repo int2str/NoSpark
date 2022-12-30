@@ -92,8 +92,7 @@ uint8_t center_P(OutputStream &lcd, const char *str, const uint8_t offset = 0) {
 
 }  // namespace
 
-namespace nospark {
-namespace ui {
+namespace nospark::ui {
 
 LcdStateRunning::LcdStateRunning(stream::LcdStream &lcd)
     : LcdState(lcd),
@@ -278,5 +277,4 @@ void LcdStateRunning::select() {
   if (page != PAGE_DEFAULT) EepromSettings::load(settings);
 }
 
-}  // namespace ui
 }  // namespace nospark

@@ -29,8 +29,7 @@ ISR(TIMER2_OVF_vect) {
   if (relays) relays->updateState();
 }
 
-namespace nospark {
-namespace board {
+namespace nospark::board {
 
 Relays::Relays()
     : state(UNKNOWN),
@@ -96,5 +95,4 @@ void Relays::updateState() {
   sample_history = (sample_history << 1) | active;
 }
 
-}  // namespace board
 }  // namespace nospark

@@ -99,8 +99,7 @@ constexpr Pair<uint8_t, uint8_t> bits4color(const LCD16x2::Backlight color) {
 
 }  // namespace
 
-namespace nospark {
-namespace devices {
+namespace nospark::devices {
 
 LCD16x2::LCD16x2() : io{LCD_I2C_ADDR}, backlight_bits{bits4color(OFF)} {
   // Initialize GPIO expander
@@ -179,5 +178,4 @@ void LCD16x2::pulse(const uint8_t b) {
   io.writeB(b | backlight_bits.second);
 }
 
-}  // namespace devices
 }  // namespace nospark

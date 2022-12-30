@@ -16,8 +16,7 @@
 #include "event/loop.h"
 #include "system/timer.h"
 
-namespace nospark {
-namespace event {
+namespace nospark::event {
 
 void Loop::post(const Event &event) { get().events.push(event); }
 
@@ -75,5 +74,4 @@ void Loop::dispatch_impl() {
   }
 }
 
-}  // namespace event
 }  // namespace nospark

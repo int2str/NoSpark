@@ -45,8 +45,7 @@ void setChargeLimited(const bool limited) {
 }
 }  // namespace
 
-namespace nospark {
-namespace evse {
+namespace nospark::evse {
 
 ChargeTimer &ChargeTimer::init() {
   static ChargeTimer timer;
@@ -90,5 +89,4 @@ void ChargeTimer::onEvent(const event::Event &event) {
     checkTime();
 }
 
-}  // namespace evse
 }  // namespace nospark

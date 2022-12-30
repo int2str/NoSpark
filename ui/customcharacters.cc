@@ -66,8 +66,7 @@ void loadCustomCharacters(LCD16x2 &lcd, const uint8_t p[][8]) {
 
 }  // namespace
 
-namespace nospark {
-namespace ui {
+namespace nospark::ui {
 
 void CustomCharacters::loadCustomChars(LCD16x2 &lcd) {
   loadCustomCharacters(lcd, MAP);
@@ -88,5 +87,4 @@ void CustomCharacters::largeDigit(LCD16x2 &lcd, const uint8_t digit,
   for (uint8_t i = 0; i != 3; ++i) lcd.write(pgm_read_byte(p + i + 3));
 }
 
-}  // namespace ui
 }  // namespace nospark

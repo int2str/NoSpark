@@ -51,8 +51,7 @@ ISR(TIMER0_OVF_vect) {
 }
 }  // namespace
 
-namespace nospark {
-namespace system {
+namespace nospark::system {
 
 uint32_t Timer::millis() {
   static Timer sysTime;
@@ -77,5 +76,4 @@ uint32_t Timer::millis_impl() const {
   return timer0_millis;
 }
 
-}  // namespace system
 }  // namespace nospark

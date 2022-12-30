@@ -18,8 +18,7 @@
 #include <avr/pgmspace.h>
 #include <stdlib.h>
 
-namespace nospark {
-namespace stream {
+namespace nospark::stream {
 
 OutputStream::OutputStream() : flags(0) {}
 
@@ -73,5 +72,4 @@ OutputStream &OutputStream::operator<<(const uint32_t val) {
   return *this << buffer;
 }
 
-}  // namespace stream
 }  // namespace nospark
