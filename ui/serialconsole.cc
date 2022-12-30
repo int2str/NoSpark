@@ -94,9 +94,8 @@ namespace ui {
 
 SerialConsole::SerialConsole(UartStream &uart)
     : uart(uart),
-      event_debug(false)  // TODO: Read from EEPROM?
-      ,
-      commands({{STR_CMD_HELP, &SerialConsole::commandHelp},
+      event_debug(false),  // TODO: Read from EEPROM?
+      commands{{STR_CMD_HELP, &SerialConsole::commandHelp},
                 {STR_CMD_STATUS, &SerialConsole::commandStatus},
                 {STR_CMD_ENERGY, &SerialConsole::commandEnergy},
                 {STR_CMD_VERSION, &SerialConsole::commandVersion},
@@ -105,7 +104,7 @@ SerialConsole::SerialConsole(UartStream &uart)
                 {STR_CMD_SETDATE, &SerialConsole::commandSetDate},
                 {STR_CMD_SETLIMIT, &SerialConsole::commandSetLimit},
                 {STR_CMD_SETTIME, &SerialConsole::commandSetTime},
-                {STR_CMD_DEBUG, &SerialConsole::commandDebug}}) {}
+                {STR_CMD_DEBUG, &SerialConsole::commandDebug}} {}
 
 void SerialConsole::onEvent(const event::Event &event) {
   switch (event.id) {

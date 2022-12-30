@@ -44,9 +44,9 @@ Relays::Relays()
   relays = this;
 
   // Start timer 2 to sample AC pins
-  TCCR2A |= _BV(WGM21) | _BV(WGM20);
-  TCCR2B |= _BV(CS22);
-  TIMSK2 |= _BV(TOIE2);
+  TCCR2A = TCCR2A | _BV(WGM21) | _BV(WGM20);
+  TCCR2B = TCCR2B | _BV(CS22);
+  TIMSK2 = TIMSK2 | _BV(TOIE2);
 
   setPins(false);
 }

@@ -13,8 +13,9 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include "pin.h"
 #include <avr/io.h>
+
+#include "pin.h"
 
 #define _AVR_REG(addr) (*reinterpret_cast<volatile uint8_t *>(addr))
 
@@ -38,19 +39,19 @@ namespace board {
 
 Pin::Pin(volatile uint8_t *reg_pin, const uint8_t b, const PinDirection d)
     : reg_pin(reg_pin), b(b) {
-  _DDR &= ~b;
+  _DDR = _DDR & ~b;
 
   if (d == PIN_OUT)
-    _DDR |= b;
+    _DDR = _DDR | b;
 
   else if (d == PIN_IN_PULLUP)
-    _PORT |= b;
+    _PORT = _PORT | b;
 }
 
 uint16_t Pin::analogRead() const {
   ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
   ADMUX = (1 << REFS0) | bit2num(b);
-  ADCSRA |= (1 << ADSC);
+  ADCSRA = ADCSRA | (1 << ADSC);
   while (ADCSRA & (1 << ADSC)) {
   };
   return ADCW;
@@ -58,9 +59,9 @@ uint16_t Pin::analogRead() const {
 
 Pin &Pin::operator=(const uint8_t rhs) {
   if (rhs)
-    _PORT |= b;
+    _PORT = _PORT | b;
   else
-    _PORT &= ~b;
+    _PORT = _PORT & ~b;
 
   return *this;
 }

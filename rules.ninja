@@ -24,9 +24,10 @@ objcopy = avr-objcopy
 size = avr-size
 dude = avrdude
 
-cflags = -Os -g -mmcu=$mcu -DF_CPU=$freq -std=c++17 -W -Wall -pedantic $
+cflags = -Os -g -mmcu=$mcu -DF_CPU=$freq -std=c++20 -W -Wall -pedantic $
     -ffunction-sections -fdata-sections -fmerge-all-constants -fno-stack-protector $
-    -fno-inline-small-functions -fshort-enums -fno-exceptions -I.
+    -fno-inline-small-functions -fshort-enums -fno-exceptions -I. $
+    --param=min-pagesize=0
 ldflags = -Wl,--gc-sections -Wl,--relax
 
 dudeflags = -V -p $mcu -c usbasp

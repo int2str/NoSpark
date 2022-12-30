@@ -63,13 +63,13 @@ Timer::Timer() {
   sei();
 
   // Fast PWM mode; OCRx update BOTTOM, TOV at MAX
-  TCCR0A |= _BV(WGM01) | _BV(WGM00);
+  TCCR0A = TCCR0A | _BV(WGM01) | _BV(WGM00);
 
   // Set pre-scale factor to 64
-  TCCR0B |= _BV(CS01) | _BV(CS00);
+  TCCR0B = TCCR0B | _BV(CS01) | _BV(CS00);
 
   // Enable timer 0 overflow interrupt
-  TIMSK0 |= _BV(TOIE0);
+  TIMSK0 = TIMSK0 | _BV(TOIE0);
 }
 
 uint32_t Timer::millis_impl() const {

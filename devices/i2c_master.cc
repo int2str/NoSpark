@@ -13,25 +13,24 @@
 // See LICENSE for a copy of the GNU General Public License or see
 // it online at <http://www.gnu.org/licenses/>.
 
-#include "i2c_master.h"
-
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stdbool.h>
 #include <util/twi.h>
 
+#include "i2c_master.h"
 #include "utils/cpp.h"
 
 #define I2C_FREQ 400000UL
 
 // clang-format off
 //                      TWINT          TWEA          TWSTA          TWSTO          TWEN          TWIE
-#define I2C_START (1 << TWINT) | (1 << TWEA) | (1 << TWSTA) |                (1 << TWEN) | (1 << TWIE)
-#define I2C_STOP  (1 << TWINT) |                              (1 << TWSTO) | (1 << TWEN)
-#define I2C_SEND  (1 << TWINT) | (1 << TWEA) |                               (1 << TWEN) | (1 << TWIE)
-#define I2C_ACK   (1 << TWINT) | (1 << TWEA) |                               (1 << TWEN) | (1 << TWIE)
-#define I2C_NACK  (1 << TWINT) |                                             (1 << TWEN) | (1 << TWIE)
-#define I2C_RESET                                                            (1 << TWEN)
+#define I2C_START ((1 << TWINT) | (1 << TWEA) | (1 << TWSTA) |                (1 << TWEN) | (1 << TWIE))
+#define I2C_STOP  ((1 << TWINT) |                              (1 << TWSTO) | (1 << TWEN)              )
+#define I2C_SEND  ((1 << TWINT) | (1 << TWEA) |                               (1 << TWEN) | (1 << TWIE))
+#define I2C_ACK   ((1 << TWINT) | (1 << TWEA) |                               (1 << TWEN) | (1 << TWIE))
+#define I2C_NACK  ((1 << TWINT) |                                             (1 << TWEN) | (1 << TWIE))
+#define I2C_RESET (                                                           (1 << TWEN)              )
 //
 // clang-format on
 
@@ -60,7 +59,7 @@ ISR(TWI_vect) {
     case TW_MT_SLA_ACK:
     case TW_MT_DATA_ACK:
       if (i2c_len) {
-        --i2c_len;
+        i2c_len = i2c_len - 1;
         TWDR = *i2c_data++;
         TWCR = I2C_SEND;
       } else {
@@ -81,7 +80,7 @@ ISR(TWI_vect) {
 
     case TW_MR_DATA_ACK:
       *i2c_data++ = TWDR;
-      --i2c_len;
+      i2c_len = i2c_len - 1;
       [[fallthrough]];
     case TW_MR_SLA_ACK:
       TWCR = (i2c_len > 1) ? I2C_ACK : I2C_NACK;
@@ -89,7 +88,7 @@ ISR(TWI_vect) {
 
     case TW_MR_DATA_NACK:
       *i2c_data = TWDR;
-      --i2c_len;
+      i2c_len = i2c_len - 1;
       [[fallthrough]];
     case TW_MR_SLA_NACK:
       TWCR = I2C_STOP;
@@ -130,7 +129,7 @@ I2CMaster::I2CMaster() {
   // Any system using this REALLY should be using external pull-ups
   // as well (4.7k recommended). The internal pull-ups are too weak
   // for pretty much any cable length (if cables are used).
-  PORTC |= (1 << PC4) | (1 << PC5);
+  PORTC = PORTC | (1 << PC4) | (1 << PC5);
 
   TWSR = 0x00;
   TWBR = (F_CPU / I2C_FREQ - 16) / 2;

@@ -47,17 +47,17 @@ uint8_t amp2duty(const uint8_t amp) {
 }
 
 void setPinActive(const bool active) {
-  DDRB |= (1 << PB2);
+  DDRB = DDRB | (1 << PB2);
   if (active)
-    PORTB |= (1 << PB2);
+    PORTB = PORTB | (1 << PB2);
   else
-    PORTB &= ~(1 << PB2);
+    PORTB = PORTB & ~(1 << PB2);
 }
 
 void pwmEnable(const uint8_t duty_cycle) {
   nospark::utils::Atomic _atomic;
 
-  DDRB |= (1 << PB2);
+  DDRB = DDRB | (1 << PB2);
 
   TCCR1A = (1 << COM1B1) | (1 << WGM11) | (1 << WGM10);
   TCCR1B = (1 << WGM13) | (1 << WGM12) | (1 << CS11) | (1 << CS10);

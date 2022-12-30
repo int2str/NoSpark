@@ -88,36 +88,38 @@ Adc::Adc()
   ADMUX = (1 << REFS0) | mode;
 
   // Start first conversion; ISR will re-start conversion
-  ADCSRA |= (1 << ADSC);
+  ADCSRA = ADCSRA | (1 << ADSC);
 }
 
 void Adc::update(const uint16_t val) {
   if (mode == ADC_AMMETER && ammeter_zero_crossings < 3 &&
       ammeter_samples < 0xFF) {
-    if (ammeter_samples++) {
+    ammeter_samples = ammeter_samples + 1;
+    if (ammeter_samples > 1) {
       if ((val >= 512 && ammeter_last_sample < 512) ||
           (val < 512 && ammeter_last_sample >= 512)) {
         if (ammeter_zero_crossings == 0 || ammeter_samples > 25) {
           if (ammeter_zero_crossings == 0) ammeter_samples = 1;
-          ++ammeter_zero_crossings;
+          ammeter_zero_crossings = ammeter_zero_crossings + 1;
         }
       }
 
-      ammeter += square(normalize(val));
+      ammeter = ammeter + square(normalize(val));
     }
     ammeter_last_sample = val;
 
   } else if (mode == ADC_J1772 && j1772_samples < J1772_SAMPLES) {
     j1772.first = utils::min(j1772.first, val);
     j1772.second = utils::max(j1772.second, val);
-    ++j1772_samples;
+    j1772_samples = j1772_samples + 1;
 
   } else {
-    if (++mode > ADC_J1772) mode = 0;
+    mode = mode + 1;
+    if (mode > ADC_J1772) mode = 0;
     ADMUX = (1 << REFS0) | mode;
   }
 
-  ADCSRA |= (1 << ADSC);
+  ADCSRA = ADCSRA | (1 << ADSC);
 }
 
 bool Adc::j1772Ready() const { return j1772_samples == J1772_SAMPLES; }
@@ -144,7 +146,7 @@ uint32_t Adc::readAmmeter() {
   utils::Atomic _atomic;
 
   if (ammeter_zero_crossings == 3 && ammeter_samples != 0)
-    ammeter /= ammeter_samples;
+    ammeter = ammeter / ammeter_samples;
   else
     ammeter = 0;
   uint32_t ret = square_root(ammeter);

@@ -36,11 +36,13 @@ volatile uint8_t usart_index_insert = 0;
 volatile uint8_t usart_index_read = 0;
 
 void usart_insert(const uint8_t b) {
-  usart_buffer[usart_index_insert++] = b;
+  usart_buffer[usart_index_insert] = b;
+  usart_index_insert = usart_index_insert + 1;
 
   if (usart_index_insert == USART_BUFFER_SIZE) usart_index_insert = 0;
 
-  if (usart_index_insert == usart_index_read) ++usart_index_read;
+  if (usart_index_insert == usart_index_read)
+    usart_index_read = usart_index_read + 1;
 }
 
 uint8_t usart_read() {
@@ -49,7 +51,9 @@ uint8_t usart_read() {
 
   if (usart_index_read == usart_index_insert) return -1;
 
-  return usart_buffer[usart_index_read++];
+  auto val = usart_buffer[usart_index_read];
+  usart_index_read = usart_index_read + 1;
+  return val;
 }
 
 uint8_t usart_available() {
@@ -71,7 +75,7 @@ Usart::Usart() {
   UBRR0H = USART_BAUD_PRESCALE >> 8;
   UBRR0L = USART_BAUD_PRESCALE & 0xFF;
 
-  UCSR0A |= (1 << U2X0);
+  UCSR0A = UCSR0A | (1 << U2X0);
   UCSR0B = (1 << RXEN0) | (1 << TXEN0) | (1 << RXCIE0);
   UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
 }
